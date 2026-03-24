@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scouting Cantera — MM Talent Sport</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #111; font-size: 14px; }
+
+.header { background: #0F1F3D; color: #fff; padding: 12px 24px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 100; }
+.header h1 { font-size: 16px; font-weight: 600; letter-spacing: .02em; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.teal-dot { width: 8px; height: 8px; border-radius: 50%; background: #0D9488; flex-shrink: 0; }
+.save-pill { font-size: 11px; color: #0D9488; background: rgba(13,148,136,.15); padding: 3px 10px; border-radius: 99px; display: none; }
+.user-pill { font-size: 12px; color: #94a3b8; background: rgba(255,255,255,.08); padding: 4px 12px; border-radius: 99px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbtn { font-family: inherit; font-size: 12px; padding: 5px 10px; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; background: transparent; color: #94a3b8; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.hbtn:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+.container { max-width: 800px; margin: 0 auto; padding: 20px 16px; }
+.page { display: none; }
+.page.active { display: block; }
+
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; }
+.card-title { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 14px; }
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+.stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 600; color: #0F1F3D; }
+.stat-label { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+input, select, textarea { font-family: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb; color: #111; outline: none; transition: border-color .15s, box-shadow .15s; width: 100%; }
+input:focus, select:focus, textarea:focus { border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,.12); background: #fff; }
+input[type=range] { -webkit-appearance: none; height: 4px; border-radius: 2px; background: #e2e8f0; padding: 0; border: none; box-shadow: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #0D9488; cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+
+button { font-family: inherit; font-size: 13px; padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; cursor: pointer; transition: all .15s; white-space: nowrap; }
+button:hover { background: #f3f4f6; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: #0D9488 !important; color: #fff !important; border-color: #0D9488 !important; font-weight: 500; }
+.btn-primary:hover:not(:disabled) { background: #0a7a70 !important; }
+.btn-navy { background: #0F1F3D !important; color: #fff !important; border-color: #0F1F3D !important; font-weight: 500; }
+.btn-navy:hover:not(:disabled) { background: #1a3260 !important; }
+.btn-danger { color: #dc2626 !important; border-color: #fca5a5 !important; }
+.btn-danger:hover { background: #fef2f2 !important; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group.full { grid-column: 1/-1; }
+.form-label { font-size: 11px; color: #64748b; font-weight: 500; }
+.nota-global { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border-radius: 8px; margin-top: 6px; border: 1px solid #e2e8f0; }
+.slider-row { margin-bottom: 12px; }
+.slider-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
+.toolbar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.toolbar input[type=text] { flex: 1; min-width: 150px; }
+.player-row { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; transition: border-color .15s, box-shadow .15s; }
+.player-row:hover { border-color: #0D9488; box-shadow: 0 2px 8px rgba(13,148,136,.1); }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: #dbeafe; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #1d4ed8; flex-shrink: 0; }
+.avatar-lg { width: 54px; height: 54px; border-radius: 50%; background: #dbeafe; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #1d4ed8; flex-shrink: 0; }
+.player-info { flex: 1; min-width: 0; }
+.player-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.player-sub { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.badge { font-size: 10px; padding: 3px 9px; border-radius: 99px; font-weight: 500; white-space: nowrap; }
+.badge-activo { background: #dcfce7; color: #166534; }
+.badge-seguimiento { background: #dbeafe; color: #1e40af; }
+.badge-espera { background: #fef9c3; color: #854d0e; }
+.badge-descartado { background: #fee2e2; color: #991b1b; }
+
+.detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.ratings-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+.rating-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; text-align: center; }
+.rating-box .rl { font-size: 10px; color: #64748b; margin-bottom: 3px; }
+.rating-box .rv { font-size: 20px; font-weight: 700; }
+.detail-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-row .dk { color: #64748b; }
+.detail-row .dv { font-weight: 500; text-align: right; }
+.visit-item { border-left: 3px solid #bfdbfe; padding-left: 12px; margin-bottom: 12px; }
+.visit-meta { font-size: 11px; color: #64748b; margin-bottom: 3px; }
+.visit-note { font-size: 12px; color: #374151; line-height: 1.5; }
+.empty { text-align: center; padding: 3rem 1rem; color: #94a3b8; }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty h3 { font-size: 15px; color: #475569; margin-bottom: 6px; }
+.empty p { font-size: 13px; margin-bottom: 16px; }
+
+.ai-loading { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 12px; }
+.ai-spinner { width: 18px; height: 18px; border: 2px solid #bbf7d0; border-top-color: #0D9488; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* LOGIN */
+#page-login { display: none; min-height: 100vh; background: #0F1F3D; align-items: center; justify-content: center; }
+#page-login.active { display: flex; }
+.login-box { background: #fff; border-radius: 16px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+.login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.login-logo-dot { width: 12px; height: 12px; border-radius: 50%; background: #0D9488; }
+.login-logo h2 { font-size: 17px; font-weight: 700; color: #0F1F3D; }
+.login-tabs { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 24px; }
+.login-tab { flex: 1; padding: 8px; text-align: center; font-size: 13px; font-weight: 500; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; }
+.login-tab.active { color: #0D9488; border-bottom-color: #0D9488; }
+.login-field { margin-bottom: 14px; }
+.login-field label { display: block; font-size: 11px; font-weight: 500; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+.login-field input { border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.login-error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #dc2626; margin-bottom: 14px; display: none; }
+.login-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #166534; margin-bottom: 14px; display: none; }
+.login-btn { width: 100%; padding: 11px; font-size: 14px; border-radius: 8px; font-weight: 600; background: #0F1F3D; color: #fff; border: none; cursor: pointer; transition: background .15s; }
+.login-btn:hover { background: #1a3260; }
+.login-btn:disabled { opacity: .6; cursor: not-allowed; }
+.forgot-link { text-align: center; margin-top: 12px; font-size: 12px; color: #94a3b8; cursor: pointer; }
+.forgot-link:hover { color: #0D9488; }
+
+/* LOADING SCREEN */
+#page-loading { display: none; min-height: 100vh; background: #0F1F3D; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+#page-loading.active { display: flex; }
+.loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(13,148,136,.3); border-top-color: #0D9488; border-radius: 50%; animation: spin .8s linear infinite; }
+
+#api-banner { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 8px 24px; display: none; align-items: center; gap: 10px; flex-wrap: wrap; }
+#api-banner.show { display: flex; }
+#api-banner span { font-size: 12px; color: #92400e; flex: 1; min-width: 200px; }
+#api-banner input { max-width: 320px; font-size: 12px; padding: 5px 9px; border-color: #fcd34d; background: #fff; }
+
+#toast { position: fixed; bottom: 20px; right: 20px; background: #0D9488; color: #fff; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; display: none; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="page-loading" class="page active">
+  <div class="loading-spinner"></div>
+  <span style="color:#94a3b8;font-size:13px">Conectando...</span>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" class="page">
+  <div class="login-box">
+    <div class="login-logo"><div class="login-logo-dot"></div><h2>MM Talent Sport · Scouting</h2></div>
+    <div class="login-tabs">
+      <div class="login-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</div>
+      <div class="login-tab" id="tab-register" onclick="switchTab('register')">Crear cuenta</div>
+    </div>
+    <div id="login-error" class="login-error"></div>
+    <div id="login-success" class="login-success"></div>
+    <div class="login-field"><label>Correo electrónico</label><input id="l-email" type="email" placeholder="tu@email.com" autocomplete="email"></div>
+    <div class="login-field"><label>Contraseña</label><input id="l-pass" type="password" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+    <p class="forgot-link" id="forgot-link" onclick="resetPassword()">¿Olvidaste tu contraseña?</p>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header" id="main-header" style="display:none">
+  <div class="teal-dot"></div>
+  <h1>Scouting Cantera</h1>
+  <div class="header-right">
+    <span class="save-pill" id="save-pill">✓ Guardado</span>
+    <span class="user-pill" id="user-pill">—</span>
+    <button class="hbtn" id="btn-api-admin" onclick="showApiKeyConfig()" title="Clave API para análisis IA" style="display:none">🔑 API IA</button>
+    <button class="hbtn" onclick="doLogout()">Salir</button>
+  </div>
+</div>
+
+<!-- API KEY BANNER -->
+<div id="api-banner">
+  <span>🔑 Introduce tu clave API de Anthropic para activar el análisis IA real en los informes:</span>
+  <input type="password" id="api-key-input" placeholder="sk-ant-api03-...">
+  <button style="font-size:12px;padding:5px 12px;background:#d97706;color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="saveApiKey()">Guardar</button>
+  <button style="background:transparent;color:#92400e;border:1px solid #fcd34d;font-size:12px;padding:5px 10px;border-radius:6px;cursor:pointer" onclick="document.getElementById('api-banner').classList.remove('show')">✕</button>
+</div>
+
+<!-- LIST -->
+<div id="page-list" class="page">
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="st-total">0</div><div class="stat-label">Jugadores</div></div>
+      <div class="stat"><div class="stat-num" id="st-activos">0</div><div class="stat-label">Activos</div></div>
+      <div class="stat"><div class="stat-num" id="st-seguimiento">0</div><div class="stat-label">Seguimiento</div></div>
+      <div class="stat"><div class="stat-num" id="st-juvenil">0</div><div class="stat-label">Juvenil</div></div>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Buscar nombre, club o posición..." oninput="renderList()">
+      <select id="filter-cat" onchange="renderList()">
+        <option value="">Todas las categorías</option>
+        <option>Alevín</option><option>Infantil</option><option>Cadete</option>
+        <option>Juvenil Provincial</option><option>Juvenil Nacional</option>
+      </select>
+      <select id="filter-state" onchange="renderList()">
+        <option value="">Todos los estados</option>
+        <option>Activo</option><option>En seguimiento</option><option>En espera</option><option>Descartado</option>
+      </select>
+      <button class="btn-primary" onclick="openNew()">+ Nuevo jugador</button>
+    </div>
+    <div id="player-list"></div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div id="page-form" class="page">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button onclick="goBack()">← Volver</button>
+      <h2 style="font-size:16px;font-weight:600" id="form-title">Nuevo jugador</h2>
+    </div>
+    <div class="card">
+      <div class="card-title">01 — Ficha técnica</div>
+      <div class="form-grid">
+        <div class="form-group full"><label class="form-label">Nombre completo</label><input id="f-nombre" placeholder="Ej: Alejandro García López"></div>
+        <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input id="f-fecha" type="date"></div>
+        <div class="form-group"><label class="form-label">Categoría</label>
+          <select id="f-categoria"><option>Alevín</option><option>Infantil</option><option selected>Cadete</option><option>Juvenil Provincial</option><option>Juvenil Nacional</option></select></div>
+        <div class="form-group"><label class="form-label">Posición principal</label>
+          <select id="f-posicion"><option>Portero</option><option>Lateral Derecho</option><option>Lateral Izquierdo</option><option>Central</option><option>Pivote Defensivo</option><option>Mediocampista</option><option>Mediapunta</option><option>Extremo Derecho</option><option>Extremo Izquierdo</option><option>Delantero Centro</option><option>Segundo Delantero</option></select></div>
+        <div class="form-group"><label class="form-label">Pie dominante</label>
+          <select id="f-pie"><option>Derecho</option><option>Izquierdo</option><option>Ambidiestro</option></select></div>
+        <div class="form-group"><label class="form-label">Altura (cm)</label><input id="f-altura" type="number" placeholder="175"></div>
+        <div class="form-group"><label class="form-label">Peso (kg)</label><input id="f-peso" type="number" placeholder="68"></div>
+        <div class="form-group full"><label class="form-label">Club actual</label><input id="f-club" placeholder="Ej: CF Lorca Deportiva"></div>
+        <div class="form-group full"><label class="form-label">Estado</label>
+          <select id="f-estado"><option>Activo</option><option>En seguimiento</option><option>En espera</option><option>Descartado</option></select></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">02 — Valoración scout</div>
+      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:#475569">Técnica individual</span><span id="v-tecnica" style="font-size:15px;font-weight:600;color:#0D9488">5</span></div><input type="range" id="f-tecnica" min="1" max="10" value="5" step="1" oninput="updateSlider('tecnica')"></div>
+      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:#475569">Capacidad táctica</span><span id="v-tactica" style="font-size:15px;font-weight:600;color:#0D9488">5</span></div><input type="range" id="f-tactica" min="1" max="10" value="5" step="1" oninput="updateSlider('tactica')"></div>
+      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:#475569">Físico y atletismo</span><span id="v-fisico" style="font-size:15px;font-weight:600;color:#0D9488">5</span></div><input type="range" id="f-fisico" min="1" max="10" value="5" step="1" oninput="updateSlider('fisico')"></div>
+      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:#475569">Actitud y competitividad</span><span id="v-actitud" style="font-size:15px;font-weight:600;color:#0D9488">5</span></div><input type="range" id="f-actitud" min="1" max="10" value="5" step="1" oninput="updateSlider('actitud')"></div>
+      <div class="nota-global"><span style="font-size:13px;color:#475569">Nota global (media)</span><span id="v-nota-global" style="font-size:26px;font-weight:700;color:#0D9488">5.0</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">03 — Contacto y entorno</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Nombre del contacto</label><input id="f-contacto" placeholder="Ej: Carlos García"></div>
+        <div class="form-group"><label class="form-label">Relación</label><select id="f-relacion"><option>Padre/Madre</option><option>Tutor</option><option>Representante</option><option>Otro</option></select></div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input id="f-telefono" type="tel" placeholder="612 345 678"></div>
+        <div class="form-group"><label class="form-label">Representante (si tiene)</label><input id="f-representante" placeholder="Nombre o agencia"></div>
+        <div class="form-group full"><label class="form-label">Interés estimado en cambio de club</label>
+          <select id="f-interes"><option>Desconocido</option><option>Sin interés</option><option>Podría valorar</option><option>Interesado</option><option>Muy interesado</option></select></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:4px">
+      <button class="btn-danger" id="btn-delete" onclick="deletePlayer()" style="display:none">Eliminar jugador</button>
+      <button onclick="goBack()">Cancelar</button>
+      <button class="btn-primary" id="btn-save" onclick="savePlayer()">Guardar jugador</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div id="page-detail" class="page">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button onclick="showPage('list')">← Lista</button>
+      <button onclick="editCurrent()">Editar</button>
+      <button class="btn-navy" id="btn-report" onclick="generateReport()">📄 Generar informe</button>
+      <span style="flex:1"></span>
+      <span class="badge" id="d-badge"></span>
+    </div>
+    <div class="detail-header">
+      <div class="avatar-lg" id="d-avatar"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:18px;font-weight:700" id="d-nombre"></div>
+        <div style="font-size:12px;color:#64748b;margin-top:3px" id="d-sub"></div>
+      </div>
+      <div style="text-align:center;margin-left:auto;flex-shrink:0">
+        <div style="font-size:28px;font-weight:700" id="d-nota"></div>
+        <div style="font-size:10px;color:#94a3b8">nota global</div>
+      </div>
+    </div>
+    <div class="ratings-grid">
+      <div class="rating-box"><div class="rl">Técnica</div><div class="rv" id="d-tec"></div></div>
+      <div class="rating-box"><div class="rl">Táctica</div><div class="rv" id="d-tac"></div></div>
+      <div class="rating-box"><div class="rl">Físico</div><div class="rv" id="d-fis"></div></div>
+      <div class="rating-box"><div class="rl">Actitud</div><div class="rv" id="d-act"></div></div>
+    </div>
+    <div class="card"><div class="card-title">Ficha técnica</div><div id="d-ficha"></div></div>
+    <div class="card"><div class="card-title">Contacto y entorno</div><div id="d-contacto"></div></div>
+    <div class="card">
+      <div class="card-title" id="d-visitas-title">Historial de visitas (0)</div>
+      <div id="ai-generating" style="display:none" class="ai-loading">
+        <div class="ai-spinner"></div>
+        <span style="font-size:13px;color:#166534" id="ai-status-text">Generando informe...</span>
+      </div>
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:8px;margin-bottom:10px">
+        <input type="date" id="v-fecha">
+        <input type="text" id="v-partido" placeholder="Ej: Cadete Lorca vs Cartagena J12">
+        <textarea id="v-nota" placeholder="Notas del scout: posicionamiento, acciones destacadas, aspectos a mejorar..." style="grid-column:1/-1;height:70px;resize:vertical"></textarea>
+      </div>
+      <button onclick="addVisit()" style="margin-bottom:16px;font-size:12px">+ Añadir visita</button>
+      <div id="d-visitas-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast">✓ Guardado</div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── FIREBASE CONFIG ──────────────────────────────────────
+// REGLAS FIRESTORE NECESARIAS (actualizar en Firebase Console):
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /users/{userId}/players/{playerId} {
+//       allow read, write: if request.auth != null && request.auth.uid == userId;
+//     }
+//     match /config/apikey {
+//       allow read: if request.auth != null;
+//       allow write: if request.auth != null && request.auth.token.email == 'mariop123478@gmail.com';
+//     }
+//   }
+// }
+const firebaseConfig = {
+  apiKey: "AIzaSyAZjsB6kk96ZYa685ITb-hW5uycvBYfQeY",
+  authDomain: "mm-talent-scouting.firebaseapp.com",
+  projectId: "mm-talent-scouting",
+  storageBucket: "mm-talent-scouting.firebasestorage.app",
+  messagingSenderId: "569472528879",
+  appId: "1:569472528879:web:36b44fa500d49db3b6861a"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── STATE ────────────────────────────────────────────────
+let currentUser = null;
+let players = [];
+let currentId = null;
+let loginMode = 'login';
+let unsubscribe = null;
+
+// ── HELPERS ──────────────────────────────────────────────
+function ini(n){ return n?n.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase():'?'; }
+function avg(p){ return Math.round((p.tecnica+p.tactica+p.fisico+p.actitud)/4*10)/10; }
+function rateColor(v){ return v>=8?'#16a34a':v>=6?'#d97706':'#dc2626'; }
+function badgeClass(e){ const m={Activo:'activo','En seguimiento':'seguimiento','En espera':'espera',Descartado:'descartado'}; return 'badge badge-'+(m[e]||'activo'); }
+function formatDate(d){ if(!d)return'—'; try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;} }
+function today(){ return new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}); }
+function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); window.scrollTo(0,0); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg||'✓ Guardado'; t.style.display='block'; clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2200); }
+function showSavePill(){ const sp=document.getElementById('save-pill'); sp.style.display='block'; clearTimeout(sp._t); sp._t=setTimeout(()=>sp.style.display='none',2000); }
+// ── ADMIN CONFIG ─────────────────────────────────────────
+const ADMIN_EMAIL = 'mariop123478@gmail.com';
+function isAdmin(){ return currentUser && currentUser.email === ADMIN_EMAIL; }
+
+function getApiKey(){ try{return localStorage.getItem('sct_apikey_v1')||''}catch(e){return''} }
+
+window.saveApiKey = async function(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k){alert('Introduce una clave válida');return;}
+  // Guardar en Firestore (compartido) Y en localStorage (caché local)
+  try{
+    await setDoc(doc(db,'config','apikey'),{key:k, updatedAt:new Date().toISOString()});
+    localStorage.setItem('sct_apikey_v1',k);
+    document.getElementById('api-banner').classList.remove('show');
+    showToast('🔑 Clave API guardada para todos los usuarios');
+  }catch(e){ alert('Error al guardar la clave: '+e.message); }
+};
+
+async function loadApiKeyFromFirestore(){
+  try{
+    const {getDoc} = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db,'config','apikey'));
+    if(snap.exists()){
+      const k=snap.data().key||'';
+      localStorage.setItem('sct_apikey_v1',k);
+      return k;
+    }
+  }catch(e){}
+  return localStorage.getItem('sct_apikey_v1')||'';
+}
+
+window.showApiKeyConfig = function(){
+  if(!isAdmin()) return;
+  document.getElementById('api-key-input').value=getApiKey();
+  document.getElementById('api-banner').classList.add('show');
+};
+
+// ── AUTH ─────────────────────────────────────────────────
+window.switchTab = function(m){
+  loginMode=m;
+  document.getElementById('tab-login').classList.toggle('active',m==='login');
+  document.getElementById('tab-register').classList.toggle('active',m==='register');
+  document.getElementById('login-error').style.display='none';
+  document.getElementById('login-success').style.display='none';
+  document.getElementById('forgot-link').style.display = m==='login'?'block':'none';
+};
+
+function showLoginError(m){ const e=document.getElementById('login-error'); e.textContent=m; e.style.display='block'; document.getElementById('login-success').style.display='none'; }
+function showLoginSuccess(m){ const e=document.getElementById('login-success'); e.textContent=m; e.style.display='block'; document.getElementById('login-error').style.display='none'; }
+
+window.doLogin = async function(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){showLoginError('Introduce email y contraseña');return;}
+  const btn=document.getElementById('login-btn'); btn.disabled=true; btn.textContent='Conectando...';
+  try{
+    if(loginMode==='register'){
+      await createUserWithEmailAndPassword(auth, email, pass);
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+  } catch(e){
+    const msgs = {
+      'auth/email-already-in-use':'Este email ya tiene una cuenta. Inicia sesión.',
+      'auth/invalid-email':'El email no es válido.',
+      'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.',
+      'auth/user-not-found':'No existe cuenta con este email.',
+      'auth/wrong-password':'Contraseña incorrecta.',
+      'auth/invalid-credential':'Email o contraseña incorrectos.',
+      'auth/too-many-requests':'Demasiados intentos. Espera unos minutos.'
+    };
+    showLoginError(msgs[e.code]||'Error: '+e.message);
+    btn.disabled=false; btn.textContent=loginMode==='login'?'Entrar':'Crear cuenta';
+  }
+};
+
+window.resetPassword = async function(){
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){showLoginError('Escribe tu email primero');return;}
+  try{ await sendPasswordResetEmail(auth,email); showLoginSuccess('Email de recuperación enviado. Revisa tu bandeja.'); }
+  catch(e){ showLoginError('No se pudo enviar el email de recuperación.'); }
+};
+
+window.doLogout = async function(){
+  if(!confirm('¿Cerrar sesión?'))return;
+  if(unsubscribe){unsubscribe();unsubscribe=null;}
+  await signOut(auth);
+  players=[]; currentId=null;
+  document.getElementById('main-header').style.display='none';
+  document.getElementById('api-banner').classList.remove('show');
+  document.getElementById('l-email').value=''; document.getElementById('l-pass').value='';
+  document.getElementById('login-error').style.display='none'; document.getElementById('login-success').style.display='none';
+  const btn=document.getElementById('login-btn'); btn.disabled=false; btn.textContent='Entrar';
+  showPage('login');
+};
+
+// ── FIRESTORE SYNC ────────────────────────────────────────
+function startSync(uid){
+  if(unsubscribe){unsubscribe();} 
+  const q = query(collection(db,'users',uid,'players'), orderBy('nombre'));
+  unsubscribe = onSnapshot(q, snap=>{
+    players = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderList();
+    if(currentId){ const p=players.find(x=>x.id===currentId); if(p)renderVisits(p); }
+  }, err=>console.error('Firestore error:',err));
+}
+
+async function persistPlayer(p){
+  try{
+    const {id,...data}=p;
+    await setDoc(doc(db,'users',currentUser.uid,'players',id), data);
+    showSavePill();
+  }catch(e){ alert('Error al guardar en la nube: '+e.message); }
+}
+
+async function removePlayer(id){
+  try{ await deleteDoc(doc(db,'users',currentUser.uid,'players',id)); }
+  catch(e){ alert('Error al eliminar: '+e.message); }
+}
+
+// ── AUTH STATE OBSERVER ───────────────────────────────────
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    currentUser=user;
+    document.getElementById('user-pill').textContent='👤 '+user.email;
+    document.getElementById('main-header').style.display='flex';
+    // Mostrar botón API solo al admin
+    document.getElementById('btn-api-admin').style.display = user.email===ADMIN_EMAIL ? 'inline-block' : 'none';
+    // Cargar clave API desde Firestore para que funcione para todos
+    await loadApiKeyFromFirestore();
+    startSync(user.uid);
+    showPage('list');
+  } else {
+    currentUser=null;
+    showPage('login');
+  }
+});
+
+// ── LIST ─────────────────────────────────────────────────
+function updateStats(){ document.getElementById('st-total').textContent=players.length; document.getElementById('st-activos').textContent=players.filter(p=>p.estado==='Activo').length; document.getElementById('st-seguimiento').textContent=players.filter(p=>p.estado==='En seguimiento').length; document.getElementById('st-juvenil').textContent=players.filter(p=>(p.categoria||'').startsWith('Juvenil')).length; }
+function renderList(){
+  updateStats();
+  const q=document.getElementById('search').value.toLowerCase(), fc=document.getElementById('filter-cat').value, fs=document.getElementById('filter-state').value;
+  const f=players.filter(p=>(!q||(p.nombre||'').toLowerCase().includes(q)||(p.club||'').toLowerCase().includes(q)||(p.posicion||'').toLowerCase().includes(q))&&(!fc||p.categoria===fc)&&(!fs||p.estado===fs));
+  const el=document.getElementById('player-list');
+  if(!f.length){el.innerHTML=`<div class="empty"><div class="empty-icon">⚽</div><h3>${players.length===0?'Base de datos vacía':'Sin resultados'}</h3><p>${players.length===0?'Empieza añadiendo el primer jugador':'Prueba ajustando los filtros'}</p>${players.length===0?'<button class="btn-primary" onclick="openNew()">+ Añadir primer jugador</button>':''}</div>`;return;}
+  el.innerHTML=f.map(p=>{ const a=avg(p),sub=[p.posicion,p.club,p.categoria].filter(Boolean).join(' · '); return `<div class="player-row" onclick="openDetail('${p.id}')"><div class="avatar">${ini(p.nombre)}</div><div class="player-info"><div class="player-name">${p.nombre||'Sin nombre'}</div><div class="player-sub">${sub||'—'}</div></div><div style="display:flex;align-items:center;gap:12px;flex-shrink:0"><span class="${badgeClass(p.estado)}">${p.estado}</span><div style="text-align:center;min-width:36px"><div style="font-size:18px;font-weight:700;color:${rateColor(a)}">${a}</div><div style="font-size:9px;color:#94a3b8">nota</div></div><div style="font-size:10px;color:#94a3b8">${(p.visitas||[]).length}v</div></div></div>`; }).join('');
+}
+window.renderList = renderList;
+
+// ── FORM ─────────────────────────────────────────────────
+window.openNew = function(){
+  currentId=null; document.getElementById('form-title').textContent='Nuevo jugador'; document.getElementById('btn-delete').style.display='none';
+  ['nombre','fecha','club','telefono','contacto','representante','altura','peso'].forEach(k=>document.getElementById('f-'+k).value='');
+  document.getElementById('f-categoria').value='Cadete'; document.getElementById('f-posicion').value='Mediocampista';
+  document.getElementById('f-pie').value='Derecho'; document.getElementById('f-estado').value='Activo';
+  document.getElementById('f-relacion').value='Padre/Madre'; document.getElementById('f-interes').value='Desconocido';
+  ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=5;updateSlider(k);}); showPage('form');
+};
+window.editCurrent = function(){
+  const p=players.find(x=>x.id===currentId); if(!p)return;
+  document.getElementById('form-title').textContent='Editar jugador'; document.getElementById('btn-delete').style.display='inline-block';
+  document.getElementById('f-nombre').value=p.nombre||''; document.getElementById('f-fecha').value=p.fecha||'';
+  document.getElementById('f-club').value=p.club||''; document.getElementById('f-altura').value=p.altura||'';
+  document.getElementById('f-peso').value=p.peso||''; document.getElementById('f-telefono').value=p.telefono||'';
+  document.getElementById('f-contacto').value=p.contacto||''; document.getElementById('f-representante').value=p.representante||'';
+  document.getElementById('f-categoria').value=p.categoria||'Cadete'; document.getElementById('f-posicion').value=p.posicion||'Mediocampista';
+  document.getElementById('f-pie').value=p.pieDom||'Derecho'; document.getElementById('f-estado').value=p.estado||'Activo';
+  document.getElementById('f-relacion').value=p.relacion||'Padre/Madre'; document.getElementById('f-interes').value=p.interes||'Desconocido';
+  ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=p[k]||5;updateSlider(k);}); showPage('form');
+};
+window.updateSlider = function(k){
+  const v=parseInt(document.getElementById('f-'+k).value); const el=document.getElementById('v-'+k); el.textContent=v; el.style.color=rateColor(v);
+  const vals=['tecnica','tactica','fisico','actitud'].map(x=>parseInt(document.getElementById('f-'+x).value));
+  const a=Math.round(vals.reduce((a,b)=>a+b,0)/4*10)/10; const ng=document.getElementById('v-nota-global'); ng.textContent=a; ng.style.color=rateColor(a);
+};
+window.savePlayer = async function(){
+  const nombre=document.getElementById('f-nombre').value.trim(); if(!nombre){alert('El nombre es obligatorio');return;}
+  const btn=document.getElementById('btn-save'); btn.disabled=true; btn.textContent='Guardando...';
+  const p={
+    id:currentId||Date.now().toString(), nombre, fecha:document.getElementById('f-fecha').value,
+    club:document.getElementById('f-club').value.trim(), categoria:document.getElementById('f-categoria').value,
+    posicion:document.getElementById('f-posicion').value, pieDom:document.getElementById('f-pie').value,
+    altura:document.getElementById('f-altura').value, peso:document.getElementById('f-peso').value,
+    estado:document.getElementById('f-estado').value,
+    tecnica:parseInt(document.getElementById('f-tecnica').value), tactica:parseInt(document.getElementById('f-tactica').value),
+    fisico:parseInt(document.getElementById('f-fisico').value), actitud:parseInt(document.getElementById('f-actitud').value),
+    telefono:document.getElementById('f-telefono').value.trim(), contacto:document.getElementById('f-contacto').value.trim(),
+    relacion:document.getElementById('f-relacion').value, representante:document.getElementById('f-representante').value.trim(),
+    interes:document.getElementById('f-interes').value,
+    visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],
+    updatedAt:new Date().toISOString()
+  };
+  await persistPlayer(p);
+  btn.disabled=false; btn.textContent='Guardar jugador';
+  currentId=p.id; openDetail(p.id);
+};
+window.deletePlayer = async function(){
+  if(!confirm('¿Eliminar este jugador?'))return;
+  await removePlayer(currentId); currentId=null; showPage('list');
+};
+window.goBack = function(){ if(currentId){openDetail(currentId);}else{showPage('list');} };
+
+// ── DETAIL ────────────────────────────────────────────────
+window.openDetail = function(id){
+  currentId=id; const p=players.find(x=>x.id===id); if(!p)return;
+  const a=avg(p);
+  document.getElementById('d-avatar').textContent=ini(p.nombre);
+  document.getElementById('d-nombre').textContent=p.nombre||'Sin nombre';
+  document.getElementById('d-sub').textContent=[p.posicion,p.club,p.categoria].filter(Boolean).join(' · ')||'—';
+  document.getElementById('d-badge').className=badgeClass(p.estado); document.getElementById('d-badge').textContent=p.estado;
+  document.getElementById('d-nota').textContent=a; document.getElementById('d-nota').style.color=rateColor(a);
+  [['tec','tecnica'],['tac','tactica'],['fis','fisico'],['act','actitud']].forEach(([id,k])=>{ document.getElementById('d-'+id).textContent=p[k]||0; document.getElementById('d-'+id).style.color=rateColor(p[k]||0); });
+  document.getElementById('d-ficha').innerHTML=[['Pie dominante',p.pieDom||'—'],['Altura',p.altura?p.altura+' cm':'—'],['Peso',p.peso?p.peso+' kg':'—'],['Fecha de nacimiento',formatDate(p.fecha)]].map(([k,v])=>`<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v}</span></div>`).join('');
+  document.getElementById('d-contacto').innerHTML=[['Contacto',p.contacto?`${p.contacto} (${p.relacion})`:'—'],['Teléfono',p.telefono||'—'],['Representante',p.representante||'—'],['Interés estimado',p.interes||'—']].map(([k,v])=>`<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v}</span></div>`).join('');
+  renderVisits(p);
+  document.getElementById('v-fecha').value=''; document.getElementById('v-partido').value=''; document.getElementById('v-nota').value='';
+  showPage('detail');
+};
+function renderVisits(p){
+  const vis=(p.visitas||[]).slice().reverse();
+  document.getElementById('d-visitas-title').textContent=`Historial de visitas (${vis.length})`;
+  document.getElementById('d-visitas-list').innerHTML=vis.length===0?'<p style="font-size:12px;color:#94a3b8;text-align:center;padding:10px 0">Sin visitas registradas todavía</p>':vis.map(v=>`<div class="visit-item"><div class="visit-meta">📅 ${v.fecha} · ${v.partido}</div><div class="visit-note">${v.nota||'Sin notas'}</div></div>`).join('');
+}
+window.addVisit = async function(){
+  const fecha=document.getElementById('v-fecha').value, partido=document.getElementById('v-partido').value.trim();
+  if(!fecha||!partido){alert('Indica la fecha y el partido');return;}
+  const nota=document.getElementById('v-nota').value.trim();
+  const p=players.find(x=>x.id===currentId); if(!p)return;
+  const updated={...p, visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota}], updatedAt:new Date().toISOString()};
+  await persistPlayer(updated);
+  document.getElementById('v-fecha').value=''; document.getElementById('v-partido').value=''; document.getElementById('v-nota').value='';
+};
+
+// ── SMART AUTO-REPORT ─────────────────────────────────────
+function generateSmartSummary(p){
+  const a=avg(p); const visitas=p.visitas||[]; const allNotes=visitas.map(v=>v.nota||'').filter(Boolean).join(' ');
+  const nombre=p.nombre?p.nombre.split(' ')[0]:'El jugador'; const pos=p.posicion||'jugador'; const cat=p.categoria||'su categoría'; const club=p.club||'su club';
+  const scores=[{k:'técnica',v:p.tecnica},{k:'capacidad táctica',v:p.tactica},{k:'físico y atletismo',v:p.fisico},{k:'actitud y competitividad',v:p.actitud}];
+  const strong=scores.filter(s=>s.v>=7).sort((a,b)=>b.v-a.v).map(s=>s.k);
+  const weak=scores.filter(s=>s.v<=5).sort((a,b)=>a.v-b.v).map(s=>s.k);
+  const nivel=a>=8?'destacado nivel':a>=6.5?'buen nivel':a>=5?'nivel en desarrollo':'nivel que requiere trabajo';
+  const potencial=a>=7.5?'perfil con proyección clara para dar el salto a una categoría superior':a>=6?'perfil con margen de mejora interesante si continúa progresando':'perfil que necesita tiempo y trabajo para alcanzar su potencial';
+  const p1Parts=[`${nombre} es un ${pos} de ${cat} que actualmente milita en ${club}, con una valoración global de ${a}/10.`];
+  if(strong.length>0){p1Parts.push(`Su perfil destaca especialmente por su ${strong.slice(0,2).join(' y ')}`+(strong[0]==='técnica'?', aportando calidad con balón en las acciones individuales.':strong[0]==='capacidad táctica'?', con una lectura del juego por encima de la media para su edad.':strong[0]==='físico y atletismo'?', mostrando una condición atlética que le permite dominar los duelos físicos.':', con una implicación competitiva constante en todos los partidos observados.'));}else{p1Parts.push(`Muestra un perfil equilibrado sin desequilibrios notables entre las distintas facetas del juego.`);}
+  if(allNotes.length>20){p1Parts.push(`A lo largo de las ${visitas.length} visita${visitas.length!==1?'s':''} realizadas, se ha podido confirmar una línea de rendimiento consistente.`);}
+  let parr2='';
+  if(allNotes.length>30){const sentences=allNotes.replace(/([.!?])\s+/g,'$1|').split('|').filter(s=>s.trim().length>15); parr2=`Entre los aspectos más positivos observados en el seguimiento, cabe destacar: ${sentences.slice(0,3).join(' ')}`; if(strong.length>0)parr2+=` Estas acciones reflejan la solidez en ${strong[0]} que se refleja en la valoración asignada.`;}else{parr2=`En las visitas realizadas, ${nombre} ha mostrado un comportamiento competitivo adecuado para su categoría. `; if(strong.length>=2)parr2+=`Los puntos fuertes más evidentes han sido su ${strong[0]} y su ${strong[1]}, que marcan la diferencia con respecto a compañeros de posición.`; else if(strong.length===1)parr2+=`El punto fuerte más evidente ha sido su ${strong[0]}, aspecto en el que supera claramente la media de su categoría.`; else parr2+=`El rendimiento ha sido homogéneo, sin momentos de especial brillo pero también sin errores graves que comprometan su valoración.`;}
+  let parr3=`En cuanto a las áreas de mejora, `;
+  if(weak.length>0){parr3+=`el trabajo deberá centrarse en ${weak.slice(0,2).join(' y ')}, aspectos que limitarán su progresión si no se trabajan de forma específica. `;}else{parr3+=`no se detectan carencias técnicas o físicas graves que comprometan su desarrollo. `;}
+  parr3+=`En términos de potencial, se trata de un ${potencial}. `;
+  parr3+=a>=7?`La recomendación es mantener el seguimiento activo y valorar la posibilidad de iniciar contacto con su entorno.`:`Se recomienda continuar el seguimiento durante la temporada para confirmar si la progresión justifica activar un proceso de captación.`;
+  return [p1Parts.join(' '),parr2,parr3].map(p=>`<p>${p}</p>`).join('');
+}
+
+// ── GENERATE REPORT ───────────────────────────────────────
+window.generateReport = async function(){
+  const p=players.find(x=>x.id===currentId); if(!p)return;
+  if((p.visitas||[]).length===0){alert('Añade al menos una visita con notas para generar el informe.');return;}
+  const btn=document.getElementById('btn-report'); btn.disabled=true; btn.textContent='⏳ Generando...';
+  const genDiv=document.getElementById('ai-generating'); const statusText=document.getElementById('ai-status-text');
+  genDiv.style.display='flex';
+  let summaryHTML='';
+  const apiKey=getApiKey();
+  if(apiKey){
+    statusText.textContent='La IA está analizando las notas de seguimiento...';
+    try{
+      const visitasTexto=(p.visitas||[]).map((v,i)=>`Visita ${i+1} (${v.fecha}) — Partido: ${v.partido}\nNotas: ${v.nota||'Sin notas'}`).join('\n\n');
+      const prompt=`Eres un analista de scouting de fútbol base especializado en cantera española (Murcia y Andalucía). Redacta un informe profesional.\n\nDATOS:\n- Nombre: ${p.nombre} | Posición: ${p.posicion} | Categoría: ${p.categoria}\n- Pie: ${p.pieDom} | Club: ${p.club}\n- Técnica ${p.tecnica}/10 | Táctica ${p.tactica}/10 | Físico ${p.fisico}/10 | Actitud ${p.actitud}/10 | Global: ${avg(p)}/10\n\nVISITAS:\n${visitasTexto}\n\nRedacta 3 párrafos en español sin títulos: 1) Perfil general 2) Fortalezas y momentos destacados 3) Áreas de mejora y potencial. Tercera persona. 200-260 palabras.`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      if(data.error)throw new Error(data.error.message);
+      summaryHTML=data.content?.[0]?.text.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')||'';
+    }catch(e){ summaryHTML=generateSmartSummary(p); }
+  } else {
+    statusText.textContent='Generando análisis automático...';
+    await new Promise(r=>setTimeout(r,800));
+    summaryHTML=generateSmartSummary(p);
+  }
+  genDiv.style.display='none'; btn.disabled=false; btn.textContent='📄 Generar informe';
+  openReportWindow(p,summaryHTML);
+};
+
+// ── REPORT WINDOW ─────────────────────────────────────────
+function openReportWindow(p,summaryHTML){
+  const a=avg(p), rc=v=>v>=8?'#059669':v>=6?'#d97706':'#dc2626';
+  const fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}};
+  const visitas=p.visitas||[];
+  const scoreBoxes=[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([lbl,val])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:system-ui">${lbl}</div><div style="font-size:28px;font-weight:800;color:${rc(val)};font-family:system-ui;line-height:1">${val}</div><div style="margin-top:6px;height:4px;border-radius:2px;background:#f1f5f9"><div style="height:4px;border-radius:2px;background:${rc(val)};width:${val*10}%"></div></div></div>`).join('');
+  const infoRow=(k,v)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f8fafc;font-family:system-ui;font-size:13px"><span style="color:#64748b">${k}</span><span style="font-weight:600;color:#1e293b">${v}</span></div>`;
+  const visitasHTML=visitas.map((v,i)=>`<div style="display:flex;gap:0;margin-bottom:0"><div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:50%;background:#0F1F3D;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:system-ui;flex-shrink:0">${i+1}</div>${i<visitas.length-1?'<div style="width:1px;flex:1;background:#e2e8f0;margin:4px 0;min-height:16px"></div>':''}</div><div style="flex:1;padding-left:14px;padding-bottom:${i<visitas.length-1?'20':'0'}px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#0F1F3D;font-family:system-ui">${v.partido}</span><span style="font-size:11px;color:#64748b;font-family:system-ui;background:#f1f5f9;padding:2px 8px;border-radius:4px">${v.fecha}</span></div><p style="font-size:13.5px;color:#374151;line-height:1.7;font-family:system-ui">${v.nota||'Sin notas registradas'}</p></div></div>`).join('');
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Scout — ${p.nombre||'Jugador'}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif;background:#f8fafc;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:15mm;size:A4}.print-btn{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:8px}.print-btn button{font-family:system-ui;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;border:none;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.15)}@media print{.print-btn{display:none!important}body{background:#fff}}</style></head><body>
+<div class="print-btn"><button onclick="window.print()" style="background:#0D9488;color:#fff">🖨️ Guardar como PDF</button><button onclick="window.close()" style="background:#fff;color:#374151;border:1px solid #d1d5db">✕ Cerrar</button></div>
+<div style="background:#0F1F3D;color:#fff;padding:0;position:relative;overflow:hidden">
+  <div style="height:5px;background:linear-gradient(90deg,#0D9488,#14b8a6,#0891b2)"></div>
+  <div style="padding:36px 48px 32px;display:flex;align-items:flex-start;gap:28px;position:relative;z-index:1">
+    <div style="width:72px;height:72px;border-radius:50%;background:rgba(13,148,136,.25);border:2px solid rgba(13,148,136,.5);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#5eead4;font-family:system-ui;flex-shrink:0">${ini(p.nombre)}</div>
+    <div style="flex:1"><div style="font-size:10px;letter-spacing:.14em;color:#94a3b8;text-transform:uppercase;font-family:system-ui;margin-bottom:8px">Informe de Scouting · MM Talent Sport · Cantera</div><div style="font-size:32px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;font-family:system-ui">${p.nombre||'Jugador sin nombre'}</div><div style="font-size:15px;color:#94a3b8;font-family:system-ui;margin-bottom:16px">${p.posicion||'—'} · ${p.club||'—'} · ${p.categoria||'—'}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${[p.pieDom,p.altura?p.altura+' cm':'',p.fecha?'Nac. '+fd(p.fecha):'',p.estado,visitas.length+' visita'+(visitas.length!==1?'s':'')].filter(Boolean).map(c=>`<span style="font-size:11px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.1);color:#cbd5e1;font-family:system-ui">${c}</span>`).join('')}</div></div>
+    <div style="text-align:center;background:rgba(13,148,136,.2);border:1px solid rgba(13,148,136,.4);border-radius:12px;padding:16px 20px;flex-shrink:0"><div style="font-size:10px;letter-spacing:.1em;color:#5eead4;text-transform:uppercase;font-family:system-ui;margin-bottom:4px">Nota global</div><div style="font-size:48px;font-weight:800;color:#fff;font-family:system-ui;line-height:1">${a}</div><div style="font-size:10px;color:#94a3b8;font-family:system-ui;margin-top:4px">sobre 10</div></div>
+  </div>
+  <div style="position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(13,148,136,.08)"></div>
+</div>
+<div style="max-width:800px;margin:0 auto;padding:36px 48px">
+  <div style="margin-bottom:32px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0D9488;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #f0fdf4;font-family:system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${scoreBoxes}</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px">
+    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0D9488;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f0fdf4;font-family:system-ui">Datos del jugador</div>${infoRow('Posición',p.posicion||'—')}${infoRow('Categoría',p.categoria||'—')}${infoRow('Club actual',p.club||'—')}${infoRow('Pie dominante',p.pieDom||'—')}${infoRow('Altura',p.altura?p.altura+' cm':'—')}${infoRow('Peso',p.peso?p.peso+' kg':'—')}${infoRow('Fecha de nacimiento',fd(p.fecha))}${infoRow('Estado',p.estado||'—')}</div>
+    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0D9488;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f0fdf4;font-family:system-ui">Contacto y entorno</div>${infoRow('Nombre',p.contacto||'—')}${infoRow('Relación',p.relacion||'—')}${infoRow('Teléfono',p.telefono||'—')}${infoRow('Representante',p.representante||'—')}${infoRow('Interés',p.interes||'—')}</div>
+  </div>
+  <div style="margin-bottom:32px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0D9488;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #f0fdf4;font-family:system-ui">Análisis del scout</div><div style="background:#f8fafc;border-left:4px solid #0D9488;padding:22px 24px;border-radius:0 10px 10px 0"><div style="font-size:14.5px;line-height:1.85;color:#1e293b">${summaryHTML}</div></div></div>
+  ${visitas.length>0?`<div style="margin-bottom:32px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0D9488;margin-bottom:20px;padding-bottom:8px;border-bottom:2px solid #f0fdf4;font-family:system-ui">Historial de seguimiento — ${visitas.length} visita${visitas.length!==1?'s':''}</div>${visitasHTML}</div>`:''}
+</div>
+<div style="background:#0F1F3D;padding:16px 48px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:#475569;font-family:system-ui">Generado el ${today()}</span><div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#0D9488"></div><span style="font-size:12px;color:#64748b;font-family:system-ui;font-weight:600">MM Talent Sport · Scouting Cantera · Murcia / Andalucía</span></div></div>
+</body></html>`;
+
+  const win=window.open('','_blank','width=920,height=800,scrollbars=yes');
+  if(!win){alert('Tu navegador bloqueó la ventana emergente. Permite ventanas emergentes para este archivo.');return;}
+  win.document.write(html); win.document.close();
+}
+
+// Expose globals needed by inline HTML handlers
+window.showPage = showPage;
+window.openDetail = window.openDetail;
+</script>
+</body>
+</html>
