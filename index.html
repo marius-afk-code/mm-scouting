@@ -231,6 +231,36 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .confirm-box p { font-size:13px; color:var(--text2); margin-bottom:20px; line-height:1.5; }
 .confirm-actions { display:flex; gap:8px; justify-content:flex-end; }
 
+/* ── RADAR CHART ── */
+.radar-wrap { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); text-align:center; }
+.radar-wrap .card-title { text-align:left; }
+.radar-svg { max-width:280px; margin:0 auto; }
+
+/* ── TAGS ── */
+.tags-wrap { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.tag { font-size:11px; padding:3px 10px; border-radius:99px; font-weight:600; cursor:default; display:inline-flex; align-items:center; gap:4px; }
+.tag-rápido { background:#DBEAFE; color:#1E40AF; }
+.tag-líder { background:#FEF3C7; color:#92400E; }
+.tag-goleador { background:#D1FAE5; color:#065F46; }
+.tag-creativo { background:#EDE9FE; color:#5B21B6; }
+.tag-lesionado { background:#FEE2E2; color:#991B1B; }
+.tag-canterano { background:#E0E7FF; color:#3730A3; }
+.tag-polivalente { background:#F0FDF4; color:#166534; }
+.tag-disciplinado { background:#F8FAFC; color:#334155; }
+.tag-default { background:#F1F5F9; color:#475569; }
+.tag-remove { cursor:pointer; font-size:13px; line-height:1; opacity:.6; transition:opacity .15s; }
+.tag-remove:hover { opacity:1; }
+.tag-input-wrap { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+.tag-input-wrap select { width:auto; min-width:140px; }
+.tag-chip-option { font-size:11px; padding:4px 10px; border-radius:99px; border:1px dashed var(--borderL); color:var(--slate); cursor:pointer; transition:all .15s; user-select:none; }
+.tag-chip-option:hover { border-color:var(--purple); color:var(--purple); }
+.tag-chip-option.selected { border-style:solid; background:var(--navy2); color:#fff; border-color:var(--navy2); }
+
+/* ── PRIVATE NOTES ── */
+.private-notes { background:#FFFBEB; border:1px solid #FDE68A; border-radius:12px; padding:16px; margin-bottom:16px; }
+.private-notes .card-title { color:#92400E; border-bottom-color:#FDE68A; }
+.private-notes-badge { font-size:9px; background:#FEF3C7; color:#92400E; padding:2px 6px; border-radius:4px; font-weight:700; margin-left:6px; vertical-align:middle; }
+
 @media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
   .hero-top { flex-direction:column; align-items:flex-start; }
@@ -452,6 +482,11 @@ button:disabled { opacity:.5; cursor:not-allowed; }
         <div class="form-group"><label class="form-label">División / nivel objetivo</label><select id="f-ojeo-sub"></select></div>
         <div class="form-group full"><label class="form-label">Estado en seguimiento</label>
           <select id="f-estado"><option>Activo</option><option>En seguimiento</option><option>En espera</option><option>Descartado</option></select></div>
+        <div class="form-group full">
+          <label class="form-label">Etiquetas</label>
+          <div class="tags-wrap" id="f-tags-display"></div>
+          <div class="tag-input-wrap" id="f-tags-options"></div>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -471,6 +506,12 @@ button:disabled { opacity:.5; cursor:not-allowed; }
         <div class="form-group"><label class="form-label">Representante (si tiene)</label><input id="f-representante" placeholder="Nombre o agencia"></div>
         <div class="form-group full"><label class="form-label">Interés estimado en cambio de club</label>
           <select id="f-interes"><option>Desconocido</option><option>Sin interés</option><option>Podría valorar</option><option>Interesado</option><option>Muy interesado</option></select></div>
+      </div>
+    </div>
+    <div class="card private-notes">
+      <div class="card-title">04 — Notas privadas del scout <span class="private-notes-badge">NO sale en informes</span></div>
+      <div class="form-group full">
+        <textarea id="f-notas-privadas" placeholder="Notas internas: impresiones personales, contexto familiar, actitud fuera del campo, información confidencial..." style="height:100px;resize:vertical;background:#FFFEF5;border-color:#FDE68A"></textarea>
       </div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:4px">
@@ -512,8 +553,22 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div class="rating-box"><div class="rl">Físico</div><div class="rv" id="d-fis"></div></div>
       <div class="rating-box"><div class="rl">Actitud</div><div class="rv" id="d-act"></div></div>
     </div>
+    <div class="radar-wrap">
+      <div class="card-title">Perfil de rendimiento</div>
+      <div id="d-radar"></div>
+    </div>
+    <div id="d-tags-section" style="display:none">
+      <div class="card">
+        <div class="card-title">Etiquetas</div>
+        <div class="tags-wrap" id="d-tags"></div>
+      </div>
+    </div>
     <div class="card"><div class="card-title">Ficha técnica</div><div id="d-ficha"></div></div>
     <div class="card"><div class="card-title">Contacto y entorno</div><div id="d-contacto"></div></div>
+    <div id="d-private-notes-section" class="private-notes" style="display:none">
+      <div class="card-title">Notas privadas del scout <span class="private-notes-badge">CONFIDENCIAL</span></div>
+      <div id="d-private-notes" style="font-size:13px;color:#92400E;line-height:1.6;white-space:pre-wrap"></div>
+    </div>
     <div class="card">
       <div class="card-title" id="d-visitas-title">Historial de visitas (0)</div>
       <div id="ai-generating" style="display:none" class="ai-loading">
@@ -564,6 +619,10 @@ let currentUser=null, players=[], currentId=null, loginMode='login', unsubscribe
 let activeFilters = { estado:'' };
 let _debounceTimer = null;
 
+const AVAILABLE_TAGS = ['Rápido','Líder','Goleador','Creativo','Lesionado','Canterano','Polivalente','Disciplinado'];
+function tagClass(t){ const m={'Rápido':'rápido','Líder':'líder','Goleador':'goleador','Creativo':'creativo','Lesionado':'lesionado','Canterano':'canterano','Polivalente':'polivalente','Disciplinado':'disciplinado'}; return 'tag tag-'+(m[t]||'default'); }
+let formTags = [];
+
 /* ── UTILIDADES ── */
 function esc(s) { // XSS protection: escapa HTML
   if (!s) return '';
@@ -608,6 +667,85 @@ function debouncedRender() {
   clearTimeout(_debounceTimer);
   _debounceTimer = setTimeout(renderList, 200);
 }
+
+/* ── RADAR CHART SVG ── */
+function renderRadar(containerId, scores) {
+  // scores = {tecnica, tactica, fisico, actitud} — values 1-10
+  const labels = ['Técnica','Táctica','Físico','Actitud'];
+  const keys = ['tecnica','tactica','fisico','actitud'];
+  const cx=140, cy=140, R=110, levels=5;
+  const n = keys.length;
+  const angleStep = (2*Math.PI)/n;
+  const startAngle = -Math.PI/2; // start from top
+
+  function polar(angle, r){ return [cx+r*Math.cos(angle), cy+r*Math.sin(angle)]; }
+
+  let svg = `<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" class="radar-svg">`;
+
+  // Background grid
+  for(let l=1;l<=levels;l++){
+    const r=R*l/levels;
+    const pts=[];
+    for(let i=0;i<n;i++){
+      const [x,y]=polar(startAngle+i*angleStep,r);
+      pts.push(`${x},${y}`);
+    }
+    svg+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===levels?'1.5':'0.8'}"/>`;
+  }
+
+  // Axis lines + labels
+  for(let i=0;i<n;i++){
+    const angle=startAngle+i*angleStep;
+    const [x,y]=polar(angle,R);
+    svg+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;
+    // Label
+    const [lx,ly]=polar(angle,R+18);
+    const anchor=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';
+    svg+=`<text x="${lx}" y="${ly+4}" text-anchor="${anchor}" font-size="11" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
+  }
+
+  // Data polygon
+  const dataPts=[];
+  for(let i=0;i<n;i++){
+    const v=Math.max(1,Math.min(10,scores[keys[i]]||0));
+    const r=R*v/10;
+    const [x,y]=polar(startAngle+i*angleStep,r);
+    dataPts.push(`${x},${y}`);
+  }
+  svg+=`<polygon points="${dataPts.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  // Data points + value labels
+  for(let i=0;i<n;i++){
+    const v=Math.max(1,Math.min(10,scores[keys[i]]||0));
+    const r=R*v/10;
+    const [x,y]=polar(startAngle+i*angleStep,r);
+    svg+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;
+    svg+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="Syne,system-ui">${v}</text>`;
+  }
+
+  svg+=`</svg>`;
+  document.getElementById(containerId).innerHTML=svg;
+}
+
+/* ── GESTIÓN DE ETIQUETAS EN FORMULARIO ── */
+function renderFormTags(){
+  // Display selected tags
+  document.getElementById('f-tags-display').innerHTML=formTags.map(t=>
+    `<span class="${tagClass(t)}">${esc(t)} <span class="tag-remove" onclick="removeFormTag('${esc(t)}')">✕</span></span>`
+  ).join('');
+  // Options (unselected)
+  document.getElementById('f-tags-options').innerHTML=AVAILABLE_TAGS.filter(t=>!formTags.includes(t)).map(t=>
+    `<span class="tag-chip-option" onclick="addFormTag('${esc(t)}')">${esc(t)}</span>`
+  ).join('')+`<input type="text" id="f-custom-tag" placeholder="+ Etiqueta propia" style="width:130px;font-size:11px;padding:4px 8px" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomTag();}">`;
+}
+window.addFormTag = function(t){ if(!formTags.includes(t)){formTags.push(t);renderFormTags();} };
+window.removeFormTag = function(t){ formTags=formTags.filter(x=>x!==t); renderFormTags(); };
+window.addCustomTag = function(){
+  const input=document.getElementById('f-custom-tag');
+  const t=input.value.trim();
+  if(t&&!formTags.includes(t)){formTags.push(t);renderFormTags();}
+  if(input)input.value='';
+};
 
 /* ── SUBCATEGORÍAS ── */
 window.updateSubcats = function(subId, mainId){
@@ -766,7 +904,7 @@ function renderList(){
     fanio=document.getElementById('filter-anio').value,
     fest=activeFilters.estado||'';
   let f=players.filter(p=>(
-    (!q||(p.nombre||'').toLowerCase().includes(q)||(p.club||'').toLowerCase().includes(q)||(p.posicion||'').toLowerCase().includes(q))&&
+    (!q||(p.nombre||'').toLowerCase().includes(q)||(p.club||'').toLowerCase().includes(q)||(p.posicion||'').toLowerCase().includes(q)||(p.tags||[]).some(t=>t.toLowerCase().includes(q)))&&
     (!fc||p.catMain===fc)&&(!fo||p.ojeoMain===fo)&&(!fp||p.posicion===fp)&&
     (!fpie||p.pieDom===fpie)&&(!fanio||getYear(p.fecha)==fanio)&&(!fest||p.estado===fest)
   ));
@@ -792,6 +930,7 @@ function renderList(){
       <div class="player-info">
         <div class="player-name">${esc(p.nombre)||'Sin nombre'}</div>
         <div class="player-sub">${[esc(p.posicion),esc(p.club),catLabel].filter(Boolean).join(' · ')||'—'}${ojeoLabel?` <span style="color:var(--purple);font-weight:600">· ${ojeoLabel}</span>`:''}</div>
+        ${(p.tags||[]).length?`<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">${(p.tags||[]).slice(0,3).map(t=>`<span class="${tagClass(t)}" style="font-size:9px;padding:1px 7px">${esc(t)}</span>`).join('')}${(p.tags||[]).length>3?`<span style="font-size:9px;color:var(--slateL)">+${(p.tags||[]).length-3}</span>`:''}</div>`:''}
       </div>
       <div class="player-meta">
         ${p.fecha?`<span style="font-size:11px;color:var(--slate);font-weight:500">${getYear(p.fecha)}</span>`:''}
@@ -838,6 +977,8 @@ window.openNew = function(){
   document.getElementById('f-ojeo-main').value='Cadete';
   updateSubcats('f-ojeo-sub','f-ojeo-main');
   ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=5;updateSlider(k);});
+  formTags=[]; renderFormTags();
+  document.getElementById('f-notas-privadas').value='';
   showPage('form');
   setTimeout(()=>document.getElementById('f-nombre').focus(),100);
 };
@@ -868,6 +1009,8 @@ window.editCurrent = function(){
   updateSubcats('f-ojeo-sub','f-ojeo-main');
   document.getElementById('f-ojeo-sub').value=p.ojeoSub||'';
   ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=p[k]||5;updateSlider(k);});
+  formTags=[...(p.tags||[])]; renderFormTags();
+  document.getElementById('f-notas-privadas').value=p.notasPrivadas||'';
   showPage('form');
 };
 
@@ -926,6 +1069,8 @@ window.savePlayer = async function(){
     relacion:document.getElementById('f-relacion').value,
     representante:document.getElementById('f-representante').value.trim(),
     interes:document.getElementById('f-interes').value,
+    tags:[...formTags],
+    notasPrivadas:document.getElementById('f-notas-privadas').value.trim(),
     visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],
     updatedAt:new Date().toISOString()
   };
@@ -988,6 +1133,25 @@ window.openDetail = function(id){
   ].map(([k,v])=>`<div class="detail-row"><span class="dk">${esc(k)}</span><span class="dv">${esc(v)}</span></div>`).join('');
 
   renderVisits(p);
+
+  // Radar chart
+  renderRadar('d-radar',{tecnica:p.tecnica||0,tactica:p.tactica||0,fisico:p.fisico||0,actitud:p.actitud||0});
+
+  // Tags
+  const tags=p.tags||[];
+  const tagsSection=document.getElementById('d-tags-section');
+  if(tags.length>0){
+    tagsSection.style.display='block';
+    document.getElementById('d-tags').innerHTML=tags.map(t=>`<span class="${tagClass(t)}">${esc(t)}</span>`).join('');
+  } else { tagsSection.style.display='none'; }
+
+  // Private notes
+  const pnSection=document.getElementById('d-private-notes-section');
+  if(p.notasPrivadas){
+    pnSection.style.display='block';
+    document.getElementById('d-private-notes').textContent=p.notasPrivadas;
+  } else { pnSection.style.display='none'; }
+
   // Predeterminar fecha de hoy en el campo de nueva visita
   document.getElementById('v-fecha').value=todayISO();
   document.getElementById('v-partido').value='';
@@ -1107,6 +1271,11 @@ function openReportWindow(p,summaryHTML){
 
   const scoreBoxes=[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:system-ui">${l}</div><div style="font-size:28px;font-weight:800;color:${rc(v)};font-family:system-ui;line-height:1">${v}</div><div style="margin-top:6px;height:4px;border-radius:2px;background:#f1f5f9"><div style="height:4px;border-radius:2px;background:${rc(v)};width:${v*10}%"></div></div></div>`).join('');
 
+  // Radar SVG for report
+  const radarSvg=(()=>{const labels=['Técnica','Táctica','Físico','Actitud'],keys=['tecnica','tactica','fisico','actitud'],cx=140,cy=140,R=110,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" width="240" height="240">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.8'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;const[lx,ly]=po(a,R+18),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="11" font-weight="600" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="system-ui">${v}</text>`;}s+='</svg>';return s;})();
+
+  const tagsHTML=(p.tags||[]).length>0?`<div style="margin-bottom:20px"><div style="display:flex;gap:6px;flex-wrap:wrap">${(p.tags||[]).map(t=>{const colors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};const[bg,col]=colors[t]||['#F1F5F9','#475569'];return`<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600;font-family:system-ui">${esc(t)}</span>`;}).join('')}</div></div>`:'';
+
   const ir=(k,v)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f8fafc;font-family:system-ui;font-size:13px"><span style="color:#64748b">${k}</span><span style="font-weight:600;color:#1e293b">${v}</span></div>`;
 
   const vHTML=vis.map((v,i)=>`<div style="display:flex;gap:0;margin-bottom:0"><div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:system-ui;flex-shrink:0">${i+1}</div>${i<vis.length-1?'<div style="width:1px;flex:1;background:#e2e8f0;margin:4px 0;min-height:16px"></div>':''}</div><div style="flex:1;padding-left:14px;padding-bottom:${i<vis.length-1?'20':'0'}px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#0B0F1A;font-family:system-ui">${esc(v.partido)}</span><span style="font-size:11px;color:#64748b;font-family:system-ui;background:#f1f5f9;padding:2px 8px;border-radius:4px">${esc(v.fecha)}</span></div><p style="font-size:13.5px;color:#374151;line-height:1.7;font-family:system-ui;white-space:pre-wrap">${esc(v.nota)||'Sin notas'}</p></div></div>`).join('');
@@ -1132,7 +1301,8 @@ function openReportWindow(p,summaryHTML){
   <div style="position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(124,58,237,.08)"></div>
 </div>
 <div style="max-width:780px;margin:0 auto;padding:36px 48px">
-  <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${scoreBoxes}</div></div>
+  <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${scoreBoxes}</div><div style="text-align:center">${radarSvg}</div></div></div>
+  ${tagsHTML}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px">
     <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Datos del jugador</div>${ir('Posición',esc(p.posicion)||'—')}${ir('Categoría',esc(catLabel))}${ir('Ojeo para',esc(ojeoLabel))}${ir('Club actual',esc(p.club)||'—')}${ir('Pie dominante',esc(p.pieDom)||'—')}${ir('Altura',p.altura?p.altura+' cm':'—')}${ir('Peso',p.peso?p.peso+' kg':'—')}${ir('Nacimiento',fd(p.fecha))}${ir('Estado',esc(p.estado)||'—')}</div>
     <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Contacto y entorno</div>${ir('Contacto',esc(p.contacto)||'—')}${ir('Relación',esc(p.relacion)||'—')}${ir('Teléfono',esc(p.telefono)||'—')}${ir('Representante',esc(p.representante)||'—')}${ir('Interés',esc(p.interes)||'—')}</div>
