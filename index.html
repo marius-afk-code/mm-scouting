@@ -636,8 +636,15 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div id="d-private-notes" style="font-size:13px;color:#92400E;line-height:1.6;white-space:pre-wrap"></div>
     </div>
     <div class="evo-card" id="d-evo-section" style="display:none">
-      <div class="card-title">Evolución de la nota global</div>
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span>Evolución del jugador</span>
+        <button class="btn-sm btn-navy" id="btn-evo-ai" onclick="analyzeEvolution()" style="font-size:10px;padding:4px 10px">🤖 Analizar evolución con IA</button>
+      </div>
       <canvas id="chart-evolucion"></canvas>
+      <div id="d-evo-ai-result" style="display:none;margin-top:14px;padding:14px 16px;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:10px;border:1px solid #DDD6FE">
+        <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Análisis de evolución IA</div>
+        <div id="d-evo-ai-text" style="font-size:13px;color:var(--text2);line-height:1.7"></div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title" id="d-visitas-title">Historial de visitas (0)</div>
@@ -648,6 +655,11 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div style="display:grid;grid-template-columns:150px 1fr;gap:10px;margin-bottom:12px">
         <input type="date" id="v-fecha">
         <input type="text" id="v-partido" placeholder="Ej: Cadete Lorca vs Cartagena J12">
+        <div style="grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:10px 14px;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:10px;border:1px solid #DDD6FE">
+          <span style="font-size:12px;color:var(--text2);font-weight:500;white-space:nowrap">¿Cómo lo has visto hoy?</span>
+          <input type="range" id="v-valoracion" min="1" max="10" value="6" step="1" style="flex:1" oninput="document.getElementById('v-val-num').textContent=this.value;document.getElementById('v-val-num').style.color=this.value>=8?'var(--green)':this.value>=6?'var(--amber)':'var(--red)'">
+          <span id="v-val-num" style="font-size:20px;font-weight:800;font-family:'Syne',sans-serif;color:var(--amber);min-width:24px;text-align:center">6</span>
+        </div>
         <textarea id="v-nota" placeholder="Notas del scout: posicionamiento, acciones destacadas, aspectos a mejorar..." style="grid-column:1/-1;height:80px;resize:vertical"></textarea>
       </div>
       <button onclick="addVisit()" style="margin-bottom:18px;font-size:12px">+ Añadir visita</button>
@@ -1243,7 +1255,7 @@ function renderVisits(p){
   document.getElementById('d-visitas-list').innerHTML=vis.map(v=>
     `<div class="visit-item">
       <div class="visit-meta">
-        <span>📅 ${esc(v.fecha)} · ${esc(v.partido)}</span>
+        <span>📅 ${esc(v.fecha)} · ${esc(v.partido)}${v.valoracion?` <span style="font-size:12px;font-weight:800;color:${v.valoracion>=8?'var(--green)':v.valoracion>=6?'var(--amber)':'var(--red)'};font-family:'Syne',sans-serif;background:${v.valoracion>=8?'#D1FAE5':v.valoracion>=6?'#FEF3C7':'#FEE2E2'};padding:1px 8px;border-radius:6px;margin-left:4px">${v.valoracion}/10</span>`:''}</span>
         <button class="visit-delete" onclick="event.stopPropagation();deleteVisit('${v.id}')">✕ Eliminar</button>
       </div>
       <div class="visit-note">${esc(v.nota)||'Sin notas'}</div>
@@ -1256,13 +1268,17 @@ window.addVisit = async function(){
     partido=document.getElementById('v-partido').value.trim();
   if(!fecha||!partido){showToast('⚠️ Indica la fecha y el partido');return;}
   const nota=document.getElementById('v-nota').value.trim();
+  const valoracion=parseInt(document.getElementById('v-valoracion').value);
   const p=players.find(x=>x.id===currentId);
   if(!p)return;
-  const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota,snapshot:{tecnica:p.tecnica,tactica:p.tactica,fisico:p.fisico,actitud:p.actitud,nota:avg(p)}}],updatedAt:new Date().toISOString()};
+  const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota,valoracion}],updatedAt:new Date().toISOString()};
   await persistPlayer(updated);
   document.getElementById('v-fecha').value=todayISO();
   document.getElementById('v-partido').value='';
   document.getElementById('v-nota').value='';
+  document.getElementById('v-valoracion').value=6;
+  document.getElementById('v-val-num').textContent='6';
+  document.getElementById('v-val-num').style.color='var(--amber)';
   showToast('✓ Visita añadida');
 };
 
@@ -1408,27 +1424,83 @@ function destroyChart(id){ if(_charts[id]){_charts[id].destroy();delete _charts[
 
 /* ── EVOLUTION CHART ── */
 function renderEvolutionChart(p){
-  const vis=(p.visitas||[]).filter(v=>v.snapshot);
+  const vis=(p.visitas||[]).filter(v=>v.valoracion);
   const section=document.getElementById('d-evo-section');
   if(vis.length<2){section.style.display='none';return;}
   section.style.display='block';
+  document.getElementById('d-evo-ai-result').style.display='none';
   destroyChart('evolucion');
   const ctx=document.getElementById('chart-evolucion').getContext('2d');
   const labels=vis.map(v=>v.fecha);
+  const data=vis.map(v=>v.valoracion);
+  // Trend line (simple linear regression)
+  const n=data.length, xm=n/2, ym=data.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;
+  data.forEach((y,i)=>{num+=(i-xm)*(y-ym);den+=(i-xm)*(i-xm);});
+  const slope=den?num/den:0;
+  const intercept=ym-slope*xm;
+  const trend=data.map((_,i)=>Math.round((slope*i+intercept)*10)/10);
+
   _charts.evolucion=new Chart(ctx,{
     type:'line',
     data:{
       labels,
       datasets:[
-        {label:'Nota global',data:vis.map(v=>v.snapshot.nota),borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.3,borderWidth:2.5,pointBackgroundColor:'#7C3AED',pointRadius:5,pointHoverRadius:7},
-        {label:'Técnica',data:vis.map(v=>v.snapshot.tecnica),borderColor:'#3B82F6',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
-        {label:'Táctica',data:vis.map(v=>v.snapshot.tactica),borderColor:'#10B981',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
-        {label:'Físico',data:vis.map(v=>v.snapshot.fisico),borderColor:'#F59E0B',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
-        {label:'Actitud',data:vis.map(v=>v.snapshot.actitud),borderColor:'#EF4444',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]}
+        {label:'Valoración del scout',data,borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.3,borderWidth:2.5,pointBackgroundColor:data.map(v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626'),pointRadius:6,pointHoverRadius:8,pointBorderColor:'#fff',pointBorderWidth:2},
+        {label:'Tendencia',data:trend,borderColor:'rgba(124,58,237,.3)',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
       ]
     },
     options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}},scales:{y:{min:1,max:10,ticks:{stepSize:1,font:{size:10}}},x:{ticks:{font:{size:10}}}}}
   });
+}
+
+/* ── ANÁLISIS DE EVOLUCIÓN IA ── */
+window.analyzeEvolution = async function(){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  const vis=(p.visitas||[]).filter(v=>v.valoracion||v.nota);
+  if(vis.length<2){showToast('⚠️ Necesitas al menos 2 visitas para analizar evolución');return;}
+
+  const btn=document.getElementById('btn-evo-ai');
+  btn.disabled=true; btn.textContent='⏳ Analizando...';
+  const resultDiv=document.getElementById('d-evo-ai-result');
+  const textDiv=document.getElementById('d-evo-ai-text');
+
+  const apiKey=getApiKey();
+  const visitasTexto=vis.map((v,i)=>`Visita ${i+1} (${v.fecha}) — ${v.partido}${v.valoracion?' — Nota del scout: '+v.valoracion+'/10':''}\n${v.nota||'Sin comentarios escritos'}`).join('\n\n');
+
+  if(apiKey){
+    try{
+      const prompt=`Eres un analista de scouting de fútbol base. Analiza la EVOLUCIÓN de este jugador a lo largo de sus visitas.\n\nJUGADOR: ${p.nombre} | ${p.posicion} | ${p.catMain} | Club: ${p.club}\n\nVISITAS (en orden cronológico):\n${visitasTexto}\n\nEscribe EXACTAMENTE 3 frases cortas y directas:\n1. Cómo era el jugador en las primeras visitas\n2. Cómo ha cambiado (mejorado, empeorado, se ha estancado) y en qué aspectos\n3. Conclusión: tendencia actual y recomendación concreta\n\nSé específico, usa los datos de las notas. No uses títulos ni numeración. Español, 60-90 palabras total.`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:512,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      if(data.error)throw new Error(data.error.message);
+      textDiv.innerHTML=(data.content?.[0]?.text||'').split('\n').filter(l=>l.trim()).map(l=>`<p style="margin-bottom:6px">${esc(l)}</p>`).join('');
+    }catch(e){
+      console.warn('AI evo fallback:',e.message);
+      textDiv.innerHTML=generateSmartEvolution(p,vis);
+    }
+  } else {
+    textDiv.innerHTML=generateSmartEvolution(p,vis);
+  }
+  resultDiv.style.display='block';
+  btn.disabled=false; btn.textContent='🤖 Analizar evolución con IA';
+};
+
+function generateSmartEvolution(p,vis){
+  const nom=p.nombre?p.nombre.split(' ')[0]:'El jugador';
+  const ratings=vis.filter(v=>v.valoracion).map(v=>v.valoracion);
+  if(ratings.length<2) return `<p>No hay suficientes valoraciones numéricas para analizar la evolución de ${nom}.</p>`;
+  const first=ratings.slice(0,Math.ceil(ratings.length/2));
+  const last=ratings.slice(Math.ceil(ratings.length/2));
+  const avgFirst=Math.round(first.reduce((a,b)=>a+b,0)/first.length*10)/10;
+  const avgLast=Math.round(last.reduce((a,b)=>a+b,0)/last.length*10)/10;
+  const diff=avgLast-avgFirst;
+  const trend=diff>0.5?'mejorando':diff<-0.5?'empeorando':'manteniéndose estable';
+  const p1=`<p>${nom} comenzó con una valoración media de ${avgFirst}/10 en sus primeras ${first.length} visita${first.length!==1?'s':''}.</p>`;
+  const p2=`<p>En las últimas ${last.length} visita${last.length!==1?'s':''} su media es ${avgLast}/10, ${trend} con una variación de ${diff>0?'+':''}${diff} puntos.</p>`;
+  const p3=diff>0.5?`<p>Tendencia positiva. ${nom} está en progresión ascendente — buen momento para activar contacto.</p>`:diff<-0.5?`<p>Tendencia negativa. Conviene investigar las causas y reevaluar antes de tomar decisiones.</p>`:`<p>Rendimiento consistente. ${nom} muestra estabilidad — seguir monitorizando para detectar cambios.</p>`;
+  return p1+p2+p3;
 }
 
 /* ── DASHBOARD ── */
