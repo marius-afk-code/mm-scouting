@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MM Talent Sport — Scouting</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -22,6 +23,9 @@
   --bg: #F4F6FA;
   --text: #0B0F1A;
   --text2: #374151;
+  --green: #059669;
+  --red: #DC2626;
+  --amber: #D97706;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; -webkit-font-smoothing: antialiased; }
@@ -44,14 +48,13 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .login-brand { text-align:center; margin-bottom:36px; }
 .login-brand-logo { display:inline-flex; align-items:center; gap:12px; margin-bottom:10px; }
 .login-brand-icon { width:44px; height:44px; background:linear-gradient(135deg,var(--purple),var(--purple2)); border-radius:12px; display:flex; align-items:center; justify-content:center; }
-.login-brand-icon img { width:28px; height:28px; object-fit:contain; }
 .login-brand-icon-text { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:#fff; }
 .login-brand-name { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#fff; letter-spacing:.02em; }
 .login-brand-name span { color:var(--purple3); }
 .login-brand-sub { font-size:12px; color:var(--slateL); letter-spacing:.1em; text-transform:uppercase; }
 .login-box { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:20px; padding:36px 32px; backdrop-filter:blur(20px); }
 .login-tabs { display:flex; background:rgba(255,255,255,.04); border-radius:10px; padding:4px; margin-bottom:28px; gap:4px; }
-.login-tab { flex:1; padding:8px; text-align:center; font-size:13px; font-weight:500; color:var(--slateL); cursor:pointer; border-radius:8px; transition:all .2s; }
+.login-tab { flex:1; padding:8px; text-align:center; font-size:13px; font-weight:500; color:var(--slateL); cursor:pointer; border-radius:8px; transition:all .2s; user-select:none; }
 .login-tab.active { background:var(--purple); color:#fff; }
 .login-field { margin-bottom:16px; }
 .login-field label { display:block; font-size:11px; font-weight:600; color:var(--slateL); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
@@ -68,7 +71,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 
 /* ── HEADER ── */
 .header { background:var(--navy); border-bottom:1px solid var(--border); padding:0 24px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; height:60px; }
-.header-brand { display:flex; align-items:center; gap:10px; }
+.header-brand { display:flex; align-items:center; gap:10px; cursor:pointer; }
 .header-brand-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--purple),var(--purple2)); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .header-brand-icon-text { font-family:'Syne',sans-serif; font-size:11px; font-weight:800; color:#fff; line-height:1; }
 .header-brand-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#fff; letter-spacing:.02em; }
@@ -91,8 +94,12 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .hero::before { content:''; position:absolute; right:-80px; top:-80px; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 70%); pointer-events:none; }
 .hero::after { content:''; position:absolute; left:30%; bottom:-80px; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(139,92,246,.07) 0%,transparent 70%); pointer-events:none; }
 .hero-inner { max-width:1100px; margin:0 auto; position:relative; z-index:1; }
-.hero-title { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; color:#fff; letter-spacing:-.02em; margin-bottom:24px; }
+.hero-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.hero-title { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; color:#fff; letter-spacing:-.02em; }
 .hero-title span { color:var(--purple3); }
+.hero-actions { display:flex; gap:8px; }
+.hero-action-btn { font-family:'Inter',sans-serif; font-size:12px; padding:7px 14px; border:1px solid rgba(255,255,255,.12); border-radius:8px; background:rgba(255,255,255,.05); color:var(--slateL); cursor:pointer; transition:all .2s; white-space:nowrap; font-weight:500; display:flex; align-items:center; gap:6px; }
+.hero-action-btn:hover { background:rgba(255,255,255,.1); color:#fff; }
 .hero-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
 .hero-stat { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:18px 14px; text-align:center; transition:all .25s; cursor:default; position:relative; overflow:hidden; }
 .hero-stat:hover { background:rgba(255,255,255,.07); border-color:rgba(124,58,237,.3); transform:translateY(-3px); box-shadow:0 8px 24px rgba(124,58,237,.1); }
@@ -117,14 +124,17 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .toolbar { background:#fff; border:1px solid var(--borderL); border-radius:16px; padding:18px 20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
 .toolbar-top { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
 .toolbar-top input[type=text] { flex:1; min-width:200px; }
+.toolbar-sort { display:flex; align-items:center; gap:6px; }
+.toolbar-sort label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--slateL); white-space:nowrap; }
 .toolbar-filters { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; }
 .filter-group { display:flex; flex-direction:column; gap:6px; }
 .filter-group-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--slateL); }
 .filter-chips { display:flex; gap:6px; flex-wrap:wrap; }
-.filter-chip { font-size:12px; font-weight:500; padding:5px 12px; border:1px solid var(--borderL); border-radius:8px; background:#F8FAFC; color:var(--text2); cursor:pointer; transition:all .15s; white-space:nowrap; }
+.filter-chip { font-size:12px; font-weight:500; padding:5px 12px; border:1px solid var(--borderL); border-radius:8px; background:#F8FAFC; color:var(--text2); cursor:pointer; transition:all .15s; white-space:nowrap; user-select:none; }
 .filter-chip.active { background:var(--navy2); color:#fff; border-color:var(--navy2); }
 .filter-chip:hover:not(.active) { border-color:var(--purple); color:var(--purple); }
 .filter-select { font-size:12px; padding:6px 10px; min-width:130px; width:auto; border-radius:8px; }
+.results-count { font-size:11px; color:var(--slate); font-weight:500; padding:4px 0 0; }
 
 /* ── INPUTS ── */
 input, select, textarea { font-family:'Inter',sans-serif; font-size:13px; padding:9px 11px; border:1px solid var(--borderL); border-radius:8px; background:#F8FAFC; color:var(--text); outline:none; transition:all .15s; width:100%; }
@@ -142,6 +152,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .btn-navy:hover:not(:disabled) { background:var(--navy3) !important; }
 .btn-danger { color:#DC2626 !important; border-color:#FECACA !important; }
 .btn-danger:hover { background:#FEF2F2 !important; }
+.btn-sm { font-size:11px; padding:5px 10px; }
 
 /* ── CARDS ── */
 .card { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px 22px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
@@ -189,9 +200,13 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .detail-row:last-child { border-bottom:none; }
 .detail-row .dk { color:var(--slate); font-weight:500; }
 .detail-row .dv { font-weight:600; color:var(--text); text-align:right; }
-.visit-item { border-left:3px solid #DDD6FE; padding-left:14px; margin-bottom:14px; }
-.visit-meta { font-size:11px; font-weight:600; color:var(--slate); margin-bottom:4px; }
-.visit-note { font-size:13px; color:var(--text2); line-height:1.6; }
+.visit-item { border-left:3px solid #DDD6FE; padding:10px 14px; margin-bottom:14px; position:relative; border-radius:0 8px 8px 0; background:#FAFAFE; transition:background .2s; }
+.visit-item:hover { background:#F5F3FF; }
+.visit-meta { font-size:11px; font-weight:600; color:var(--slate); margin-bottom:4px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.visit-note { font-size:13px; color:var(--text2); line-height:1.6; white-space:pre-wrap; }
+.visit-delete { font-size:11px; color:#DC2626; background:none; border:1px solid transparent; padding:2px 8px; border-radius:6px; cursor:pointer; opacity:0; transition:all .2s; flex-shrink:0; font-family:'Inter',sans-serif; }
+.visit-item:hover .visit-delete { opacity:1; }
+.visit-delete:hover { background:#FEF2F2; border-color:#FECACA; }
 
 /* ── EMPTY ── */
 .empty { text-align:center; padding:4rem 1rem; }
@@ -205,12 +220,34 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* ── TOAST ── */
-#toast { position:fixed; bottom:24px; right:24px; background:var(--navy2); color:#fff; padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; display:none; z-index:9999; box-shadow:0 8px 24px rgba(0,0,0,.25); border:1px solid var(--border); }
+#toast { position:fixed; bottom:24px; right:24px; background:var(--navy2); color:#fff; padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600; display:none; z-index:9999; box-shadow:0 8px 24px rgba(0,0,0,.25); border:1px solid var(--border); animation:toastIn .3s ease; }
+@keyframes toastIn { from { transform:translateY(12px); opacity:0; } to { transform:translateY(0); opacity:1; } }
 
-@media(max-width:640px) {
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); z-index:9998; display:flex; align-items:center; justify-content:center; animation:fadeIn .15s ease; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.confirm-box { background:#fff; border-radius:16px; padding:28px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.confirm-box h3 { font-size:16px; font-weight:700; margin-bottom:8px; }
+.confirm-box p { font-size:13px; color:var(--text2); margin-bottom:20px; line-height:1.5; }
+.confirm-actions { display:flex; gap:8px; justify-content:flex-end; }
+
+@media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
+  .hero-top { flex-direction:column; align-items:flex-start; }
   .form-grid { grid-template-columns:1fr; }
   .ratings-grid { grid-template-columns:repeat(2,1fr); }
+  .detail-hero-inner { flex-direction:column; text-align:center; }
+  .detail-nota { margin-left:0; }
+  .player-meta { flex-wrap:wrap; justify-content:flex-end; }
+  .header { padding:0 14px; gap:10px; }
+  .header-brand-name { display:none; }
+  .toolbar-filters { gap:10px; }
+  .hero { padding:24px 16px; }
+  .container { padding:16px; }
+}
+@media(max-width:480px) {
+  .hero-stats { grid-template-columns:repeat(2,1fr); }
+  .hero-stat:first-child { grid-column:1/-1; }
 }
 </style>
 </head>
@@ -249,7 +286,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 
 <!-- HEADER -->
 <div class="header" id="main-header" style="display:none">
-  <div class="header-brand">
+  <div class="header-brand" onclick="showPage('list')">
     <div class="header-brand-icon"><span class="header-brand-icon-text">MM</span></div>
     <div class="header-brand-name">MM <span>TALENT</span> SPORT</div>
   </div>
@@ -273,7 +310,12 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 <div id="page-list" class="page">
   <div class="hero">
     <div class="hero-inner">
-      <h1 class="hero-title">Base de datos</h1>
+      <div class="hero-top">
+        <h1 class="hero-title">Base de datos</h1>
+        <div class="hero-actions">
+          <button class="hero-action-btn" onclick="exportCSV()" title="Exportar datos a CSV">📊 Exportar CSV</button>
+        </div>
+      </div>
       <div class="hero-stats">
         <div class="hero-stat">
           <div class="hero-stat-num" id="st-total">0</div>
@@ -306,7 +348,20 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <div class="container">
     <div class="toolbar">
       <div class="toolbar-top">
-        <input type="text" id="search" placeholder="🔍  Buscar jugador, club o posición..." oninput="renderList()">
+        <input type="text" id="search" placeholder="🔍  Buscar jugador, club o posición..." oninput="debouncedRender()">
+        <div class="toolbar-sort">
+          <label>Ordenar:</label>
+          <select id="sort-by" onchange="renderList()" class="filter-select" style="min-width:150px">
+            <option value="nombre">Nombre A-Z</option>
+            <option value="nombre-desc">Nombre Z-A</option>
+            <option value="nota-desc">Mejor nota</option>
+            <option value="nota-asc">Peor nota</option>
+            <option value="fecha-desc">Más joven</option>
+            <option value="fecha-asc">Mayor edad</option>
+            <option value="visitas">Más visitado</option>
+            <option value="updated">Último editado</option>
+          </select>
+        </div>
         <button class="btn-primary" onclick="openNew()">+ Nuevo jugador</button>
       </div>
       <div class="toolbar-filters">
@@ -360,6 +415,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
           </select>
         </div>
       </div>
+      <div class="results-count" id="results-count"></div>
     </div>
     <div id="player-list"></div>
   </div>
@@ -375,14 +431,14 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     <div class="card">
       <div class="card-title">01 — Ficha técnica</div>
       <div class="form-grid">
-        <div class="form-group full"><label class="form-label">Nombre completo</label><input id="f-nombre" placeholder="Ej: Alejandro García López"></div>
+        <div class="form-group full"><label class="form-label">Nombre completo *</label><input id="f-nombre" placeholder="Ej: Alejandro García López" required></div>
         <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input id="f-fecha" type="date"></div>
         <div class="form-group"><label class="form-label">Posición principal</label>
           <select id="f-posicion"><option>Portero</option><option>Lateral Derecho</option><option>Lateral Izquierdo</option><option>Central</option><option>Pivote Defensivo</option><option>Mediocampista</option><option>Mediapunta</option><option>Extremo Derecho</option><option>Extremo Izquierdo</option><option>Delantero Centro</option><option>Segundo Delantero</option></select></div>
         <div class="form-group"><label class="form-label">Pie dominante</label>
           <select id="f-pie"><option>Derecho</option><option>Izquierdo</option><option>Ambidiestro</option></select></div>
-        <div class="form-group"><label class="form-label">Altura (cm)</label><input id="f-altura" type="number" placeholder="175"></div>
-        <div class="form-group"><label class="form-label">Peso (kg)</label><input id="f-peso" type="number" placeholder="68"></div>
+        <div class="form-group"><label class="form-label">Altura (cm)</label><input id="f-altura" type="number" placeholder="175" min="100" max="220"></div>
+        <div class="form-group"><label class="form-label">Peso (kg)</label><input id="f-peso" type="number" placeholder="68" min="25" max="150"></div>
         <div class="form-group full"><label class="form-label">Club actual</label><input id="f-club" placeholder="Ej: CF Lorca Deportiva"></div>
         <div class="form-group"><label class="form-label">Categoría del jugador</label>
           <select id="f-cat-main" onchange="updateSubcats('f-cat-sub','f-cat-main')">
@@ -430,7 +486,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <div class="container" style="max-width:760px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap">
       <button onclick="showPage('list')">← Lista</button>
-      <button onclick="editCurrent()">Editar</button>
+      <button onclick="editCurrent()">✏️ Editar</button>
       <button class="btn-navy" id="btn-report" onclick="generateReport()">📄 Generar informe</button>
       <span style="flex:1"></span>
       <span class="badge" id="d-badge"></span>
@@ -506,36 +562,72 @@ const SUBCATS = {
 
 let currentUser=null, players=[], currentId=null, loginMode='login', unsubscribe=null;
 let activeFilters = { estado:'' };
+let _debounceTimer = null;
 
+/* ── UTILIDADES ── */
+function esc(s) { // XSS protection: escapa HTML
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
 function ini(n){ return n?n.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase():'?'; }
-function avg(p){ return Math.round((p.tecnica+p.tactica+p.fisico+p.actitud)/4*10)/10; }
-function rateColor(v){ return v>=8?'#059669':v>=6?'#D97706':'#DC2626'; }
+function avg(p){ return Math.round(((p.tecnica||0)+(p.tactica||0)+(p.fisico||0)+(p.actitud||0))/4*10)/10; }
+function rateColor(v){ return v>=8?'var(--green)':v>=6?'var(--amber)':'var(--red)'; }
 function badgeClass(e){ const m={Activo:'activo','En seguimiento':'seguimiento','En espera':'espera',Descartado:'descartado'}; return 'badge badge-'+(m[e]||'activo'); }
 function formatDate(d){ if(!d)return'—'; try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;} }
 function getYear(d){ if(!d)return null; try{return new Date(d+'T12:00:00').getFullYear()}catch(e){return null;} }
-function today(){ return new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}); }
+function todayISO(){ return new Date().toISOString().split('T')[0]; }
+function todayStr(){ return new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}); }
 function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); window.scrollTo(0,0); }
 function showToast(m){ const t=document.getElementById('toast'); t.textContent=m||'✓ Guardado'; t.style.display='block'; clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2200); }
 function showSavePill(){ const s=document.getElementById('save-pill'); s.style.display='block'; clearTimeout(s._t); s._t=setTimeout(()=>s.style.display='none',2000); }
 function getApiKey(){ try{return localStorage.getItem('sct_apikey_v1')||''}catch(e){return''} }
 function isAdmin(){ return currentUser&&currentUser.email===ADMIN_EMAIL; }
 
-window.updateSubcats = function(subId,mainId){
-  const main=document.getElementById(mainId).value;
-  const sub=document.getElementById(subId);
-  const cur=sub.value;
-  sub.innerHTML=(SUBCATS[main]||[]).map(s=>`<option${s===cur?' selected':''}>${s}</option>`).join('');
+/* ── DIÁLOGO DE CONFIRMACIÓN ── */
+function showConfirm(title, message, onOk, okText='Confirmar', danger=false) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `<div class="confirm-box">
+    <h3>${esc(title)}</h3>
+    <p>${esc(message)}</p>
+    <div class="confirm-actions">
+      <button class="cancel-btn">Cancelar</button>
+      <button class="ok-btn ${danger?'btn-danger':'btn-primary'}">${esc(okText)}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.cancel-btn').onclick = () => overlay.remove();
+  overlay.querySelector('.ok-btn').onclick = () => { overlay.remove(); onOk(); };
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+}
+
+/* ── DEBOUNCE PARA BÚSQUEDA ── */
+function debouncedRender() {
+  clearTimeout(_debounceTimer);
+  _debounceTimer = setTimeout(renderList, 200);
+}
+
+/* ── SUBCATEGORÍAS ── */
+window.updateSubcats = function(subId, mainId){
+  const main = document.getElementById(mainId).value;
+  const sub = document.getElementById(subId);
+  const cur = sub.value;
+  sub.innerHTML = (SUBCATS[main]||[]).map(s=>`<option${s===cur?' selected':''}>${s}</option>`).join('');
 };
 
+/* ── API KEY ── */
 window.saveApiKey = async function(){
   const k=document.getElementById('api-key-input').value.trim();
-  if(!k){alert('Introduce una clave válida');return;}
+  if(!k){showToast('⚠️ Introduce una clave válida');return;}
   try{ await setDoc(doc(db,'config','apikey'),{key:k,updatedAt:new Date().toISOString()}); localStorage.setItem('sct_apikey_v1',k); document.getElementById('api-banner').classList.remove('show'); showToast('🔑 Clave API guardada'); }
-  catch(e){ alert('Error: '+e.message); }
+  catch(e){ showToast('❌ Error: '+e.message); }
 };
 async function loadApiKey(){ try{ const s=await getDoc(doc(db,'config','apikey')); if(s.exists()){const k=s.data().key||''; localStorage.setItem('sct_apikey_v1',k); return k;} }catch(e){} return getApiKey(); }
 window.showApiKeyConfig = function(){ if(!isAdmin())return; document.getElementById('api-key-input').value=getApiKey(); document.getElementById('api-banner').classList.add('show'); };
 
+/* ── LOGIN / AUTH ── */
 window.switchTab = function(m){
   loginMode=m;
   document.getElementById('tab-login').classList.toggle('active',m==='login');
@@ -546,64 +638,480 @@ window.switchTab = function(m){
 };
 function loginErr(m){ const e=document.getElementById('login-err'); e.textContent=m; e.style.display='block'; document.getElementById('login-ok').style.display='none'; }
 function loginOk(m){ const e=document.getElementById('login-ok'); e.textContent=m; e.style.display='block'; document.getElementById('login-err').style.display='none'; }
+
 window.doLogin = async function(){
   const email=document.getElementById('l-email').value.trim(), pass=document.getElementById('l-pass').value;
   if(!email||!pass){loginErr('Introduce email y contraseña');return;}
   const btn=document.getElementById('login-btn'); btn.disabled=true; btn.textContent='Conectando...';
-  try{ if(loginMode==='register') await createUserWithEmailAndPassword(auth,email,pass); else await signInWithEmailAndPassword(auth,email,pass); }
-  catch(e){ const msgs={'auth/email-already-in-use':'Este email ya tiene cuenta.','auth/invalid-email':'Email no válido.','auth/weak-password':'Mínimo 6 caracteres.','auth/user-not-found':'No existe esta cuenta.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-credential':'Email o contraseña incorrectos.','auth/too-many-requests':'Demasiados intentos.'}; loginErr(msgs[e.code]||'Error: '+e.message); btn.disabled=false; btn.textContent=loginMode==='login'?'Entrar':'Crear cuenta'; }
+  try{
+    if(loginMode==='register') await createUserWithEmailAndPassword(auth,email,pass);
+    else await signInWithEmailAndPassword(auth,email,pass);
+  } catch(e){
+    const msgs={'auth/email-already-in-use':'Este email ya tiene cuenta.','auth/invalid-email':'Email no válido.','auth/weak-password':'Mínimo 6 caracteres.','auth/user-not-found':'No existe esta cuenta.','auth/wrong-password':'Contraseña incorrecta.','auth/invalid-credential':'Email o contraseña incorrectos.','auth/too-many-requests':'Demasiados intentos. Inténtalo en unos minutos.'};
+    loginErr(msgs[e.code]||'Error: '+e.message);
+    btn.disabled=false; btn.textContent=loginMode==='login'?'Entrar':'Crear cuenta';
+  }
 };
-window.resetPassword = async function(){ const email=document.getElementById('l-email').value.trim(); if(!email){loginErr('Escribe tu email primero');return;} try{await sendPasswordResetEmail(auth,email);loginOk('Email de recuperación enviado.');}catch(e){loginErr('No se pudo enviar el email.');} };
-window.doLogout = async function(){ if(!confirm('¿Cerrar sesión?'))return; if(unsubscribe){unsubscribe();unsubscribe=null;} await signOut(auth); players=[]; currentId=null; document.getElementById('main-header').style.display='none'; document.getElementById('api-banner').classList.remove('show'); document.getElementById('l-email').value=''; document.getElementById('l-pass').value=''; document.getElementById('login-err').style.display='none'; document.getElementById('login-btn').disabled=false; document.getElementById('login-btn').textContent='Entrar'; showPage('login'); };
+window.resetPassword = async function(){
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){loginErr('Escribe tu email primero');return;}
+  try{await sendPasswordResetEmail(auth,email);loginOk('Email de recuperación enviado. Revisa tu bandeja de entrada.');}
+  catch(e){loginErr('No se pudo enviar el email. Comprueba la dirección.');}
+};
+window.doLogout = function(){
+  showConfirm('Cerrar sesión', '¿Seguro que quieres salir?', async()=>{
+    if(unsubscribe){unsubscribe();unsubscribe=null;}
+    await signOut(auth);
+    players=[]; currentId=null;
+    document.getElementById('main-header').style.display='none';
+    document.getElementById('api-banner').classList.remove('show');
+    document.getElementById('l-email').value=''; document.getElementById('l-pass').value='';
+    document.getElementById('login-err').style.display='none';
+    document.getElementById('login-btn').disabled=false;
+    document.getElementById('login-btn').textContent='Entrar';
+    showPage('login');
+  }, 'Salir');
+};
 
-function startSync(uid){ if(unsubscribe)unsubscribe(); const q=query(collection(db,'users',uid,'players'),orderBy('nombre')); unsubscribe=onSnapshot(q,snap=>{ players=snap.docs.map(d=>({id:d.id,...d.data()})); buildYearFilter(); renderList(); if(currentId){const p=players.find(x=>x.id===currentId);if(p)renderVisits(p);} },err=>console.error(err)); }
-async function persistPlayer(p){ try{const{id,...data}=p; await setDoc(doc(db,'users',currentUser.uid,'players',id),data); showSavePill();}catch(e){alert('Error al guardar: '+e.message);} }
-async function removePlayer(id){ try{await deleteDoc(doc(db,'users',currentUser.uid,'players',id));}catch(e){alert('Error al eliminar: '+e.message);} }
+/* ── FIRESTORE SYNC ── */
+function startSync(uid){
+  if(unsubscribe)unsubscribe();
+  const q=query(collection(db,'users',uid,'players'),orderBy('nombre'));
+  unsubscribe=onSnapshot(q,snap=>{
+    players=snap.docs.map(d=>({id:d.id,...d.data()}));
+    buildYearFilter();
+    renderList();
+    if(currentId){const p=players.find(x=>x.id===currentId);if(p)renderVisits(p);}
+  },err=>console.error('Firestore error:',err));
+}
+async function persistPlayer(p){
+  try{const{id,...data}=p; await setDoc(doc(db,'users',currentUser.uid,'players',id),data); showSavePill();}
+  catch(e){showToast('❌ Error al guardar: '+e.message);}
+}
+async function removePlayer(id){
+  try{await deleteDoc(doc(db,'users',currentUser.uid,'players',id));}
+  catch(e){showToast('❌ Error al eliminar: '+e.message);}
+}
 
+/* ── AUTH STATE ── */
 onAuthStateChanged(auth, async user=>{
-  if(user){ currentUser=user; document.getElementById('user-pill').textContent='👤 '+user.email; document.getElementById('main-header').style.display='flex'; document.getElementById('btn-api-admin').style.display=user.email===ADMIN_EMAIL?'inline-block':'none'; await loadApiKey(); startSync(user.uid); showPage('list'); updateSubcats('f-cat-sub','f-cat-main'); updateSubcats('f-ojeo-sub','f-ojeo-main'); }
-  else{ currentUser=null; showPage('login'); }
+  // Transición desde loading
+  if(document.getElementById('page-loading').classList.contains('active')){
+    await new Promise(r=>setTimeout(r,1000)); // esperar animación
+  }
+  if(user){
+    currentUser=user;
+    document.getElementById('user-pill').textContent='👤 '+user.email;
+    document.getElementById('main-header').style.display='flex';
+    document.getElementById('btn-api-admin').style.display=user.email===ADMIN_EMAIL?'inline-block':'none';
+    await loadApiKey();
+    startSync(user.uid);
+    showPage('list');
+    updateSubcats('f-cat-sub','f-cat-main');
+    updateSubcats('f-ojeo-sub','f-ojeo-main');
+  } else {
+    currentUser=null;
+    showPage('login');
+  }
 });
 
-function buildYearFilter(){ const years=[...new Set(players.map(p=>getYear(p.fecha)).filter(Boolean))].sort((a,b)=>b-a); const sel=document.getElementById('filter-anio'); const cur=sel.value; sel.innerHTML='<option value="">Todos</option>'+years.map(y=>`<option${y==cur?' selected':''}>${y}</option>`).join(''); }
+/* ── FILTROS Y LISTA ── */
+function buildYearFilter(){
+  const years=[...new Set(players.map(p=>getYear(p.fecha)).filter(Boolean))].sort((a,b)=>b-a);
+  const sel=document.getElementById('filter-anio');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos</option>'+years.map(y=>`<option${y==cur?' selected':''}>${y}</option>`).join('');
+}
 
-window.toggleFilter = function(el){ const filter=el.dataset.filter; document.querySelectorAll(`[data-filter="${filter}"]`).forEach(c=>c.classList.remove('active')); el.classList.add('active'); activeFilters[filter]=el.dataset.val; renderList(); };
+window.toggleFilter = function(el){
+  const filter=el.dataset.filter;
+  document.querySelectorAll(`[data-filter="${filter}"]`).forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilters[filter]=el.dataset.val;
+  renderList();
+};
 
-function updateStats(){ document.getElementById('st-total').textContent=players.length; document.getElementById('st-activos').textContent=players.filter(p=>p.estado==='Activo').length; document.getElementById('st-seguimiento').textContent=players.filter(p=>p.estado==='En seguimiento').length; document.getElementById('st-espera').textContent=players.filter(p=>p.estado==='En espera').length; document.getElementById('st-descartado').textContent=players.filter(p=>p.estado==='Descartado').length; }
+function updateStats(){
+  document.getElementById('st-total').textContent=players.length;
+  document.getElementById('st-activos').textContent=players.filter(p=>p.estado==='Activo').length;
+  document.getElementById('st-seguimiento').textContent=players.filter(p=>p.estado==='En seguimiento').length;
+  document.getElementById('st-espera').textContent=players.filter(p=>p.estado==='En espera').length;
+  document.getElementById('st-descartado').textContent=players.filter(p=>p.estado==='Descartado').length;
+}
+
+function sortPlayers(list){
+  const sortBy = document.getElementById('sort-by').value;
+  return [...list].sort((a,b)=>{
+    switch(sortBy){
+      case 'nombre': return (a.nombre||'').localeCompare(b.nombre||'','es');
+      case 'nombre-desc': return (b.nombre||'').localeCompare(a.nombre||'','es');
+      case 'nota-desc': return avg(b)-avg(a);
+      case 'nota-asc': return avg(a)-avg(b);
+      case 'fecha-desc': return (b.fecha||'').localeCompare(a.fecha||'');
+      case 'fecha-asc': return (a.fecha||'9999').localeCompare(b.fecha||'9999');
+      case 'visitas': return (b.visitas||[]).length-(a.visitas||[]).length;
+      case 'updated': return (b.updatedAt||'').localeCompare(a.updatedAt||'');
+      default: return 0;
+    }
+  });
+}
+
 function renderList(){
   updateStats();
-  const q=document.getElementById('search').value.toLowerCase(), fc=document.getElementById('filter-cat').value, fo=document.getElementById('filter-ojeo-cat').value, fp=document.getElementById('filter-pos').value, fpie=document.getElementById('filter-pie').value, fanio=document.getElementById('filter-anio').value, fest=activeFilters.estado||'';
-  const f=players.filter(p=>(!q||(p.nombre||'').toLowerCase().includes(q)||(p.club||'').toLowerCase().includes(q)||(p.posicion||'').toLowerCase().includes(q))&&(!fc||p.catMain===fc)&&(!fo||p.ojeoMain===fo)&&(!fp||p.posicion===fp)&&(!fpie||p.pieDom===fpie)&&(!fanio||getYear(p.fecha)==fanio)&&(!fest||p.estado===fest));
+  const q=document.getElementById('search').value.toLowerCase(),
+    fc=document.getElementById('filter-cat').value,
+    fo=document.getElementById('filter-ojeo-cat').value,
+    fp=document.getElementById('filter-pos').value,
+    fpie=document.getElementById('filter-pie').value,
+    fanio=document.getElementById('filter-anio').value,
+    fest=activeFilters.estado||'';
+  let f=players.filter(p=>(
+    (!q||(p.nombre||'').toLowerCase().includes(q)||(p.club||'').toLowerCase().includes(q)||(p.posicion||'').toLowerCase().includes(q))&&
+    (!fc||p.catMain===fc)&&(!fo||p.ojeoMain===fo)&&(!fp||p.posicion===fp)&&
+    (!fpie||p.pieDom===fpie)&&(!fanio||getYear(p.fecha)==fanio)&&(!fest||p.estado===fest)
+  ));
+  f = sortPlayers(f);
+
+  // Mostrar contador de resultados
+  const rc = document.getElementById('results-count');
+  if(f.length !== players.length && players.length > 0){
+    rc.textContent = `Mostrando ${f.length} de ${players.length} jugadores`;
+  } else { rc.textContent = ''; }
+
   const el=document.getElementById('player-list');
-  if(!f.length){el.innerHTML=`<div class="empty"><div class="empty-icon">⚽</div><h3>${players.length===0?'Base de datos vacía':'Sin resultados'}</h3><p>${players.length===0?'Empieza añadiendo el primer jugador':'Ajusta los filtros'}</p>${players.length===0?'<button class="btn-primary" onclick="openNew()">+ Añadir primer jugador</button>':''}</div>`;return;}
-  el.innerHTML=f.map(p=>{ const a=avg(p), catLabel=p.catMain?`${p.catMain}${p.catSub?' · '+p.catSub:''}`:'—', ojeoLabel=p.ojeoMain?`Ojeo: ${p.ojeoMain}${p.ojeoSub?' '+p.ojeoSub:''}`:''; return `<div class="player-row" onclick="openDetail('${p.id}')"><div class="avatar">${ini(p.nombre)}</div><div class="player-info"><div class="player-name">${p.nombre||'Sin nombre'}</div><div class="player-sub">${[p.posicion,p.club,catLabel].filter(Boolean).join(' · ')||'—'}${ojeoLabel?` <span style="color:var(--purple);font-weight:600">· ${ojeoLabel}</span>`:''}</div></div><div class="player-meta">${p.fecha?`<span style="font-size:11px;color:var(--slate);font-weight:500">${getYear(p.fecha)}</span>`:''}<span style="font-size:11px;color:var(--slate);background:#F1F5F9;padding:3px 8px;border-radius:6px">${p.pieDom||'—'}</span><span class="${badgeClass(p.estado)}">${p.estado}</span><div style="text-align:center;min-width:38px"><div style="font-size:20px;font-weight:800;color:${rateColor(a)};font-family:'Syne',sans-serif;line-height:1">${a}</div><div style="font-size:9px;color:var(--slateL);font-weight:700;letter-spacing:.04em">NOTA</div></div><div style="font-size:11px;color:var(--slateL);font-weight:500">${(p.visitas||[]).length}v</div></div></div>`; }).join('');
+  if(!f.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">⚽</div><h3>${players.length===0?'Base de datos vacía':'Sin resultados'}</h3><p>${players.length===0?'Empieza añadiendo el primer jugador':'Ajusta los filtros de búsqueda'}</p>${players.length===0?'<button class="btn-primary" onclick="openNew()">+ Añadir primer jugador</button>':''}</div>`;
+    return;
+  }
+  el.innerHTML=f.map(p=>{
+    const a=avg(p),
+      catLabel=p.catMain?`${esc(p.catMain)}${p.catSub?' · '+esc(p.catSub):''}`:'—',
+      ojeoLabel=p.ojeoMain?`Ojeo: ${esc(p.ojeoMain)}${p.ojeoSub?' '+esc(p.ojeoSub):''}`:'';
+    return `<div class="player-row" onclick="openDetail('${p.id}')">
+      <div class="avatar">${ini(p.nombre)}</div>
+      <div class="player-info">
+        <div class="player-name">${esc(p.nombre)||'Sin nombre'}</div>
+        <div class="player-sub">${[esc(p.posicion),esc(p.club),catLabel].filter(Boolean).join(' · ')||'—'}${ojeoLabel?` <span style="color:var(--purple);font-weight:600">· ${ojeoLabel}</span>`:''}</div>
+      </div>
+      <div class="player-meta">
+        ${p.fecha?`<span style="font-size:11px;color:var(--slate);font-weight:500">${getYear(p.fecha)}</span>`:''}
+        <span style="font-size:11px;color:var(--slate);background:#F1F5F9;padding:3px 8px;border-radius:6px">${esc(p.pieDom)||'—'}</span>
+        <span class="${badgeClass(p.estado)}">${esc(p.estado)}</span>
+        <div style="text-align:center;min-width:38px">
+          <div style="font-size:20px;font-weight:800;color:${rateColor(a)};font-family:'Syne',sans-serif;line-height:1">${a}</div>
+          <div style="font-size:9px;color:var(--slateL);font-weight:700;letter-spacing:.04em">NOTA</div>
+        </div>
+        <div style="font-size:11px;color:var(--slateL);font-weight:500">${(p.visitas||[]).length}v</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 window.renderList=renderList;
+window.debouncedRender=debouncedRender;
 
-window.openNew = function(){ currentId=null; document.getElementById('form-title').textContent='Nuevo jugador'; document.getElementById('btn-delete').style.display='none'; ['nombre','fecha','club','telefono','contacto','representante','altura','peso'].forEach(k=>document.getElementById('f-'+k).value=''); document.getElementById('f-posicion').value='Mediocampista'; document.getElementById('f-pie').value='Derecho'; document.getElementById('f-estado').value='Activo'; document.getElementById('f-relacion').value='Padre/Madre'; document.getElementById('f-interes').value='Desconocido'; document.getElementById('f-cat-main').value='Cadete'; updateSubcats('f-cat-sub','f-cat-main'); document.getElementById('f-ojeo-main').value='Cadete'; updateSubcats('f-ojeo-sub','f-ojeo-main'); ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=5;updateSlider(k);}); showPage('form'); };
-window.editCurrent = function(){ const p=players.find(x=>x.id===currentId); if(!p)return; document.getElementById('form-title').textContent='Editar jugador'; document.getElementById('btn-delete').style.display='inline-block'; document.getElementById('f-nombre').value=p.nombre||''; document.getElementById('f-fecha').value=p.fecha||''; document.getElementById('f-club').value=p.club||''; document.getElementById('f-altura').value=p.altura||''; document.getElementById('f-peso').value=p.peso||''; document.getElementById('f-telefono').value=p.telefono||''; document.getElementById('f-contacto').value=p.contacto||''; document.getElementById('f-representante').value=p.representante||''; document.getElementById('f-posicion').value=p.posicion||'Mediocampista'; document.getElementById('f-pie').value=p.pieDom||'Derecho'; document.getElementById('f-estado').value=p.estado||'Activo'; document.getElementById('f-relacion').value=p.relacion||'Padre/Madre'; document.getElementById('f-interes').value=p.interes||'Desconocido'; document.getElementById('f-cat-main').value=p.catMain||'Cadete'; updateSubcats('f-cat-sub','f-cat-main'); document.getElementById('f-cat-sub').value=p.catSub||''; document.getElementById('f-ojeo-main').value=p.ojeoMain||'Cadete'; updateSubcats('f-ojeo-sub','f-ojeo-main'); document.getElementById('f-ojeo-sub').value=p.ojeoSub||''; ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=p[k]||5;updateSlider(k);}); showPage('form'); };
-window.updateSlider = function(k){ const v=parseInt(document.getElementById('f-'+k).value); const el=document.getElementById('v-'+k); el.textContent=v; el.style.color=rateColor(v); const a=Math.round(['tecnica','tactica','fisico','actitud'].map(x=>parseInt(document.getElementById('f-'+x).value)).reduce((a,b)=>a+b,0)/4*10)/10; const ng=document.getElementById('v-nota-global'); ng.textContent=a; ng.style.color=rateColor(a); };
-window.savePlayer = async function(){ const nombre=document.getElementById('f-nombre').value.trim(); if(!nombre){alert('El nombre es obligatorio');return;} const btn=document.getElementById('btn-save'); btn.disabled=true; btn.textContent='Guardando...'; const p={id:currentId||Date.now().toString(),nombre,fecha:document.getElementById('f-fecha').value,club:document.getElementById('f-club').value.trim(),catMain:document.getElementById('f-cat-main').value,catSub:document.getElementById('f-cat-sub').value,ojeoMain:document.getElementById('f-ojeo-main').value,ojeoSub:document.getElementById('f-ojeo-sub').value,posicion:document.getElementById('f-posicion').value,pieDom:document.getElementById('f-pie').value,altura:document.getElementById('f-altura').value,peso:document.getElementById('f-peso').value,estado:document.getElementById('f-estado').value,tecnica:parseInt(document.getElementById('f-tecnica').value),tactica:parseInt(document.getElementById('f-tactica').value),fisico:parseInt(document.getElementById('f-fisico').value),actitud:parseInt(document.getElementById('f-actitud').value),telefono:document.getElementById('f-telefono').value.trim(),contacto:document.getElementById('f-contacto').value.trim(),relacion:document.getElementById('f-relacion').value,representante:document.getElementById('f-representante').value.trim(),interes:document.getElementById('f-interes').value,visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],updatedAt:new Date().toISOString()}; await persistPlayer(p); btn.disabled=false; btn.textContent='Guardar jugador'; currentId=p.id; openDetail(p.id); };
-window.deletePlayer = async function(){ if(!confirm('¿Eliminar este jugador?'))return; await removePlayer(currentId); currentId=null; showPage('list'); };
-window.goBack = function(){ if(currentId){openDetail(currentId);}else{showPage('list');} };
+/* ── EXPORTAR CSV ── */
+window.exportCSV = function(){
+  if(!players.length){showToast('⚠️ No hay jugadores que exportar');return;}
+  const headers=['Nombre','Posición','Club','Categoría','División','Ojeo Categoría','Ojeo División','Pie','Fecha Nacimiento','Altura','Peso','Técnica','Táctica','Físico','Actitud','Nota Global','Estado','Contacto','Relación','Teléfono','Representante','Interés','Nº Visitas'];
+  const rows=players.map(p=>[p.nombre,p.posicion,p.club,p.catMain,p.catSub,p.ojeoMain,p.ojeoSub,p.pieDom,p.fecha,p.altura,p.peso,p.tecnica,p.tactica,p.fisico,p.actitud,avg(p),p.estado,p.contacto,p.relacion,p.telefono,p.representante,p.interes,(p.visitas||[]).length].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));
+  const csv='\uFEFF'+[headers.join(';'),...rows.map(r=>r.join(';'))].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`mm-talent-sport-${todayISO()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('📊 CSV exportado');
+};
 
-window.openDetail = function(id){ currentId=id; const p=players.find(x=>x.id===id); if(!p)return; const a=avg(p); document.getElementById('d-avatar').textContent=ini(p.nombre); document.getElementById('d-nombre').textContent=p.nombre||'Sin nombre'; document.getElementById('d-sub').textContent=[p.posicion,p.club].filter(Boolean).join(' · ')||'—'; document.getElementById('d-badge').className=badgeClass(p.estado); document.getElementById('d-badge').textContent=p.estado; document.getElementById('d-nota').textContent=a; document.getElementById('d-nota').style.color=rateColor(a);
-const chips=[[p.catMain+(p.catSub?' · '+p.catSub:''),'rgba(255,255,255,.1)','#cbd5e1'],[p.ojeoMain?'Ojeo: '+p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'','rgba(124,58,237,.2)','#c4b5fd'],[p.pieDom,'rgba(255,255,255,.07)','#94a3b8'],[p.fecha?'Nac. '+formatDate(p.fecha):'','rgba(255,255,255,.07)','#94a3b8']].filter(c=>c[0]);
-document.getElementById('d-chips').innerHTML=chips.map(([t,bg,col])=>`<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:500">${t}</span>`).join('');
-[['tec','tecnica'],['tac','tactica'],['fis','fisico'],['act','actitud']].forEach(([id,k])=>{document.getElementById('d-'+id).textContent=p[k]||0;document.getElementById('d-'+id).style.color=rateColor(p[k]||0);});
-document.getElementById('d-ficha').innerHTML=[['Posición',p.posicion||'—'],['Pie dominante',p.pieDom||'—'],['Categoría del jugador',p.catMain+(p.catSub?' · '+p.catSub:'')],['Categoría de ojeo',p.ojeoMain+(p.ojeoSub?' · '+p.ojeoSub:'')],['Altura',p.altura?p.altura+' cm':'—'],['Peso',p.peso?p.peso+' kg':'—'],['Fecha de nacimiento',formatDate(p.fecha)],['Estado',p.estado||'—']].map(([k,v])=>`<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v}</span></div>`).join('');
-document.getElementById('d-contacto').innerHTML=[['Contacto',p.contacto?`${p.contacto} (${p.relacion})`:'—'],['Teléfono',p.telefono||'—'],['Representante',p.representante||'—'],['Interés estimado',p.interes||'—']].map(([k,v])=>`<div class="detail-row"><span class="dk">${k}</span><span class="dv">${v}</span></div>`).join('');
-renderVisits(p); document.getElementById('v-fecha').value=''; document.getElementById('v-partido').value=''; document.getElementById('v-nota').value=''; showPage('detail'); };
+/* ── NUEVO JUGADOR ── */
+window.openNew = function(){
+  currentId=null;
+  document.getElementById('form-title').textContent='Nuevo jugador';
+  document.getElementById('btn-delete').style.display='none';
+  ['nombre','fecha','club','telefono','contacto','representante','altura','peso'].forEach(k=>document.getElementById('f-'+k).value='');
+  document.getElementById('f-posicion').value='Mediocampista';
+  document.getElementById('f-pie').value='Derecho';
+  document.getElementById('f-estado').value='Activo';
+  document.getElementById('f-relacion').value='Padre/Madre';
+  document.getElementById('f-interes').value='Desconocido';
+  document.getElementById('f-cat-main').value='Cadete';
+  updateSubcats('f-cat-sub','f-cat-main');
+  document.getElementById('f-ojeo-main').value='Cadete';
+  updateSubcats('f-ojeo-sub','f-ojeo-main');
+  ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=5;updateSlider(k);});
+  showPage('form');
+  setTimeout(()=>document.getElementById('f-nombre').focus(),100);
+};
 
-function renderVisits(p){ const vis=(p.visitas||[]).slice().reverse(); document.getElementById('d-visitas-title').textContent=`Historial de visitas (${vis.length})`; document.getElementById('d-visitas-list').innerHTML=vis.length===0?'<p style="font-size:13px;color:var(--slateL);text-align:center;padding:12px 0">Sin visitas registradas todavía</p>':vis.map(v=>`<div class="visit-item"><div class="visit-meta">📅 ${v.fecha} · ${v.partido}</div><div class="visit-note">${v.nota||'Sin notas'}</div></div>`).join(''); }
-window.addVisit = async function(){ const fecha=document.getElementById('v-fecha').value, partido=document.getElementById('v-partido').value.trim(); if(!fecha||!partido){alert('Indica la fecha y el partido');return;} const nota=document.getElementById('v-nota').value.trim(); const p=players.find(x=>x.id===currentId); if(!p)return; const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota}],updatedAt:new Date().toISOString()}; await persistPlayer(updated); document.getElementById('v-fecha').value=''; document.getElementById('v-partido').value=''; document.getElementById('v-nota').value=''; };
+/* ── EDITAR JUGADOR ── */
+window.editCurrent = function(){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  document.getElementById('form-title').textContent='Editar jugador';
+  document.getElementById('btn-delete').style.display='inline-block';
+  document.getElementById('f-nombre').value=p.nombre||'';
+  document.getElementById('f-fecha').value=p.fecha||'';
+  document.getElementById('f-club').value=p.club||'';
+  document.getElementById('f-altura').value=p.altura||'';
+  document.getElementById('f-peso').value=p.peso||'';
+  document.getElementById('f-telefono').value=p.telefono||'';
+  document.getElementById('f-contacto').value=p.contacto||'';
+  document.getElementById('f-representante').value=p.representante||'';
+  document.getElementById('f-posicion').value=p.posicion||'Mediocampista';
+  document.getElementById('f-pie').value=p.pieDom||'Derecho';
+  document.getElementById('f-estado').value=p.estado||'Activo';
+  document.getElementById('f-relacion').value=p.relacion||'Padre/Madre';
+  document.getElementById('f-interes').value=p.interes||'Desconocido';
+  document.getElementById('f-cat-main').value=p.catMain||'Cadete';
+  updateSubcats('f-cat-sub','f-cat-main');
+  document.getElementById('f-cat-sub').value=p.catSub||'';
+  document.getElementById('f-ojeo-main').value=p.ojeoMain||'Cadete';
+  updateSubcats('f-ojeo-sub','f-ojeo-main');
+  document.getElementById('f-ojeo-sub').value=p.ojeoSub||'';
+  ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=p[k]||5;updateSlider(k);});
+  showPage('form');
+};
 
-function generateSmartSummary(p){ const a=avg(p),vis=p.visitas||[],notes=vis.map(v=>v.nota||'').filter(Boolean).join(' '),nom=p.nombre?p.nombre.split(' ')[0]:'El jugador',catLabel=p.catMain+(p.catSub?' '+p.catSub:''),ojeoLabel=p.ojeoMain?p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'',scores=[{k:'técnica',v:p.tecnica},{k:'capacidad táctica',v:p.tactica},{k:'físico y atletismo',v:p.fisico},{k:'actitud y competitividad',v:p.actitud}],strong=scores.filter(s=>s.v>=7).sort((a,b)=>b.v-a.v).map(s=>s.k),weak=scores.filter(s=>s.v<=5).sort((a,b)=>a.v-b.v).map(s=>s.k),potencial=a>=7.5?'proyección clara para el salto de categoría':a>=6?'margen de mejora interesante':'recorrido que dependerá del trabajo específico'; let p1=`${nom} es un ${p.posicion||'jugador'} de ${catLabel} en ${p.club||'su club'}, con nota global ${a}/10.`; if(strong.length>0)p1+=` Destaca en ${strong.slice(0,2).join(' y ')}.`; if(ojeoLabel)p1+=` Observado con vistas a ${ojeoLabel}.`; if(vis.length>0)p1+=` A lo largo de ${vis.length} visita${vis.length!==1?'s':''} se ha confirmado rendimiento consistente.`; let p2=''; if(notes.length>30){const sents=notes.replace(/([.!?])\s+/g,'$1|').split('|').filter(s=>s.trim().length>15); p2=`Entre los aspectos más destacados: ${sents.slice(0,3).join(' ')}`; }else{ p2=`En las visitas, ${nom} ha mostrado un comportamiento adecuado para su categoría. `+(strong.length>0?`Sus fortalezas principales: ${strong.slice(0,2).join(' y ')}.`:'Rendimiento homogéneo.'); } let p3=`Áreas de mejora: `+(weak.length>0?`conviene trabajar ${weak.slice(0,2).join(' y ')}. `:'sin carencias graves. ')+`Potencial: ${potencial}. `+(a>=7?'Recomendación: activar contacto en el próximo mercado.':'Recomendación: mantener seguimiento y reevaluar al cierre de temporada.'); return [p1,p2,p3].map(x=>`<p>${x}</p>`).join(''); }
+window.updateSlider = function(k){
+  const v=parseInt(document.getElementById('f-'+k).value);
+  const el=document.getElementById('v-'+k);
+  el.textContent=v;
+  el.style.color=rateColor(v);
+  const a=Math.round(['tecnica','tactica','fisico','actitud'].map(x=>parseInt(document.getElementById('f-'+x).value)).reduce((a,b)=>a+b,0)/4*10)/10;
+  const ng=document.getElementById('v-nota-global');
+  ng.textContent=a;
+  ng.style.color=rateColor(a);
+};
 
-window.generateReport = async function(){ const p=players.find(x=>x.id===currentId); if(!p)return; if((p.visitas||[]).length===0){alert('Añade al menos una visita para generar el informe.');return;} const btn=document.getElementById('btn-report'); btn.disabled=true; btn.textContent='⏳ Generando...'; document.getElementById('ai-generating').style.display='flex'; let summaryHTML=''; const apiKey=getApiKey(); if(apiKey){ document.getElementById('ai-status-text').textContent='La IA está analizando las notas...'; try{ const vt=(p.visitas||[]).map((v,i)=>`Visita ${i+1} (${v.fecha}) — ${v.partido}\n${v.nota||'Sin notas'}`).join('\n\n'),catLabel=p.catMain+(p.catSub?' '+p.catSub:''),ojeoLabel=p.ojeoMain?p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'no especificada',prompt=`Eres un analista de scouting de fútbol base en España (Murcia/Andalucía). Redacta un informe profesional.\n\nJUGADOR: ${p.nombre} | ${p.posicion} | ${catLabel} | Club: ${p.club} | Ojeo para: ${ojeoLabel}\nValoraciones: Técnica ${p.tecnica} | Táctica ${p.tactica} | Físico ${p.fisico} | Actitud ${p.actitud} | Global: ${avg(p)}/10\n\nVISITAS:\n${vt}\n\n3 párrafos sin títulos: 1) Perfil y estilo 2) Fortalezas y momentos destacados 3) Áreas de mejora y potencial para la categoría objetivo. Español, tercera persona, 220-270 palabras.`; const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,messages:[{role:'user',content:prompt}]})}); const data=await res.json(); if(data.error)throw new Error(data.error.message); summaryHTML=data.content?.[0]?.text.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')||''; }catch(e){ summaryHTML=generateSmartSummary(p); } }else{ document.getElementById('ai-status-text').textContent='Generando análisis automático...'; await new Promise(r=>setTimeout(r,700)); summaryHTML=generateSmartSummary(p); } document.getElementById('ai-generating').style.display='none'; btn.disabled=false; btn.textContent='📄 Generar informe'; openReportWindow(p,summaryHTML); };
+/* ── GUARDAR JUGADOR ── */
+window.savePlayer = async function(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  if(!nombre){showToast('⚠️ El nombre es obligatorio');document.getElementById('f-nombre').focus();return;}
 
-function openReportWindow(p,summaryHTML){ const a=avg(p),rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626',fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}},vis=p.visitas||[],catLabel=p.catMain+(p.catSub?' · '+p.catSub:''),ojeoLabel=p.ojeoMain+(p.ojeoSub?' · '+p.ojeoSub:''),scoreBoxes=[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:system-ui">${l}</div><div style="font-size:28px;font-weight:800;color:${rc(v)};font-family:system-ui;line-height:1">${v}</div><div style="margin-top:6px;height:4px;border-radius:2px;background:#f1f5f9"><div style="height:4px;border-radius:2px;background:${rc(v)};width:${v*10}%"></div></div></div>`).join(''),ir=(k,v)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f8fafc;font-family:system-ui;font-size:13px"><span style="color:#64748b">${k}</span><span style="font-weight:600;color:#1e293b">${v}</span></div>`,vHTML=vis.map((v,i)=>`<div style="display:flex;gap:0;margin-bottom:0"><div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:system-ui;flex-shrink:0">${i+1}</div>${i<vis.length-1?'<div style="width:1px;flex:1;background:#e2e8f0;margin:4px 0;min-height:16px"></div>':''}</div><div style="flex:1;padding-left:14px;padding-bottom:${i<vis.length-1?'20':'0'}px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#0B0F1A;font-family:system-ui">${v.partido}</span><span style="font-size:11px;color:#64748b;font-family:system-ui;background:#f1f5f9;padding:2px 8px;border-radius:4px">${v.fecha}</span></div><p style="font-size:13.5px;color:#374151;line-height:1.7;font-family:system-ui">${v.nota||'Sin notas'}</p></div></div>`).join('');
-const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Scout — ${p.nombre||'Jugador'}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:12mm;size:A4}.pbtns{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:8px}.pbtns button{font-family:'Inter',system-ui;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;border:none;font-weight:700}@media print{.pbtns{display:none!important}body{background:#fff}}</style></head><body>
+  // Detección de duplicados (solo al crear)
+  if(!currentId){
+    const dup=players.find(p=>p.nombre&&p.nombre.toLowerCase().trim()===nombre.toLowerCase());
+    if(dup){
+      const proceed = await new Promise(resolve=>{
+        showConfirm('Posible duplicado',`Ya existe un jugador llamado "${dup.nombre}" en ${dup.club||'sin club'}. ¿Quieres crear otro de todas formas?`,()=>resolve(true),'Crear igualmente');
+        // Si cierra sin confirmar, resolve false
+        const observer = new MutationObserver(()=>{ if(!document.querySelector('.confirm-overlay')){observer.disconnect();resolve(false);} });
+        observer.observe(document.body,{childList:true});
+      });
+      if(!proceed) return;
+    }
+  }
+
+  const btn=document.getElementById('btn-save');
+  btn.disabled=true; btn.textContent='Guardando...';
+  const p={
+    id:currentId||Date.now().toString(),
+    nombre,
+    fecha:document.getElementById('f-fecha').value,
+    club:document.getElementById('f-club').value.trim(),
+    catMain:document.getElementById('f-cat-main').value,
+    catSub:document.getElementById('f-cat-sub').value,
+    ojeoMain:document.getElementById('f-ojeo-main').value,
+    ojeoSub:document.getElementById('f-ojeo-sub').value,
+    posicion:document.getElementById('f-posicion').value,
+    pieDom:document.getElementById('f-pie').value,
+    altura:document.getElementById('f-altura').value,
+    peso:document.getElementById('f-peso').value,
+    estado:document.getElementById('f-estado').value,
+    tecnica:parseInt(document.getElementById('f-tecnica').value),
+    tactica:parseInt(document.getElementById('f-tactica').value),
+    fisico:parseInt(document.getElementById('f-fisico').value),
+    actitud:parseInt(document.getElementById('f-actitud').value),
+    telefono:document.getElementById('f-telefono').value.trim(),
+    contacto:document.getElementById('f-contacto').value.trim(),
+    relacion:document.getElementById('f-relacion').value,
+    representante:document.getElementById('f-representante').value.trim(),
+    interes:document.getElementById('f-interes').value,
+    visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],
+    updatedAt:new Date().toISOString()
+  };
+  await persistPlayer(p);
+  btn.disabled=false; btn.textContent='Guardar jugador';
+  currentId=p.id;
+  showToast('✓ Jugador guardado');
+  openDetail(p.id);
+};
+
+/* ── ELIMINAR JUGADOR ── */
+window.deletePlayer = function(){
+  const p=players.find(x=>x.id===currentId);
+  showConfirm('Eliminar jugador',`¿Seguro que quieres eliminar a ${p?p.nombre:'este jugador'}? Esta acción no se puede deshacer.`,async()=>{
+    await removePlayer(currentId);
+    currentId=null;
+    showPage('list');
+    showToast('Jugador eliminado');
+  },'Eliminar',true);
+};
+
+window.goBack = function(){
+  if(currentId){openDetail(currentId);}else{showPage('list');}
+};
+
+/* ── VER DETALLE ── */
+window.openDetail = function(id){
+  currentId=id;
+  const p=players.find(x=>x.id===id);
+  if(!p)return;
+  const a=avg(p);
+  document.getElementById('d-avatar').textContent=ini(p.nombre);
+  document.getElementById('d-nombre').textContent=p.nombre||'Sin nombre';
+  document.getElementById('d-sub').textContent=[p.posicion,p.club].filter(Boolean).join(' · ')||'—';
+  document.getElementById('d-badge').className=badgeClass(p.estado);
+  document.getElementById('d-badge').textContent=p.estado;
+  document.getElementById('d-nota').textContent=a;
+  document.getElementById('d-nota').style.color=rateColor(a);
+
+  const chips=[[p.catMain+(p.catSub?' · '+p.catSub:''),'rgba(255,255,255,.1)','#cbd5e1'],[p.ojeoMain?'Ojeo: '+p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'','rgba(124,58,237,.2)','#c4b5fd'],[p.pieDom,'rgba(255,255,255,.07)','#94a3b8'],[p.fecha?'Nac. '+formatDate(p.fecha):'','rgba(255,255,255,.07)','#94a3b8']].filter(c=>c[0]);
+  document.getElementById('d-chips').innerHTML=chips.map(([t,bg,col])=>`<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:500">${esc(t)}</span>`).join('');
+
+  [['tec','tecnica'],['tac','tactica'],['fis','fisico'],['act','actitud']].forEach(([id,k])=>{
+    document.getElementById('d-'+id).textContent=p[k]||0;
+    document.getElementById('d-'+id).style.color=rateColor(p[k]||0);
+  });
+
+  document.getElementById('d-ficha').innerHTML=[
+    ['Posición',p.posicion||'—'],['Pie dominante',p.pieDom||'—'],
+    ['Categoría del jugador',p.catMain+(p.catSub?' · '+p.catSub:'')],
+    ['Categoría de ojeo',p.ojeoMain+(p.ojeoSub?' · '+p.ojeoSub:'')],
+    ['Altura',p.altura?p.altura+' cm':'—'],['Peso',p.peso?p.peso+' kg':'—'],
+    ['Fecha de nacimiento',formatDate(p.fecha)],['Estado',p.estado||'—']
+  ].map(([k,v])=>`<div class="detail-row"><span class="dk">${esc(k)}</span><span class="dv">${esc(v)}</span></div>`).join('');
+
+  document.getElementById('d-contacto').innerHTML=[
+    ['Contacto',p.contacto?`${p.contacto} (${p.relacion})`:'—'],
+    ['Teléfono',p.telefono||'—'],['Representante',p.representante||'—'],
+    ['Interés estimado',p.interes||'—']
+  ].map(([k,v])=>`<div class="detail-row"><span class="dk">${esc(k)}</span><span class="dv">${esc(v)}</span></div>`).join('');
+
+  renderVisits(p);
+  // Predeterminar fecha de hoy en el campo de nueva visita
+  document.getElementById('v-fecha').value=todayISO();
+  document.getElementById('v-partido').value='';
+  document.getElementById('v-nota').value='';
+  showPage('detail');
+};
+
+/* ── VISITAS ── */
+function renderVisits(p){
+  const vis=(p.visitas||[]).slice().reverse();
+  document.getElementById('d-visitas-title').textContent=`Historial de visitas (${vis.length})`;
+  if(!vis.length){
+    document.getElementById('d-visitas-list').innerHTML='<p style="font-size:13px;color:var(--slateL);text-align:center;padding:12px 0">Sin visitas registradas todavía</p>';
+    return;
+  }
+  document.getElementById('d-visitas-list').innerHTML=vis.map(v=>
+    `<div class="visit-item">
+      <div class="visit-meta">
+        <span>📅 ${esc(v.fecha)} · ${esc(v.partido)}</span>
+        <button class="visit-delete" onclick="event.stopPropagation();deleteVisit('${v.id}')">✕ Eliminar</button>
+      </div>
+      <div class="visit-note">${esc(v.nota)||'Sin notas'}</div>
+    </div>`
+  ).join('');
+}
+
+window.addVisit = async function(){
+  const fecha=document.getElementById('v-fecha').value,
+    partido=document.getElementById('v-partido').value.trim();
+  if(!fecha||!partido){showToast('⚠️ Indica la fecha y el partido');return;}
+  const nota=document.getElementById('v-nota').value.trim();
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota}],updatedAt:new Date().toISOString()};
+  await persistPlayer(updated);
+  document.getElementById('v-fecha').value=todayISO();
+  document.getElementById('v-partido').value='';
+  document.getElementById('v-nota').value='';
+  showToast('✓ Visita añadida');
+};
+
+window.deleteVisit = function(visitId){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  const v=(p.visitas||[]).find(x=>x.id===visitId);
+  showConfirm('Eliminar visita',`¿Eliminar la visita del ${v?v.fecha:''} (${v?v.partido:''})?`,async()=>{
+    const updated={...p,visitas:(p.visitas||[]).filter(x=>x.id!==visitId),updatedAt:new Date().toISOString()};
+    await persistPlayer(updated);
+    showToast('Visita eliminada');
+  },'Eliminar',true);
+};
+
+/* ── RESUMEN INTELIGENTE (FALLBACK SIN IA) ── */
+function generateSmartSummary(p){
+  const a=avg(p),vis=p.visitas||[],notes=vis.map(v=>v.nota||'').filter(Boolean).join(' '),
+    nom=p.nombre?p.nombre.split(' ')[0]:'El jugador',
+    catLabel=p.catMain+(p.catSub?' '+p.catSub:''),
+    ojeoLabel=p.ojeoMain?p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'',
+    scores=[{k:'técnica',v:p.tecnica},{k:'capacidad táctica',v:p.tactica},{k:'físico y atletismo',v:p.fisico},{k:'actitud y competitividad',v:p.actitud}],
+    strong=scores.filter(s=>s.v>=7).sort((a,b)=>b.v-a.v).map(s=>s.k),
+    weak=scores.filter(s=>s.v<=5).sort((a,b)=>a.v-b.v).map(s=>s.k),
+    potencial=a>=7.5?'proyección clara para el salto de categoría':a>=6?'margen de mejora interesante':'recorrido que dependerá del trabajo específico';
+  let p1=`${nom} es un ${p.posicion||'jugador'} de ${catLabel} en ${p.club||'su club'}, con nota global ${a}/10.`;
+  if(strong.length>0)p1+=` Destaca en ${strong.slice(0,2).join(' y ')}.`;
+  if(ojeoLabel)p1+=` Observado con vistas a ${ojeoLabel}.`;
+  if(vis.length>0)p1+=` A lo largo de ${vis.length} visita${vis.length!==1?'s':''} se ha confirmado rendimiento consistente.`;
+  let p2='';
+  if(notes.length>30){const sents=notes.replace(/([.!?])\s+/g,'$1|').split('|').filter(s=>s.trim().length>15); p2=`Entre los aspectos más destacados: ${sents.slice(0,3).join(' ')}`;}
+  else{p2=`En las visitas, ${nom} ha mostrado un comportamiento adecuado para su categoría. `+(strong.length>0?`Sus fortalezas principales: ${strong.slice(0,2).join(' y ')}.`:'Rendimiento homogéneo.');}
+  let p3=`Áreas de mejora: `+(weak.length>0?`conviene trabajar ${weak.slice(0,2).join(' y ')}. `:'sin carencias graves. ')+`Potencial: ${potencial}. `+(a>=7?'Recomendación: activar contacto en el próximo mercado.':'Recomendación: mantener seguimiento y reevaluar al cierre de temporada.');
+  return [p1,p2,p3].map(x=>`<p>${x}</p>`).join('');
+}
+
+/* ── GENERAR INFORME ── */
+window.generateReport = async function(){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  if((p.visitas||[]).length===0){showToast('⚠️ Añade al menos una visita para generar el informe.');return;}
+  const btn=document.getElementById('btn-report');
+  btn.disabled=true; btn.textContent='⏳ Generando...';
+  document.getElementById('ai-generating').style.display='flex';
+  let summaryHTML='';
+  const apiKey=getApiKey();
+  if(apiKey){
+    document.getElementById('ai-status-text').textContent='La IA está analizando las notas...';
+    try{
+      const vt=(p.visitas||[]).map((v,i)=>`Visita ${i+1} (${v.fecha}) — ${v.partido}\n${v.nota||'Sin notas'}`).join('\n\n'),
+        catLabel=p.catMain+(p.catSub?' '+p.catSub:''),
+        ojeoLabel=p.ojeoMain?p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:''):'no especificada',
+        prompt=`Eres un analista de scouting de fútbol base en España (Murcia/Andalucía). Redacta un informe profesional.\n\nJUGADOR: ${p.nombre} | ${p.posicion} | ${catLabel} | Club: ${p.club} | Ojeo para: ${ojeoLabel}\nValoraciones: Técnica ${p.tecnica} | Táctica ${p.tactica} | Físico ${p.fisico} | Actitud ${p.actitud} | Global: ${avg(p)}/10\n\nVISITAS:\n${vt}\n\n3 párrafos sin títulos: 1) Perfil y estilo 2) Fortalezas y momentos destacados 3) Áreas de mejora y potencial para la categoría objetivo. Español, tercera persona, 220-270 palabras.`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      if(data.error)throw new Error(data.error.message);
+      summaryHTML=data.content?.[0]?.text.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')||'';
+    }catch(e){
+      console.warn('AI fallback:',e.message);
+      summaryHTML=generateSmartSummary(p);
+    }
+  } else {
+    document.getElementById('ai-status-text').textContent='Generando análisis automático...';
+    await new Promise(r=>setTimeout(r,700));
+    summaryHTML=generateSmartSummary(p);
+  }
+  document.getElementById('ai-generating').style.display='none';
+  btn.disabled=false; btn.textContent='📄 Generar informe';
+  openReportWindow(p,summaryHTML);
+};
+
+/* ── VENTANA DE INFORME ── */
+function openReportWindow(p,summaryHTML){
+  const a=avg(p),
+    rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626',
+    fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}},
+    vis=p.visitas||[],
+    catLabel=(p.catMain||'')+(p.catSub?' · '+p.catSub:''),
+    ojeoLabel=(p.ojeoMain||'')+(p.ojeoSub?' · '+p.ojeoSub:'');
+
+  const scoreBoxes=[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:system-ui">${l}</div><div style="font-size:28px;font-weight:800;color:${rc(v)};font-family:system-ui;line-height:1">${v}</div><div style="margin-top:6px;height:4px;border-radius:2px;background:#f1f5f9"><div style="height:4px;border-radius:2px;background:${rc(v)};width:${v*10}%"></div></div></div>`).join('');
+
+  const ir=(k,v)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f8fafc;font-family:system-ui;font-size:13px"><span style="color:#64748b">${k}</span><span style="font-weight:600;color:#1e293b">${v}</span></div>`;
+
+  const vHTML=vis.map((v,i)=>`<div style="display:flex;gap:0;margin-bottom:0"><div style="display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0"><div style="width:28px;height:28px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:system-ui;flex-shrink:0">${i+1}</div>${i<vis.length-1?'<div style="width:1px;flex:1;background:#e2e8f0;margin:4px 0;min-height:16px"></div>':''}</div><div style="flex:1;padding-left:14px;padding-bottom:${i<vis.length-1?'20':'0'}px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:#0B0F1A;font-family:system-ui">${esc(v.partido)}</span><span style="font-size:11px;color:#64748b;font-family:system-ui;background:#f1f5f9;padding:2px 8px;border-radius:4px">${esc(v.fecha)}</span></div><p style="font-size:13.5px;color:#374151;line-height:1.7;font-family:system-ui;white-space:pre-wrap">${esc(v.nota)||'Sin notas'}</p></div></div>`).join('');
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe Scout — ${esc(p.nombre)||'Jugador'}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:12mm;size:A4}.pbtns{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:8px}.pbtns button{font-family:'Inter',system-ui;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;border:none;font-weight:700}@media print{.pbtns{display:none!important}body{background:#fff}}</style></head><body>
 <div class="pbtns"><button onclick="window.print()" style="background:#7C3AED;color:#fff">🖨️ Guardar como PDF</button><button onclick="window.close()" style="background:#fff;color:#374151;border:1px solid #d1d5db">✕ Cerrar</button></div>
 <div style="background:#0B0F1A;color:#fff;position:relative;overflow:hidden">
   <div style="height:5px;background:linear-gradient(90deg,#7C3AED,#8B5CF6,#A78BFA)"></div>
@@ -611,9 +1119,9 @@ const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>In
     <div style="width:68px;height:68px;border-radius:16px;background:rgba(124,58,237,.2);border:2px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#c4b5fd;font-family:'Syne',system-ui;flex-shrink:0">${ini(p.nombre)}</div>
     <div style="flex:1">
       <div style="font-size:10px;letter-spacing:.14em;color:#94a3b8;text-transform:uppercase;font-family:'Inter',system-ui;margin-bottom:8px;font-weight:600">Informe de Scouting · MM Talent Sport</div>
-      <div style="font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;font-family:'Syne',system-ui">${p.nombre||'Jugador sin nombre'}</div>
-      <div style="font-size:14px;color:#94a3b8;font-family:'Inter',system-ui;margin-bottom:16px">${p.posicion||'—'} &nbsp;·&nbsp; ${p.club||'—'} &nbsp;·&nbsp; ${catLabel}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">${[p.pieDom,p.altura?p.altura+' cm':'',p.fecha?'Nac. '+fd(p.fecha):'',`Ojeo: ${ojeoLabel}`,p.estado,vis.length+' visita'+(vis.length!==1?'s':'')].filter(Boolean).map(c=>`<span style="font-size:11px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.08);color:#cbd5e1;font-family:'Inter',system-ui;font-weight:500">${c}</span>`).join('')}</div>
+      <div style="font-size:30px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;font-family:'Syne',system-ui">${esc(p.nombre)||'Jugador sin nombre'}</div>
+      <div style="font-size:14px;color:#94a3b8;font-family:'Inter',system-ui;margin-bottom:16px">${esc(p.posicion)||'—'} &nbsp;·&nbsp; ${esc(p.club)||'—'} &nbsp;·&nbsp; ${esc(catLabel)}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">${[p.pieDom,p.altura?p.altura+' cm':'',p.fecha?'Nac. '+fd(p.fecha):'',`Ojeo: ${ojeoLabel}`,p.estado,vis.length+' visita'+(vis.length!==1?'s':'')].filter(Boolean).map(c=>`<span style="font-size:11px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.08);color:#cbd5e1;font-family:'Inter',system-ui;font-weight:500">${esc(c)}</span>`).join('')}</div>
     </div>
     <div style="text-align:center;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.35);border-radius:14px;padding:16px 20px;flex-shrink:0">
       <div style="font-size:10px;letter-spacing:.1em;color:#c4b5fd;text-transform:uppercase;font-family:'Inter',system-ui;margin-bottom:4px;font-weight:700">Nota global</div>
@@ -626,18 +1134,30 @@ const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>In
 <div style="max-width:780px;margin:0 auto;padding:36px 48px">
   <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${scoreBoxes}</div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px">
-    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Datos del jugador</div>${ir('Posición',p.posicion||'—')}${ir('Categoría',catLabel)}${ir('Ojeo para',ojeoLabel)}${ir('Club actual',p.club||'—')}${ir('Pie dominante',p.pieDom||'—')}${ir('Altura',p.altura?p.altura+' cm':'—')}${ir('Peso',p.peso?p.peso+' kg':'—')}${ir('Nacimiento',fd(p.fecha))}${ir('Estado',p.estado||'—')}</div>
-    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Contacto y entorno</div>${ir('Contacto',p.contacto||'—')}${ir('Relación',p.relacion||'—')}${ir('Teléfono',p.telefono||'—')}${ir('Representante',p.representante||'—')}${ir('Interés',p.interes||'—')}</div>
+    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Datos del jugador</div>${ir('Posición',esc(p.posicion)||'—')}${ir('Categoría',esc(catLabel))}${ir('Ojeo para',esc(ojeoLabel))}${ir('Club actual',esc(p.club)||'—')}${ir('Pie dominante',esc(p.pieDom)||'—')}${ir('Altura',p.altura?p.altura+' cm':'—')}${ir('Peso',p.peso?p.peso+' kg':'—')}${ir('Nacimiento',fd(p.fecha))}${ir('Estado',esc(p.estado)||'—')}</div>
+    <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Contacto y entorno</div>${ir('Contacto',esc(p.contacto)||'—')}${ir('Relación',esc(p.relacion)||'—')}${ir('Teléfono',esc(p.telefono)||'—')}${ir('Representante',esc(p.representante)||'—')}${ir('Interés',esc(p.interes)||'—')}</div>
   </div>
   <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Análisis del scout</div><div style="background:#F5F3FF;border-left:4px solid #7C3AED;padding:22px 24px;border-radius:0 10px 10px 0"><div style="font-size:14.5px;line-height:1.9;color:#1e293b;font-family:'Inter',system-ui">${summaryHTML}</div></div></div>
   ${vis.length>0?`<div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:20px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Historial de seguimiento — ${vis.length} visita${vis.length!==1?'s':''}</div>${vHTML}</div>`:''}
 </div>
 <div style="background:#0B0F1A;padding:16px 48px;display:flex;justify-content:space-between;align-items:center">
-  <span style="font-size:11px;color:#475569;font-family:'Inter',system-ui">Generado el ${today()}</span>
+  <span style="font-size:11px;color:#475569;font-family:'Inter',system-ui">Generado el ${todayStr()}</span>
   <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#7C3AED"></div><span style="font-size:12px;color:#64748b;font-family:'Inter',system-ui;font-weight:600">MM Talent Sport · Scouting · Murcia / Andalucía</span></div>
 </div>
 </body></html>`;
-const win=window.open('','_blank','width=920,height=800,scrollbars=yes'); if(!win){alert('Permite ventanas emergentes.');return;} win.document.write(html); win.document.close(); }
+  const win=window.open('','_blank','width=920,height=800,scrollbars=yes');
+  if(!win){showToast('⚠️ Permite ventanas emergentes para ver el informe.');return;}
+  win.document.write(html);
+  win.document.close();
+}
+
+/* ── ATAJOS DE TECLADO ── */
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    const overlay=document.querySelector('.confirm-overlay');
+    if(overlay){overlay.remove();return;}
+  }
+});
 
 window.showPage=showPage;
 </script>
