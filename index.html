@@ -288,26 +288,38 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .evo-card canvas { max-height:200px; }
 
 /* ── COMPARE ── */
-.cmp-selectors { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:start; margin-bottom:24px; }
-.cmp-selector { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:18px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
-.cmp-selector select { font-size:13px; margin-bottom:10px; }
-.cmp-vs { display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--purple3); padding-top:30px; }
+.cmp-selectors { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:flex-start; }
+.cmp-selector { flex:1; min-width:180px; background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:14px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.cmp-selector select { font-size:12px; margin-bottom:8px; }
+.cmp-selector-preview { text-align:center; font-size:11px; color:var(--slateL); padding:4px 0; }
+.cmp-add-btn { display:flex; align-items:center; justify-content:center; min-width:50px; background:#fff; border:2px dashed var(--borderL); border-radius:14px; padding:14px; cursor:pointer; color:var(--slateL); font-size:24px; transition:all .2s; }
+.cmp-add-btn:hover { border-color:var(--purple); color:var(--purple); }
 .cmp-result { display:none; }
 .cmp-result.active { display:block; }
-.cmp-hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-.cmp-hero-card { background:linear-gradient(135deg,var(--navy),#160b2e); border-radius:14px; padding:24px; text-align:center; position:relative; overflow:hidden; }
+.cmp-hero-grid { display:grid; gap:12px; margin-bottom:16px; }
+.cmp-hero-card { background:linear-gradient(135deg,var(--navy),#160b2e); border-radius:14px; padding:20px; text-align:center; position:relative; overflow:hidden; }
 .cmp-hero-card::after { content:''; position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:rgba(124,58,237,.1); }
-.cmp-hero-card.b { background:linear-gradient(135deg,#0c1a2e,#0a1628); }
-.cmp-hero-card.b::after { background:rgba(59,130,246,.1); }
 .cmp-bars { margin-bottom:16px; }
-.cmp-bar-row { display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin-bottom:10px; }
-.cmp-bar-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); text-align:center; }
-.cmp-bar { height:28px; border-radius:8px; display:flex; align-items:center; padding:0 10px; font-size:13px; font-weight:800; font-family:'Syne',sans-serif; color:#fff; transition:width .6s ease; }
-.cmp-bar.left { justify-content:flex-end; background:linear-gradient(90deg,rgba(124,58,237,.2),var(--purple)); margin-left:auto; }
-.cmp-bar.right { justify-content:flex-start; background:linear-gradient(90deg,#3B82F6,rgba(59,130,246,.2)); }
-.cmp-bar.winner { box-shadow:0 0 12px rgba(124,58,237,.3); }
+.cmp-bar-row { margin-bottom:12px; }
+.cmp-bar-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); margin-bottom:4px; }
+.cmp-bar-track { display:flex; gap:3px; }
+.cmp-bar-seg { height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; font-family:'Syne',sans-serif; color:#fff; transition:width .5s ease; min-width:28px; }
 .cmp-radar-wrap { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.04); margin-bottom:16px; }
 .cmp-radar-wrap canvas { max-height:300px; }
+.cmp-ai-box { background:linear-gradient(135deg,#F5F3FF,#EDE9FE); border:1px solid #DDD6FE; border-radius:14px; padding:20px; margin-bottom:16px; }
+
+/* ── PHOTO UPLOAD ── */
+.photo-upload { display:flex; align-items:center; gap:16px; }
+.photo-preview { width:80px; height:80px; border-radius:14px; background:#F1F5F9; border:2px dashed var(--borderL); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; cursor:pointer; transition:all .2s; position:relative; }
+.photo-preview:hover { border-color:var(--purple); }
+.photo-preview img { width:100%; height:100%; object-fit:cover; border-radius:12px; }
+.photo-preview-empty { font-size:28px; opacity:.3; }
+.photo-remove { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#DC2626; color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #fff; line-height:1; }
+.photo-hint { font-size:11px; color:var(--slate); }
+
+/* ── SHARE ── */
+.share-link-box { display:flex; gap:8px; align-items:center; margin-top:10px; }
+.share-link-box input { flex:1; font-size:12px; background:#F1F5F9; }
 
 @media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
@@ -323,9 +335,8 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .hero { padding:24px 16px; }
   .container { padding:16px; }
   .dash-grid { grid-template-columns:1fr; }
-  .cmp-selectors { grid-template-columns:1fr; }
-  .cmp-vs { padding:0; font-size:20px; }
-  .cmp-hero-grid { grid-template-columns:1fr; }
+  .cmp-selectors { flex-direction:column; }
+  .cmp-hero-grid { grid-template-columns:1fr 1fr; }
 }
 @media(max-width:480px) {
   .hero-stats { grid-template-columns:repeat(2,1fr); }
@@ -560,26 +571,9 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     </div>
   </div>
   <div class="container">
-    <div class="cmp-selectors">
-      <div class="cmp-selector">
-        <select id="cmp-player-a" onchange="runCompare()">
-          <option value="">Selecciona jugador A</option>
-        </select>
-        <div id="cmp-preview-a" style="text-align:center;color:var(--slateL);font-size:12px;padding:8px 0">—</div>
-      </div>
-      <div class="cmp-vs">VS</div>
-      <div class="cmp-selector">
-        <select id="cmp-player-b" onchange="runCompare()">
-          <option value="">Selecciona jugador B</option>
-        </select>
-        <div id="cmp-preview-b" style="text-align:center;color:var(--slateL);font-size:12px;padding:8px 0">—</div>
-      </div>
-    </div>
+    <div class="cmp-selectors" id="cmp-selectors"></div>
     <div class="cmp-result" id="cmp-result">
-      <div class="cmp-hero-grid">
-        <div class="cmp-hero-card" id="cmp-card-a"></div>
-        <div class="cmp-hero-card b" id="cmp-card-b"></div>
-      </div>
+      <div class="cmp-hero-grid" id="cmp-heroes"></div>
       <div class="cmp-radar-wrap">
         <div class="dash-card-title">Radar comparativo</div>
         <canvas id="chart-compare-radar"></canvas>
@@ -591,6 +585,15 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div class="card">
         <div class="card-title">Datos comparados</div>
         <div id="cmp-table"></div>
+      </div>
+      <div class="cmp-ai-box" id="cmp-ai-box" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em">🤖 Recomendación IA</div>
+        </div>
+        <div id="cmp-ai-text" style="font-size:13px;color:var(--text2);line-height:1.7"></div>
+      </div>
+      <div style="text-align:center;padding:8px 0">
+        <button class="btn-primary" id="btn-cmp-ai" onclick="compareAI()">🤖 ¿Cuál es la mejor opción?</button>
       </div>
     </div>
   </div>
@@ -606,6 +609,19 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     <div class="card">
       <div class="card-title">01 — Ficha técnica</div>
       <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Foto del jugador</label>
+          <div class="photo-upload">
+            <div class="photo-preview" id="f-photo-preview" onclick="document.getElementById('f-photo-input').click()">
+              <span class="photo-preview-empty" id="f-photo-empty">📷</span>
+            </div>
+            <div>
+              <button type="button" onclick="document.getElementById('f-photo-input').click()" style="font-size:12px;padding:6px 12px">Subir foto</button>
+              <input type="file" id="f-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+              <div class="photo-hint">JPG o PNG, máx. 500KB. Se redimensiona automáticamente.</div>
+            </div>
+          </div>
+        </div>
         <div class="form-group full"><label class="form-label">Nombre completo *</label><input id="f-nombre" placeholder="Ej: Alejandro García López" required></div>
         <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input id="f-fecha" type="date"></div>
         <div class="form-group"><label class="form-label">Posición principal</label>
@@ -674,8 +690,18 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <button onclick="showPage('list')">← Lista</button>
       <button onclick="editCurrent()">✏️ Editar</button>
       <button class="btn-navy" id="btn-report" onclick="generateReport()">📄 Generar informe</button>
+      <button onclick="shareReport()">🔗 Compartir</button>
       <span style="flex:1"></span>
       <span class="badge" id="d-badge"></span>
+    </div>
+    <div id="d-share-box" style="display:none;margin-bottom:16px">
+      <div class="card" style="background:#F5F3FF;border-color:#DDD6FE">
+        <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px">🔗 Enlace para compartir (válido 30 días)</div>
+        <div class="share-link-box">
+          <input type="text" id="d-share-url" readonly style="font-size:11px">
+          <button onclick="copyShareLink()" style="font-size:11px;padding:6px 12px;white-space:nowrap">📋 Copiar</button>
+        </div>
+      </div>
     </div>
     <div class="detail-hero">
       <div class="detail-hero-inner">
@@ -748,6 +774,20 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 </div>
 
 <div id="toast">✓ Guardado</div>
+
+<!-- SHARED REPORT VIEWER -->
+<div id="page-shared" class="page">
+  <div style="max-width:760px;margin:0 auto;padding:24px">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--purple2));border-radius:10px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#fff">MM</span></div>
+        <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text)">MM <span style="color:var(--purple)">TALENT</span> SPORT</span>
+      </div>
+      <div style="font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.1em">Informe compartido</div>
+    </div>
+    <div id="shared-content"></div>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -994,6 +1034,8 @@ async function removePlayer(id){
 
 /* ── AUTH STATE ── */
 onAuthStateChanged(auth, async user=>{
+  // Check if this is a shared report link
+  if(await checkSharedReport()) return;
   // Transición desde loading
   if(document.getElementById('page-loading').classList.contains('active')){
     await new Promise(r=>setTimeout(r,1000)); // esperar animación
@@ -1087,7 +1129,7 @@ function renderList(){
       catLabel=p.catMain?`${esc(p.catMain)}${p.catSub?' · '+esc(p.catSub):''}`:'—',
       ojeoLabel=p.ojeoMain?`Ojeo: ${esc(p.ojeoMain)}${p.ojeoSub?' '+esc(p.ojeoSub):''}`:'';
     return `<div class="player-row" onclick="openDetail('${p.id}')">
-      <div class="avatar">${ini(p.nombre)}</div>
+      <div class="avatar">${p.foto?`<img src="${p.foto}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`:ini(p.nombre)}</div>
       <div class="player-info">
         <div class="player-name">${esc(p.nombre)||'Sin nombre'}</div>
         <div class="player-sub">${[esc(p.posicion),esc(p.club),catLabel].filter(Boolean).join(' · ')||'—'}${ojeoLabel?` <span style="color:var(--purple);font-weight:600">· ${ojeoLabel}</span>`:''}</div>
@@ -1139,6 +1181,9 @@ window.openNew = function(){
   updateSubcats('f-ojeo-sub','f-ojeo-main');
   ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=5;updateSlider(k);});
   formTags=[]; renderFormTags();
+  playerPhoto='';
+  document.getElementById('f-photo-preview').innerHTML='<span class="photo-preview-empty">📷</span>';
+  document.getElementById('f-photo-input').value='';
   document.getElementById('f-notas-privadas').value='';
   showPage('form');
   setTimeout(()=>document.getElementById('f-nombre').focus(),100);
@@ -1171,6 +1216,11 @@ window.editCurrent = function(){
   document.getElementById('f-ojeo-sub').value=p.ojeoSub||'';
   ['tecnica','tactica','fisico','actitud'].forEach(k=>{document.getElementById('f-'+k).value=p[k]||5;updateSlider(k);});
   formTags=[...(p.tags||[])]; renderFormTags();
+  playerPhoto=p.foto||'';
+  const prev=document.getElementById('f-photo-preview');
+  if(playerPhoto){prev.innerHTML=`<img src="${playerPhoto}"><span class="photo-remove" onclick="event.stopPropagation();removePhoto()">✕</span>`;}
+  else{prev.innerHTML='<span class="photo-preview-empty">📷</span>';}
+  document.getElementById('f-photo-input').value='';
   document.getElementById('f-notas-privadas').value=p.notasPrivadas||'';
   showPage('form');
 };
@@ -1231,6 +1281,7 @@ window.savePlayer = async function(){
     representante:document.getElementById('f-representante').value.trim(),
     interes:document.getElementById('f-interes').value,
     tags:[...formTags],
+    foto:playerPhoto,
     notasPrivadas:document.getElementById('f-notas-privadas').value.trim(),
     visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],
     updatedAt:new Date().toISOString()
@@ -1263,9 +1314,10 @@ window.openDetail = function(id){
   const p=players.find(x=>x.id===id);
   if(!p)return;
   const a=avg(p);
-  document.getElementById('d-avatar').textContent=ini(p.nombre);
+  document.getElementById('d-avatar').innerHTML=p.foto?`<img src="${p.foto}" style="width:100%;height:100%;object-fit:cover;border-radius:14px">`:ini(p.nombre);
   document.getElementById('d-nombre').textContent=p.nombre||'Sin nombre';
   document.getElementById('d-sub').textContent=[p.posicion,p.club].filter(Boolean).join(' · ')||'—';
+  document.getElementById('d-share-box').style.display='none';
   document.getElementById('d-badge').className=badgeClass(p.estado);
   document.getElementById('d-badge').textContent=p.estado;
   document.getElementById('d-nota').textContent=a;
@@ -1676,98 +1728,243 @@ function renderDashboard(){
   }
 }
 
-/* ── COMPARADOR DE JUGADORES ── */
+/* ── COMPARADOR DE JUGADORES (hasta 4) ── */
+const CMP_COLORS=['#7C3AED','#3B82F6','#10B981','#F59E0B'];
+const CMP_BG=['rgba(124,58,237,.15)','rgba(59,130,246,.15)','rgba(16,185,129,.15)','rgba(245,158,11,.15)'];
+let cmpSlots=2;
+
 window.openCompare = function(){
   if(players.length<2){showToast('⚠️ Necesitas al menos 2 jugadores para comparar');return;}
-  // Populate selectors
-  const opts='<option value="">Selecciona jugador</option>'+[...players].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).map(p=>`<option value="${p.id}">${esc(p.nombre)} — ${esc(p.posicion)} (${avg(p)})</option>`).join('');
-  document.getElementById('cmp-player-a').innerHTML=opts;
-  document.getElementById('cmp-player-b').innerHTML=opts;
-  document.getElementById('cmp-preview-a').textContent='—';
-  document.getElementById('cmp-preview-b').textContent='—';
+  cmpSlots=2;
   document.getElementById('cmp-result').classList.remove('active');
+  document.getElementById('cmp-ai-box').style.display='none';
+  renderCmpSelectors();
   showPage('compare');
 };
 
-window.runCompare = function(){
-  const idA=document.getElementById('cmp-player-a').value;
-  const idB=document.getElementById('cmp-player-b').value;
-  const pa=players.find(x=>x.id===idA);
-  const pb=players.find(x=>x.id===idB);
-
-  // Preview
-  document.getElementById('cmp-preview-a').innerHTML=pa?`<div class="avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 4px">${ini(pa.nombre)}</div>${esc(pa.club)||'—'} · ${esc(pa.catMain)||''}`:'—';
-  document.getElementById('cmp-preview-b').innerHTML=pb?`<div class="avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 4px">${ini(pb.nombre)}</div>${esc(pb.club)||'—'} · ${esc(pb.catMain)||''}`:'—';
-
-  if(!pa||!pb||idA===idB){
-    document.getElementById('cmp-result').classList.remove('active');
-    if(idA===idB&&idA)showToast('Selecciona dos jugadores diferentes');
-    return;
+function renderCmpSelectors(){
+  const opts='<option value="">Selecciona jugador</option>'+[...players].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).map(p=>`<option value="${p.id}">${esc(p.nombre)} — ${esc(p.posicion)} (${avg(p)})</option>`).join('');
+  let html='';
+  for(let i=0;i<cmpSlots;i++){
+    html+=`<div class="cmp-selector"><select id="cmp-p${i}" onchange="runCompare()">${opts}</select><div class="cmp-selector-preview" id="cmp-prev${i}">—</div></div>`;
   }
-  document.getElementById('cmp-result').classList.add('active');
+  if(cmpSlots<4){
+    html+=`<div class="cmp-add-btn" onclick="addCmpSlot()" title="Añadir jugador">+</div>`;
+  }
+  document.getElementById('cmp-selectors').innerHTML=html;
+}
 
-  const aAvg=avg(pa), bAvg=avg(pb);
+window.addCmpSlot = function(){
+  if(cmpSlots>=4)return;
+  cmpSlots++;
+  renderCmpSelectors();
+};
+
+window.runCompare = function(){
+  const selected=[];
+  for(let i=0;i<cmpSlots;i++){
+    const id=document.getElementById('cmp-p'+i)?.value;
+    const p=players.find(x=>x.id===id);
+    const prev=document.getElementById('cmp-prev'+i);
+    if(p){
+      const ph=p.foto?`<img src="${p.foto}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin:0 auto 4px;display:block">`:`<div class="avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 4px">${ini(p.nombre)}</div>`;
+      prev.innerHTML=`${ph}${esc(p.club)||'—'} · ${esc(p.catMain)||''}`;
+      selected.push(p);
+    } else if(prev){ prev.textContent='—'; }
+  }
+  // Check duplicates
+  const ids=selected.map(p=>p.id);
+  if(new Set(ids).size!==ids.length){document.getElementById('cmp-result').classList.remove('active');return;}
+  if(selected.length<2){document.getElementById('cmp-result').classList.remove('active');return;}
+  document.getElementById('cmp-result').classList.add('active');
+  document.getElementById('cmp-ai-box').style.display='none';
+
   const rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626';
+  const n=selected.length;
 
   // Hero cards
-  document.getElementById('cmp-card-a').innerHTML=`
-    <div class="avatar-lg" style="margin:0 auto 10px;background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4)">${ini(pa.nombre)}</div>
-    <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:2px">${esc(pa.nombre)}</div>
-    <div style="font-size:11px;color:var(--slateL);margin-bottom:10px">${esc(pa.posicion)} · ${esc(pa.club)||'—'}</div>
-    <div style="font-size:40px;font-weight:800;color:${rc(aAvg)};font-family:'Syne',sans-serif;line-height:1">${aAvg}</div>
-    <div style="font-size:10px;color:var(--slateL);margin-top:4px">nota global</div>`;
-  document.getElementById('cmp-card-b').innerHTML=`
-    <div class="avatar-lg" style="margin:0 auto 10px;background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.4);color:#93C5FD">${ini(pb.nombre)}</div>
-    <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:2px">${esc(pb.nombre)}</div>
-    <div style="font-size:11px;color:var(--slateL);margin-bottom:10px">${esc(pb.posicion)} · ${esc(pb.club)||'—'}</div>
-    <div style="font-size:40px;font-weight:800;color:${rc(bAvg)};font-family:'Syne',sans-serif;line-height:1">${bAvg}</div>
-    <div style="font-size:10px;color:var(--slateL);margin-top:4px">nota global</div>`;
-
-  // Bars comparison
-  const dims=[['Técnica','tecnica'],['Táctica','tactica'],['Físico','fisico'],['Actitud','actitud'],['Nota global',null]];
-  document.getElementById('cmp-bars').innerHTML=dims.map(([label,key])=>{
-    const vA=key?pa[key]||0:aAvg, vB=key?pb[key]||0:bAvg;
-    const maxV=10, wA=(vA/maxV*100), wB=(vB/maxV*100);
-    const winA=vA>vB, winB=vB>vA;
-    return `<div class="cmp-bar-row">
-      <div style="display:flex;justify-content:flex-end"><div class="cmp-bar left${winA?' winner':''}" style="width:${wA}%">${vA}</div></div>
-      <div class="cmp-bar-label">${label}</div>
-      <div><div class="cmp-bar right${winB?' winner':''}" style="width:${wB}%">${vB}</div></div>
-    </div>`;
+  document.getElementById('cmp-heroes').style.gridTemplateColumns=`repeat(${Math.min(n,4)},1fr)`;
+  document.getElementById('cmp-heroes').innerHTML=selected.map((p,i)=>{
+    const a=avg(p);
+    const ph=p.foto?`<img src="${p.foto}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;margin:0 auto 10px;display:block;border:2px solid ${CMP_COLORS[i]}">`:`<div class="avatar-lg" style="margin:0 auto 10px;border-color:${CMP_COLORS[i]};color:${CMP_COLORS[i]}">${ini(p.nombre)}</div>`;
+    return `<div class="cmp-hero-card">${ph}<div style="font-size:15px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:2px">${esc(p.nombre)}</div><div style="font-size:10px;color:var(--slateL);margin-bottom:8px">${esc(p.posicion)} · ${esc(p.club)||'—'}</div><div style="font-size:36px;font-weight:800;color:${rc(a)};font-family:'Syne',sans-serif;line-height:1">${a}</div><div style="font-size:9px;color:var(--slateL);margin-top:4px">nota global · <span style="color:${CMP_COLORS[i]};font-weight:700">${(p.visitas||[]).length}v</span></div></div>`;
   }).join('');
 
-  // Radar overlay
+  // Bars
+  const dims=[['Técnica','tecnica'],['Táctica','tactica'],['Físico','fisico'],['Actitud','actitud'],['Nota global',null]];
+  document.getElementById('cmp-bars').innerHTML=dims.map(([label,key])=>{
+    const vals=selected.map(p=>key?(p[key]||0):avg(p));
+    const maxV=Math.max(...vals);
+    return `<div class="cmp-bar-row"><div class="cmp-bar-label">${label}</div><div class="cmp-bar-track">${vals.map((v,i)=>`<div class="cmp-bar-seg" style="width:${v/10*100}%;background:${v===maxV?CMP_COLORS[i]:CMP_COLORS[i]+'60'}">${v}</div>`).join('')}</div></div>`;
+  }).join('');
+
+  // Radar
   destroyChart('compare-radar');
   _charts['compare-radar']=new Chart(document.getElementById('chart-compare-radar').getContext('2d'),{
     type:'radar',
     data:{
       labels:['Técnica','Táctica','Físico','Actitud'],
-      datasets:[
-        {label:pa.nombre,data:[pa.tecnica||0,pa.tactica||0,pa.fisico||0,pa.actitud||0],backgroundColor:'rgba(124,58,237,.15)',borderColor:'#7C3AED',borderWidth:2.5,pointBackgroundColor:'#7C3AED',pointRadius:5},
-        {label:pb.nombre,data:[pb.tecnica||0,pb.tactica||0,pb.fisico||0,pb.actitud||0],backgroundColor:'rgba(59,130,246,.15)',borderColor:'#3B82F6',borderWidth:2.5,pointBackgroundColor:'#3B82F6',pointRadius:5}
-      ]
+      datasets:selected.map((p,i)=>({label:p.nombre,data:[p.tecnica||0,p.tactica||0,p.fisico||0,p.actitud||0],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}))
     },
-    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:12,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:12,family:'Inter'},boxWidth:14,padding:12}}}}
+    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}}}
   });
 
-  // Data table
-  const rows=[
-    ['Posición',pa.posicion,pb.posicion],
-    ['Club',pa.club,pb.club],
-    ['Categoría',pa.catMain+(pa.catSub?' · '+pa.catSub:''),pb.catMain+(pb.catSub?' · '+pb.catSub:'')],
-    ['Ojeo para',pa.ojeoMain+(pa.ojeoSub?' '+pa.ojeoSub:''),pb.ojeoMain+(pb.ojeoSub?' '+pb.ojeoSub:'')],
-    ['Pie',pa.pieDom,pb.pieDom],
-    ['Nacimiento',formatDate(pa.fecha),formatDate(pb.fecha)],
-    ['Altura',pa.altura?pa.altura+' cm':'—',pb.altura?pb.altura+' cm':'—'],
-    ['Estado',pa.estado,pb.estado],
-    ['Visitas',''+(pa.visitas||[]).length,''+(pb.visitas||[]).length],
-    ['Etiquetas',(pa.tags||[]).join(', ')||'—',(pb.tags||[]).join(', ')||'—']
-  ];
-  document.getElementById('cmp-table').innerHTML=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
-    <thead><tr><th style="text-align:left;padding:8px;color:var(--slate);font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #F1F5F9"></th><th style="text-align:center;padding:8px;color:var(--purple);font-weight:700;border-bottom:2px solid #F1F5F9">${esc(pa.nombre)}</th><th style="text-align:center;padding:8px;color:#3B82F6;font-weight:700;border-bottom:2px solid #F1F5F9">${esc(pb.nombre)}</th></tr></thead>
-    <tbody>${rows.map(([l,a,b])=>`<tr><td style="padding:7px 8px;color:var(--slate);font-weight:500;border-bottom:1px solid #F8FAFC">${esc(l)}</td><td style="padding:7px 8px;text-align:center;font-weight:600;border-bottom:1px solid #F8FAFC">${esc(a)||'—'}</td><td style="padding:7px 8px;text-align:center;font-weight:600;border-bottom:1px solid #F8FAFC">${esc(b)||'—'}</td></tr>`).join('')}</tbody>
+  // Table
+  const fields=[['Posición',p=>p.posicion],['Club',p=>p.club],['Categoría',p=>p.catMain+(p.catSub?' · '+p.catSub:'')],['Ojeo para',p=>p.ojeoMain+(p.ojeoSub?' '+p.ojeoSub:'')],['Pie',p=>p.pieDom],['Nacimiento',p=>formatDate(p.fecha)],['Altura',p=>p.altura?p.altura+' cm':'—'],['Estado',p=>p.estado],['Visitas',p=>''+((p.visitas||[]).length)],['Etiquetas',p=>(p.tags||[]).join(', ')||'—']];
+  document.getElementById('cmp-table').innerHTML=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr><th style="text-align:left;padding:6px 8px;color:var(--slate);font-size:10px;text-transform:uppercase;border-bottom:2px solid #F1F5F9"></th>${selected.map((p,i)=>`<th style="text-align:center;padding:6px 8px;color:${CMP_COLORS[i]};font-weight:700;font-size:11px;border-bottom:2px solid #F1F5F9">${esc(p.nombre)}</th>`).join('')}</tr></thead>
+    <tbody>${fields.map(([l,fn])=>`<tr><td style="padding:5px 8px;color:var(--slate);font-weight:500;border-bottom:1px solid #F8FAFC;white-space:nowrap">${l}</td>${selected.map(p=>`<td style="padding:5px 8px;text-align:center;font-weight:600;border-bottom:1px solid #F8FAFC">${esc(fn(p))||'—'}</td>`).join('')}</tr>`).join('')}</tbody>
   </table></div>`;
 };
+
+/* ── IA: RECOMENDACIÓN COMPARADOR ── */
+window.compareAI = async function(){
+  const selected=[];
+  for(let i=0;i<cmpSlots;i++){
+    const id=document.getElementById('cmp-p'+i)?.value;
+    const p=players.find(x=>x.id===id);
+    if(p)selected.push(p);
+  }
+  if(selected.length<2){showToast('⚠️ Selecciona al menos 2 jugadores');return;}
+
+  const btn=document.getElementById('btn-cmp-ai');
+  btn.disabled=true; btn.textContent='⏳ La IA está analizando...';
+  const box=document.getElementById('cmp-ai-box');
+  const text=document.getElementById('cmp-ai-text');
+  const apiKey=getApiKey();
+
+  const playersInfo=selected.map((p,i)=>{
+    const vis=(p.visitas||[]);
+    const visTexto=vis.slice(-3).map((v,j)=>`  Visita ${j+1} (${v.fecha}): ${v.valoracion?v.valoracion+'/10':''} ${v.nota||''}`).join('\n');
+    return `JUGADOR ${i+1}: ${p.nombre} | ${p.posicion} | ${p.catMain} ${p.catSub||''} | Club: ${p.club} | Ojeo: ${p.ojeoMain} ${p.ojeoSub||''}\nValoraciones: Técnica ${p.tecnica} | Táctica ${p.tactica} | Físico ${p.fisico} | Actitud ${p.actitud} | Global: ${avg(p)}/10\nVisitas: ${vis.length} total. Últimas:\n${visTexto||'  Sin visitas'}\nEtiquetas: ${(p.tags||[]).join(', ')||'ninguna'}`;
+  }).join('\n\n');
+
+  if(apiKey){
+    try{
+      const prompt=`Eres un director deportivo de fútbol base en España. Te presentan ${selected.length} jugadores para elegir uno. Analiza y recomienda.\n\n${playersInfo}\n\nEscribe EXACTAMENTE 3 frases:\n1. Quién eliges y por qué (nombra al jugador)\n2. Qué ventaja tiene sobre los demás (sé específico con datos)\n3. Qué riesgo tiene tu elección y cuándo reevaluar\n\nSé directo y usa los datos. Español, 70-100 palabras.`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:512,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      if(data.error)throw new Error(data.error.message);
+      text.innerHTML=(data.content?.[0]?.text||'').split('\n').filter(l=>l.trim()).map(l=>`<p style="margin-bottom:6px">${esc(l)}</p>`).join('');
+    }catch(e){
+      text.innerHTML=generateSmartRecommendation(selected);
+    }
+  } else {
+    text.innerHTML=generateSmartRecommendation(selected);
+  }
+  box.style.display='block';
+  btn.disabled=false; btn.textContent='🤖 ¿Cuál es la mejor opción?';
+  box.scrollIntoView({behavior:'smooth'});
+};
+
+function generateSmartRecommendation(sel){
+  const scored=sel.map(p=>{
+    const a=avg(p), vis=(p.visitas||[]),
+      recentRatings=vis.filter(v=>v.valoracion).slice(-3).map(v=>v.valoracion),
+      trend=recentRatings.length>=2?recentRatings[recentRatings.length-1]-recentRatings[0]:0;
+    return {p,a,vis:vis.length,trend,score:a*0.5+(recentRatings.length?recentRatings.reduce((s,v)=>s+v,0)/recentRatings.length*0.3:a*0.3)+vis.length*0.05+trend*0.15};
+  }).sort((a,b)=>b.score-a.score);
+  const best=scored[0], second=scored[1];
+  return `<p>Recomendación: <strong>${esc(best.p.nombre)}</strong> con nota global ${best.a}/10 y ${best.vis} visitas registradas.</p>
+    <p>Destaca sobre ${esc(second.p.nombre)} (${second.a}/10) ${best.a>second.a?'con mejor puntuación global':'con mayor consistencia en las visitas'}${best.trend>0?' y tendencia ascendente en las últimas observaciones':''}.</p>
+    <p>${best.trend<0?'Riesgo: tendencia reciente a la baja. Reevaluar en 2-3 visitas más.':best.vis<3?'Riesgo: pocas visitas. Ampliar seguimiento antes de tomar decisión definitiva.':'Perfil sólido con seguimiento suficiente. Buen momento para activar contacto.'}</p>`;
+}
+
+/* ── FOTO DEL JUGADOR ── */
+let playerPhoto='';
+
+function compressPhoto(file){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        const MAX=200;
+        let w=img.width, h=img.height;
+        if(w>h){h=h*(MAX/w);w=MAX;}else{w=w*(MAX/h);h=MAX;}
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',0.7));
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+window.handlePhotoUpload = async function(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>2*1024*1024){showToast('⚠️ La imagen es demasiado grande (máx 2MB)');return;}
+  playerPhoto=await compressPhoto(file);
+  const prev=document.getElementById('f-photo-preview');
+  prev.innerHTML=`<img src="${playerPhoto}"><span class="photo-remove" onclick="event.stopPropagation();removePhoto()">✕</span>`;
+};
+
+window.removePhoto = function(){
+  playerPhoto='';
+  document.getElementById('f-photo-preview').innerHTML='<span class="photo-preview-empty">📷</span>';
+  document.getElementById('f-photo-input').value='';
+};
+
+/* ── COMPARTIR INFORME ── */
+window.shareReport = async function(){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+
+  const shareData={
+    nombre:p.nombre,posicion:p.posicion,club:p.club,
+    catMain:p.catMain,catSub:p.catSub,ojeoMain:p.ojeoMain,ojeoSub:p.ojeoSub,
+    pieDom:p.pieDom,fecha:p.fecha,altura:p.altura,peso:p.peso,estado:p.estado,
+    tecnica:p.tecnica,tactica:p.tactica,fisico:p.fisico,actitud:p.actitud,
+    tags:p.tags||[],foto:p.foto||'',
+    visitas:(p.visitas||[]).map(v=>({fecha:v.fecha,partido:v.partido,nota:v.nota,valoracion:v.valoracion})),
+    sharedAt:new Date().toISOString(),sharedBy:currentUser.email
+  };
+
+  try{
+    const shareId=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    await setDoc(doc(db,'shared-reports',shareId),shareData);
+    const url=window.location.origin+window.location.pathname+'?report='+shareId;
+    document.getElementById('d-share-url').value=url;
+    document.getElementById('d-share-box').style.display='block';
+    showToast('🔗 Enlace generado');
+  }catch(e){
+    showToast('❌ Error al compartir: '+e.message);
+  }
+};
+
+window.copyShareLink = function(){
+  const input=document.getElementById('d-share-url');
+  input.select();
+  document.execCommand('copy');
+  showToast('📋 Enlace copiado');
+};
+
+async function checkSharedReport(){
+  const params=new URLSearchParams(window.location.search);
+  const reportId=params.get('report');
+  if(!reportId)return false;
+  try{
+    const snap=await getDoc(doc(db,'shared-reports',reportId));
+    if(!snap.exists()){document.getElementById('shared-content').innerHTML='<div class="empty"><div class="empty-icon">📄</div><h3>Informe no encontrado</h3><p>Este enlace puede haber expirado o no existe.</p></div>';showPage('shared');return true;}
+    const p=snap.data();
+    const a=Math.round(((p.tecnica||0)+(p.tactica||0)+(p.fisico||0)+(p.actitud||0))/4*10)/10;
+    const rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626';
+    const vis=p.visitas||[];
+    const ph=p.foto?`<img src="${p.foto}" style="width:60px;height:60px;border-radius:14px;object-fit:cover">`:`<div class="avatar-lg">${p.nombre?p.nombre.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase():'?'}</div>`;
+    document.getElementById('shared-content').innerHTML=`
+      <div class="detail-hero"><div class="detail-hero-inner">${ph}<div style="flex:1;min-width:0"><div style="font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:4px">${esc(p.nombre)}</div><div style="font-size:12px;color:var(--slateL)">${esc(p.posicion)} · ${esc(p.club)||'—'} · ${esc(p.catMain)}${p.catSub?' · '+esc(p.catSub):''}</div></div><div class="detail-nota"><div style="font-size:10px;letter-spacing:.1em;color:var(--purple3);text-transform:uppercase;font-weight:700;margin-bottom:4px">Nota</div><div style="font-size:38px;font-weight:800;color:${rc(a)};line-height:1;font-family:'Syne',sans-serif">${a}</div></div></div></div>
+      <div class="ratings-grid">${[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div class="rating-box"><div class="rl">${l}</div><div class="rv" style="color:${rc(v)}">${v}</div></div>`).join('')}</div>
+      ${(p.tags||[]).length?`<div class="card"><div class="card-title">Etiquetas</div><div class="tags-wrap">${p.tags.map(t=>`<span class="tag tag-default">${esc(t)}</span>`).join('')}</div></div>`:''}
+      ${vis.length?`<div class="card"><div class="card-title">Historial de visitas (${vis.length})</div>${vis.map(v=>`<div class="visit-item"><div class="visit-meta"><span>📅 ${esc(v.fecha)} · ${esc(v.partido)}${v.valoracion?` <span style="font-weight:800;color:${rc(v.valoracion)}">${v.valoracion}/10</span>`:''}</span></div><div class="visit-note">${esc(v.nota)||'Sin notas'}</div></div>`).join('')}</div>`:''}
+      <div style="text-align:center;padding:20px;font-size:11px;color:var(--slateL)">Compartido el ${new Date(p.sharedAt).toLocaleDateString('es-ES')} por ${esc(p.sharedBy)}</div>`;
+    showPage('shared');
+    document.getElementById('main-header').style.display='none';
+    return true;
+  }catch(e){return false;}
+}
 
 /* ── PWA MANIFEST (inline) ── */
 (function(){
