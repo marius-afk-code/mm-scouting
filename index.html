@@ -6,6 +6,7 @@
 <title>MM Talent Sport — Scouting</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --navy: #0B0F1A;
@@ -261,6 +262,25 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .private-notes .card-title { color:#92400E; border-bottom-color:#FDE68A; }
 .private-notes-badge { font-size:9px; background:#FEF3C7; color:#92400E; padding:2px 6px; border-radius:4px; font-weight:700; margin-left:6px; vertical-align:middle; }
 
+/* ── DASHBOARD ── */
+.dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.dash-card { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.dash-card-title { font-size:10px; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; }
+.dash-card canvas { max-height:260px; }
+.dash-card-full { grid-column:1/-1; }
+.dash-top-list { list-style:none; }
+.dash-top-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #F8FAFC; cursor:pointer; transition:background .15s; }
+.dash-top-item:hover { background:#F8FAFC; margin:0 -10px; padding:8px 10px; border-radius:8px; }
+.dash-top-item:last-child { border-bottom:none; }
+.dash-top-rank { width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Syne',sans-serif; }
+.dash-top-rank.gold { background:linear-gradient(135deg,#F59E0B,#FBBF24); }
+.dash-top-rank.silver { background:linear-gradient(135deg,#94A3B8,#CBD5E1); }
+.dash-top-rank.bronze { background:linear-gradient(135deg,#D97706,#F59E0B); }
+
+/* ── EVOLUTION CHART ── */
+.evo-card { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.evo-card canvas { max-height:200px; }
+
 @media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
   .hero-top { flex-direction:column; align-items:flex-start; }
@@ -274,6 +294,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .toolbar-filters { gap:10px; }
   .hero { padding:24px 16px; }
   .container { padding:16px; }
+  .dash-grid { grid-template-columns:1fr; }
 }
 @media(max-width:480px) {
   .hero-stats { grid-template-columns:repeat(2,1fr); }
@@ -322,6 +343,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   </div>
   <div class="header-right">
     <span class="save-pill" id="save-pill">✓ Guardado</span>
+    <button class="hbtn" onclick="openDashboard()">📊 Dashboard</button>
     <span class="user-pill" id="user-pill">—</span>
     <button class="hbtn" id="btn-api-admin" onclick="showApiKeyConfig()" style="display:none">🔑 API IA</button>
     <button class="hbtn" onclick="doLogout()">Salir</button>
@@ -451,6 +473,50 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   </div>
 </div>
 
+<!-- DASHBOARD PAGE -->
+<div id="page-dashboard" class="page">
+  <div class="hero" style="padding:24px">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-title">📊 Dashboard <span>Analytics</span></h1>
+        <button class="hero-action-btn" onclick="showPage('list')">← Volver a la lista</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dash-card-title">Distribución por estado</div>
+        <canvas id="chart-estado"></canvas>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Distribución por posición</div>
+        <canvas id="chart-posicion"></canvas>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Jugadores por categoría</div>
+        <canvas id="chart-categoria"></canvas>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Media de valoraciones</div>
+        <canvas id="chart-medias"></canvas>
+      </div>
+      <div class="dash-card dash-card-full">
+        <div class="dash-card-title">Top 10 jugadores por nota global</div>
+        <ul class="dash-top-list" id="dash-top10"></ul>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Distribución por pie dominante</div>
+        <canvas id="chart-pie"></canvas>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-title">Etiquetas más usadas</div>
+        <canvas id="chart-tags"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FORM PAGE -->
 <div id="page-form" class="page">
   <div class="container" style="max-width:760px">
@@ -568,6 +634,10 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     <div id="d-private-notes-section" class="private-notes" style="display:none">
       <div class="card-title">Notas privadas del scout <span class="private-notes-badge">CONFIDENCIAL</span></div>
       <div id="d-private-notes" style="font-size:13px;color:#92400E;line-height:1.6;white-space:pre-wrap"></div>
+    </div>
+    <div class="evo-card" id="d-evo-section" style="display:none">
+      <div class="card-title">Evolución de la nota global</div>
+      <canvas id="chart-evolucion"></canvas>
     </div>
     <div class="card">
       <div class="card-title" id="d-visitas-title">Historial de visitas (0)</div>
@@ -1152,6 +1222,9 @@ window.openDetail = function(id){
     document.getElementById('d-private-notes').textContent=p.notasPrivadas;
   } else { pnSection.style.display='none'; }
 
+  // Evolution chart
+  renderEvolutionChart(p);
+
   // Predeterminar fecha de hoy en el campo de nueva visita
   document.getElementById('v-fecha').value=todayISO();
   document.getElementById('v-partido').value='';
@@ -1185,7 +1258,7 @@ window.addVisit = async function(){
   const nota=document.getElementById('v-nota').value.trim();
   const p=players.find(x=>x.id===currentId);
   if(!p)return;
-  const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota}],updatedAt:new Date().toISOString()};
+  const updated={...p,visitas:[...(p.visitas||[]),{id:Date.now().toString(),fecha,partido,nota,snapshot:{tecnica:p.tecnica,tactica:p.tactica,fisico:p.fisico,actitud:p.actitud,nota:avg(p)}}],updatedAt:new Date().toISOString()};
   await persistPlayer(updated);
   document.getElementById('v-fecha').value=todayISO();
   document.getElementById('v-partido').value='';
@@ -1328,6 +1401,129 @@ document.addEventListener('keydown', e=>{
     if(overlay){overlay.remove();return;}
   }
 });
+
+/* ── CHART INSTANCES (destroy before recreating) ── */
+let _charts = {};
+function destroyChart(id){ if(_charts[id]){_charts[id].destroy();delete _charts[id];} }
+
+/* ── EVOLUTION CHART ── */
+function renderEvolutionChart(p){
+  const vis=(p.visitas||[]).filter(v=>v.snapshot);
+  const section=document.getElementById('d-evo-section');
+  if(vis.length<2){section.style.display='none';return;}
+  section.style.display='block';
+  destroyChart('evolucion');
+  const ctx=document.getElementById('chart-evolucion').getContext('2d');
+  const labels=vis.map(v=>v.fecha);
+  _charts.evolucion=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Nota global',data:vis.map(v=>v.snapshot.nota),borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.3,borderWidth:2.5,pointBackgroundColor:'#7C3AED',pointRadius:5,pointHoverRadius:7},
+        {label:'Técnica',data:vis.map(v=>v.snapshot.tecnica),borderColor:'#3B82F6',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
+        {label:'Táctica',data:vis.map(v=>v.snapshot.tactica),borderColor:'#10B981',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
+        {label:'Físico',data:vis.map(v=>v.snapshot.fisico),borderColor:'#F59E0B',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]},
+        {label:'Actitud',data:vis.map(v=>v.snapshot.actitud),borderColor:'#EF4444',borderWidth:1.5,tension:.3,pointRadius:3,borderDash:[4,4]}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}},scales:{y:{min:1,max:10,ticks:{stepSize:1,font:{size:10}}},x:{ticks:{font:{size:10}}}}}
+  });
+}
+
+/* ── DASHBOARD ── */
+window.openDashboard = function(){
+  if(!players.length){showToast('⚠️ Añade jugadores para ver el dashboard');return;}
+  showPage('dashboard');
+  setTimeout(renderDashboard,100);
+};
+
+function renderDashboard(){
+  const chartDefaults={responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:8}}}};
+
+  // 1. Estado (doughnut)
+  destroyChart('estado');
+  const estados=['Activo','En seguimiento','En espera','Descartado'];
+  const estadoColors=['#34D399','#818CF8','#FBBF24','#F87171'];
+  const estadoData=estados.map(e=>players.filter(p=>p.estado===e).length);
+  _charts.estado=new Chart(document.getElementById('chart-estado').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:estados,datasets:[{data:estadoData,backgroundColor:estadoColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{...chartDefaults,cutout:'60%'}
+  });
+
+  // 2. Posición (bar)
+  destroyChart('posicion');
+  const posiciones=[...new Set(players.map(p=>p.posicion).filter(Boolean))].sort();
+  const posData=posiciones.map(pos=>players.filter(p=>p.posicion===pos).length);
+  _charts.posicion=new Chart(document.getElementById('chart-posicion').getContext('2d'),{
+    type:'bar',
+    data:{labels:posiciones.map(p=>p.length>12?p.slice(0,10)+'..':p),datasets:[{label:'Jugadores',data:posData,backgroundColor:'rgba(124,58,237,.7)',borderRadius:6,borderSkipped:false}]},
+    options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}}},x:{ticks:{font:{size:9}}}},indexAxis:'y'}
+  });
+
+  // 3. Categoría (bar)
+  destroyChart('categoria');
+  const cats=['Benjamín','Alevín','Infantil','Cadete','Juvenil','Sénior'];
+  const catColors=['#93C5FD','#6EE7B7','#FDE68A','#C4B5FD','#FDA4AF','#94A3B8'];
+  const catData=cats.map(c=>players.filter(p=>p.catMain===c).length);
+  _charts.categoria=new Chart(document.getElementById('chart-categoria').getContext('2d'),{
+    type:'bar',
+    data:{labels:cats,datasets:[{label:'Jugadores',data:catData,backgroundColor:catColors,borderRadius:6,borderSkipped:false}]},
+    options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}}},x:{ticks:{font:{size:10}}}}}
+  });
+
+  // 4. Medias globales (radar)
+  destroyChart('medias');
+  const avgTec=players.reduce((s,p)=>s+(p.tecnica||0),0)/players.length;
+  const avgTac=players.reduce((s,p)=>s+(p.tactica||0),0)/players.length;
+  const avgFis=players.reduce((s,p)=>s+(p.fisico||0),0)/players.length;
+  const avgAct=players.reduce((s,p)=>s+(p.actitud||0),0)/players.length;
+  _charts.medias=new Chart(document.getElementById('chart-medias').getContext('2d'),{
+    type:'radar',
+    data:{labels:['Técnica','Táctica','Físico','Actitud'],datasets:[{label:'Media global',data:[avgTec,avgTac,avgFis,avgAct].map(v=>Math.round(v*10)/10),backgroundColor:'rgba(124,58,237,.15)',borderColor:'#7C3AED',borderWidth:2.5,pointBackgroundColor:'#7C3AED',pointRadius:5}]},
+    options:{...chartDefaults,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:11,weight:'600'}}}}}
+  });
+
+  // 5. Top 10
+  const sorted=[...players].sort((a,b)=>avg(b)-avg(a)).slice(0,10);
+  document.getElementById('dash-top10').innerHTML=sorted.map((p,i)=>{
+    const a=avg(p), rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    return `<li class="dash-top-item" onclick="openDetail('${p.id}')">
+      <span class="dash-top-rank ${rankClass}">${i+1}</span>
+      <span class="avatar" style="width:32px;height:32px;font-size:11px;border-radius:8px">${ini(p.nombre)}</span>
+      <span style="flex:1;min-width:0"><span style="font-weight:600;font-size:13px">${esc(p.nombre)}</span><br><span style="font-size:11px;color:var(--slate)">${esc(p.posicion)} · ${esc(p.club)||'—'}</span></span>
+      <span style="font-size:22px;font-weight:800;color:${rateColor(a)};font-family:'Syne',sans-serif">${a}</span>
+    </li>`;
+  }).join('');
+
+  // 6. Pie dominante (doughnut)
+  destroyChart('pie');
+  const pies=['Derecho','Izquierdo','Ambidiestro'];
+  const pieColors=['#3B82F6','#EF4444','#10B981'];
+  const pieData=pies.map(pi=>players.filter(p=>p.pieDom===pi).length);
+  _charts.pie=new Chart(document.getElementById('chart-pie').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:pies,datasets:[{data:pieData,backgroundColor:pieColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{...chartDefaults,cutout:'60%'}
+  });
+
+  // 7. Tags (bar horizontal)
+  destroyChart('tags');
+  const allTags=players.flatMap(p=>p.tags||[]);
+  const tagCounts={};
+  allTags.forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1;});
+  const sortedTags=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if(sortedTags.length>0){
+    _charts.tags=new Chart(document.getElementById('chart-tags').getContext('2d'),{
+      type:'bar',
+      data:{labels:sortedTags.map(([t])=>t),datasets:[{label:'Jugadores',data:sortedTags.map(([,c])=>c),backgroundColor:'rgba(139,92,246,.6)',borderRadius:6,borderSkipped:false}]},
+      options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:false}},indexAxis:'y',scales:{x:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}}},y:{ticks:{font:{size:10}}}}}
+    });
+  } else {
+    document.getElementById('chart-tags').parentElement.innerHTML+='<p style="text-align:center;color:var(--slateL);font-size:12px;padding:20px">Sin etiquetas todavía</p>';
+  }
+}
 
 window.showPage=showPage;
 </script>
