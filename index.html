@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0F1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MM Talent Sport">
+<meta name="description" content="Plataforma de scouting y analytics de fútbol base">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%237C3AED'/><text x='90' y='120' text-anchor='middle' font-size='72' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
 <title>MM Talent Sport — Scouting</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -281,6 +287,28 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .evo-card { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
 .evo-card canvas { max-height:200px; }
 
+/* ── COMPARE ── */
+.cmp-selectors { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:start; margin-bottom:24px; }
+.cmp-selector { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:18px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.cmp-selector select { font-size:13px; margin-bottom:10px; }
+.cmp-vs { display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--purple3); padding-top:30px; }
+.cmp-result { display:none; }
+.cmp-result.active { display:block; }
+.cmp-hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.cmp-hero-card { background:linear-gradient(135deg,var(--navy),#160b2e); border-radius:14px; padding:24px; text-align:center; position:relative; overflow:hidden; }
+.cmp-hero-card::after { content:''; position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:rgba(124,58,237,.1); }
+.cmp-hero-card.b { background:linear-gradient(135deg,#0c1a2e,#0a1628); }
+.cmp-hero-card.b::after { background:rgba(59,130,246,.1); }
+.cmp-bars { margin-bottom:16px; }
+.cmp-bar-row { display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin-bottom:10px; }
+.cmp-bar-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); text-align:center; }
+.cmp-bar { height:28px; border-radius:8px; display:flex; align-items:center; padding:0 10px; font-size:13px; font-weight:800; font-family:'Syne',sans-serif; color:#fff; transition:width .6s ease; }
+.cmp-bar.left { justify-content:flex-end; background:linear-gradient(90deg,rgba(124,58,237,.2),var(--purple)); margin-left:auto; }
+.cmp-bar.right { justify-content:flex-start; background:linear-gradient(90deg,#3B82F6,rgba(59,130,246,.2)); }
+.cmp-bar.winner { box-shadow:0 0 12px rgba(124,58,237,.3); }
+.cmp-radar-wrap { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.04); margin-bottom:16px; }
+.cmp-radar-wrap canvas { max-height:300px; }
+
 @media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
   .hero-top { flex-direction:column; align-items:flex-start; }
@@ -295,6 +323,9 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .hero { padding:24px 16px; }
   .container { padding:16px; }
   .dash-grid { grid-template-columns:1fr; }
+  .cmp-selectors { grid-template-columns:1fr; }
+  .cmp-vs { padding:0; font-size:20px; }
+  .cmp-hero-grid { grid-template-columns:1fr; }
 }
 @media(max-width:480px) {
   .hero-stats { grid-template-columns:repeat(2,1fr); }
@@ -344,6 +375,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <div class="header-right">
     <span class="save-pill" id="save-pill">✓ Guardado</span>
     <button class="hbtn" onclick="openDashboard()">📊 Dashboard</button>
+    <button class="hbtn" onclick="openCompare()">⚖️ Comparar</button>
     <span class="user-pill" id="user-pill">—</span>
     <button class="hbtn" id="btn-api-admin" onclick="showApiKeyConfig()" style="display:none">🔑 API IA</button>
     <button class="hbtn" onclick="doLogout()">Salir</button>
@@ -512,6 +544,53 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div class="dash-card">
         <div class="dash-card-title">Etiquetas más usadas</div>
         <canvas id="chart-tags"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARE PAGE -->
+<div id="page-compare" class="page">
+  <div class="hero" style="padding:24px">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-title">⚖️ Comparar <span>jugadores</span></h1>
+        <button class="hero-action-btn" onclick="showPage('list')">← Volver a la lista</button>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="cmp-selectors">
+      <div class="cmp-selector">
+        <select id="cmp-player-a" onchange="runCompare()">
+          <option value="">Selecciona jugador A</option>
+        </select>
+        <div id="cmp-preview-a" style="text-align:center;color:var(--slateL);font-size:12px;padding:8px 0">—</div>
+      </div>
+      <div class="cmp-vs">VS</div>
+      <div class="cmp-selector">
+        <select id="cmp-player-b" onchange="runCompare()">
+          <option value="">Selecciona jugador B</option>
+        </select>
+        <div id="cmp-preview-b" style="text-align:center;color:var(--slateL);font-size:12px;padding:8px 0">—</div>
+      </div>
+    </div>
+    <div class="cmp-result" id="cmp-result">
+      <div class="cmp-hero-grid">
+        <div class="cmp-hero-card" id="cmp-card-a"></div>
+        <div class="cmp-hero-card b" id="cmp-card-b"></div>
+      </div>
+      <div class="cmp-radar-wrap">
+        <div class="dash-card-title">Radar comparativo</div>
+        <canvas id="chart-compare-radar"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title">Comparativa de valoraciones</div>
+        <div class="cmp-bars" id="cmp-bars"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Datos comparados</div>
+        <div id="cmp-table"></div>
       </div>
     </div>
   </div>
@@ -1596,6 +1675,109 @@ function renderDashboard(){
     document.getElementById('chart-tags').parentElement.innerHTML+='<p style="text-align:center;color:var(--slateL);font-size:12px;padding:20px">Sin etiquetas todavía</p>';
   }
 }
+
+/* ── COMPARADOR DE JUGADORES ── */
+window.openCompare = function(){
+  if(players.length<2){showToast('⚠️ Necesitas al menos 2 jugadores para comparar');return;}
+  // Populate selectors
+  const opts='<option value="">Selecciona jugador</option>'+[...players].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).map(p=>`<option value="${p.id}">${esc(p.nombre)} — ${esc(p.posicion)} (${avg(p)})</option>`).join('');
+  document.getElementById('cmp-player-a').innerHTML=opts;
+  document.getElementById('cmp-player-b').innerHTML=opts;
+  document.getElementById('cmp-preview-a').textContent='—';
+  document.getElementById('cmp-preview-b').textContent='—';
+  document.getElementById('cmp-result').classList.remove('active');
+  showPage('compare');
+};
+
+window.runCompare = function(){
+  const idA=document.getElementById('cmp-player-a').value;
+  const idB=document.getElementById('cmp-player-b').value;
+  const pa=players.find(x=>x.id===idA);
+  const pb=players.find(x=>x.id===idB);
+
+  // Preview
+  document.getElementById('cmp-preview-a').innerHTML=pa?`<div class="avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 4px">${ini(pa.nombre)}</div>${esc(pa.club)||'—'} · ${esc(pa.catMain)||''}`:'—';
+  document.getElementById('cmp-preview-b').innerHTML=pb?`<div class="avatar" style="width:36px;height:36px;font-size:12px;margin:0 auto 4px">${ini(pb.nombre)}</div>${esc(pb.club)||'—'} · ${esc(pb.catMain)||''}`:'—';
+
+  if(!pa||!pb||idA===idB){
+    document.getElementById('cmp-result').classList.remove('active');
+    if(idA===idB&&idA)showToast('Selecciona dos jugadores diferentes');
+    return;
+  }
+  document.getElementById('cmp-result').classList.add('active');
+
+  const aAvg=avg(pa), bAvg=avg(pb);
+  const rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626';
+
+  // Hero cards
+  document.getElementById('cmp-card-a').innerHTML=`
+    <div class="avatar-lg" style="margin:0 auto 10px;background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4)">${ini(pa.nombre)}</div>
+    <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:2px">${esc(pa.nombre)}</div>
+    <div style="font-size:11px;color:var(--slateL);margin-bottom:10px">${esc(pa.posicion)} · ${esc(pa.club)||'—'}</div>
+    <div style="font-size:40px;font-weight:800;color:${rc(aAvg)};font-family:'Syne',sans-serif;line-height:1">${aAvg}</div>
+    <div style="font-size:10px;color:var(--slateL);margin-top:4px">nota global</div>`;
+  document.getElementById('cmp-card-b').innerHTML=`
+    <div class="avatar-lg" style="margin:0 auto 10px;background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.4);color:#93C5FD">${ini(pb.nombre)}</div>
+    <div style="font-size:18px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:2px">${esc(pb.nombre)}</div>
+    <div style="font-size:11px;color:var(--slateL);margin-bottom:10px">${esc(pb.posicion)} · ${esc(pb.club)||'—'}</div>
+    <div style="font-size:40px;font-weight:800;color:${rc(bAvg)};font-family:'Syne',sans-serif;line-height:1">${bAvg}</div>
+    <div style="font-size:10px;color:var(--slateL);margin-top:4px">nota global</div>`;
+
+  // Bars comparison
+  const dims=[['Técnica','tecnica'],['Táctica','tactica'],['Físico','fisico'],['Actitud','actitud'],['Nota global',null]];
+  document.getElementById('cmp-bars').innerHTML=dims.map(([label,key])=>{
+    const vA=key?pa[key]||0:aAvg, vB=key?pb[key]||0:bAvg;
+    const maxV=10, wA=(vA/maxV*100), wB=(vB/maxV*100);
+    const winA=vA>vB, winB=vB>vA;
+    return `<div class="cmp-bar-row">
+      <div style="display:flex;justify-content:flex-end"><div class="cmp-bar left${winA?' winner':''}" style="width:${wA}%">${vA}</div></div>
+      <div class="cmp-bar-label">${label}</div>
+      <div><div class="cmp-bar right${winB?' winner':''}" style="width:${wB}%">${vB}</div></div>
+    </div>`;
+  }).join('');
+
+  // Radar overlay
+  destroyChart('compare-radar');
+  _charts['compare-radar']=new Chart(document.getElementById('chart-compare-radar').getContext('2d'),{
+    type:'radar',
+    data:{
+      labels:['Técnica','Táctica','Físico','Actitud'],
+      datasets:[
+        {label:pa.nombre,data:[pa.tecnica||0,pa.tactica||0,pa.fisico||0,pa.actitud||0],backgroundColor:'rgba(124,58,237,.15)',borderColor:'#7C3AED',borderWidth:2.5,pointBackgroundColor:'#7C3AED',pointRadius:5},
+        {label:pb.nombre,data:[pb.tecnica||0,pb.tactica||0,pb.fisico||0,pb.actitud||0],backgroundColor:'rgba(59,130,246,.15)',borderColor:'#3B82F6',borderWidth:2.5,pointBackgroundColor:'#3B82F6',pointRadius:5}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:12,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:12,family:'Inter'},boxWidth:14,padding:12}}}}
+  });
+
+  // Data table
+  const rows=[
+    ['Posición',pa.posicion,pb.posicion],
+    ['Club',pa.club,pb.club],
+    ['Categoría',pa.catMain+(pa.catSub?' · '+pa.catSub:''),pb.catMain+(pb.catSub?' · '+pb.catSub:'')],
+    ['Ojeo para',pa.ojeoMain+(pa.ojeoSub?' '+pa.ojeoSub:''),pb.ojeoMain+(pb.ojeoSub?' '+pb.ojeoSub:'')],
+    ['Pie',pa.pieDom,pb.pieDom],
+    ['Nacimiento',formatDate(pa.fecha),formatDate(pb.fecha)],
+    ['Altura',pa.altura?pa.altura+' cm':'—',pb.altura?pb.altura+' cm':'—'],
+    ['Estado',pa.estado,pb.estado],
+    ['Visitas',''+(pa.visitas||[]).length,''+(pb.visitas||[]).length],
+    ['Etiquetas',(pa.tags||[]).join(', ')||'—',(pb.tags||[]).join(', ')||'—']
+  ];
+  document.getElementById('cmp-table').innerHTML=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr><th style="text-align:left;padding:8px;color:var(--slate);font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #F1F5F9"></th><th style="text-align:center;padding:8px;color:var(--purple);font-weight:700;border-bottom:2px solid #F1F5F9">${esc(pa.nombre)}</th><th style="text-align:center;padding:8px;color:#3B82F6;font-weight:700;border-bottom:2px solid #F1F5F9">${esc(pb.nombre)}</th></tr></thead>
+    <tbody>${rows.map(([l,a,b])=>`<tr><td style="padding:7px 8px;color:var(--slate);font-weight:500;border-bottom:1px solid #F8FAFC">${esc(l)}</td><td style="padding:7px 8px;text-align:center;font-weight:600;border-bottom:1px solid #F8FAFC">${esc(a)||'—'}</td><td style="padding:7px 8px;text-align:center;font-weight:600;border-bottom:1px solid #F8FAFC">${esc(b)||'—'}</td></tr>`).join('')}</tbody>
+  </table></div>`;
+};
+
+/* ── PWA MANIFEST (inline) ── */
+(function(){
+  const manifest={name:'MM Talent Sport',short_name:'MM Talent',description:'Plataforma de scouting de fútbol base',start_url:'/',display:'standalone',background_color:'#0B0F1A',theme_color:'#0B0F1A',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%237C3AED"/><text x="256" y="340" text-anchor="middle" font-size="220" font-weight="800" fill="white" font-family="system-ui">MM</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const link=document.createElement('link');
+  link.rel='manifest';
+  link.href=URL.createObjectURL(blob);
+  document.head.appendChild(link);
+})();
 
 window.showPage=showPage;
 </script>
