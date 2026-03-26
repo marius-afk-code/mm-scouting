@@ -49,10 +49,51 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 @keyframes loadfill { to { width:100%; } }
 
 /* ── LOGIN ── */
-#page-login { display:none; min-height:100vh; background:var(--navy); align-items:center; justify-content:center; position:relative; overflow:hidden; }
-#page-login.active { display:flex; }
-#page-login::before { content:''; position:absolute; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,.15) 0%,transparent 70%); top:-100px; right:-100px; pointer-events:none; }
-#page-login::after { content:''; position:absolute; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(139,92,246,.1) 0%,transparent 70%); bottom:-80px; left:-80px; pointer-events:none; }
+#page-login { display:none; min-height:100vh; background:#fff; position:relative; overflow-x:hidden; }
+#page-login.active { display:block; }
+.lp-hero { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:60px 24px; background:linear-gradient(165deg,#ffffff 0%,#f3f0ff 30%,#ede5ff 50%,#e0d4ff 70%,#d4c0ff 100%); }
+.lp-hero::before { content:''; position:absolute; width:800px; height:800px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,.08) 0%,transparent 70%); top:-200px; right:-200px; pointer-events:none; }
+.lp-hero::after { content:''; position:absolute; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(139,92,246,.06) 0%,transparent 70%); bottom:-100px; left:-100px; pointer-events:none; }
+.lp-hero-inner { max-width:900px; text-align:center; position:relative; z-index:1; }
+.lp-badge { display:inline-block; font-size:11px; color:var(--purple); background:rgba(124,58,237,.08); padding:5px 16px; border-radius:99px; font-weight:600; letter-spacing:.04em; margin-bottom:20px; border:1px solid rgba(124,58,237,.15); }
+.lp-h1 { font-family:'Syne',sans-serif; font-size:52px; font-weight:800; color:var(--navy); letter-spacing:-.03em; line-height:1.1; margin-bottom:16px; }
+.lp-h1 span { background:linear-gradient(135deg,var(--purple),var(--purple3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.lp-sub { font-size:18px; color:var(--text2); line-height:1.6; max-width:600px; margin:0 auto 32px; }
+.lp-ctas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:48px; }
+.lp-cta-primary { font-family:'Inter',sans-serif; font-size:15px; padding:14px 32px; border-radius:12px; background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; border:none; cursor:pointer; font-weight:700; transition:all .2s; letter-spacing:.01em; }
+.lp-cta-primary:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(124,58,237,.35); }
+.lp-cta-secondary { font-family:'Inter',sans-serif; font-size:15px; padding:14px 32px; border-radius:12px; background:var(--navy); color:#fff; border:none; cursor:pointer; font-weight:600; transition:all .2s; }
+.lp-cta-secondary:hover { background:var(--navy3); transform:translateY(-1px); box-shadow:0 8px 24px rgba(11,15,26,.3); }
+.lp-scroll-hint { font-size:12px; color:var(--slate); margin-top:20px; opacity:.6; }
+
+/* ── LANDING FEATURES ── */
+.lp-features { background:linear-gradient(180deg,#ece4ff 0%,#f5f0ff 50%,#ffffff 100%); padding:80px 24px; }
+.lp-features-inner { max-width:1000px; margin:0 auto; }
+.lp-section-label { font-size:11px; color:var(--purple); font-weight:700; text-transform:uppercase; letter-spacing:.12em; text-align:center; margin-bottom:8px; }
+.lp-section-title { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; color:var(--navy); text-align:center; margin-bottom:40px; letter-spacing:-.02em; }
+.lp-features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.lp-feature { background:var(--navy); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:28px 24px; transition:all .25s; }
+.lp-feature:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(11,15,26,.25); }
+.lp-feature-icon { font-size:28px; margin-bottom:14px; }
+.lp-feature-title { font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
+.lp-feature-desc { font-size:13px; color:var(--slateL); line-height:1.6; }
+
+/* ── LANDING CTA FINAL ── */
+.lp-final { background:var(--navy); padding:80px 24px; text-align:center; position:relative; overflow:hidden; }
+.lp-final::before { content:''; position:absolute; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,.15) 0%,transparent 70%); top:-150px; right:-100px; pointer-events:none; }
+.lp-final-title { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#fff; margin-bottom:12px; position:relative; z-index:1; }
+.lp-final-sub { font-size:14px; color:var(--slateL); margin-bottom:28px; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.6; position:relative; z-index:1; }
+.lp-footer { background:var(--navy); padding:20px 24px; text-align:center; border-top:1px solid var(--border); }
+.lp-footer span { font-size:11px; color:var(--slateL); }
+
+/* ── LOGIN MODAL ── */
+.login-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(8px); z-index:200; display:flex; align-items:center; justify-content:center; animation:fadeIn .2s ease; }
+.login-modal { width:100%; max-width:420px; padding:0 20px; }
+
+/* ── DEMO BANNER ── */
+.demo-banner { background:linear-gradient(90deg,#F59E0B,#FBBF24); padding:8px 24px; display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
+.demo-banner span { font-size:12px; font-weight:600; color:#78350F; }
+.demo-banner button { font-family:'Inter',sans-serif; font-size:11px; padding:4px 14px; border-radius:6px; background:#78350F; color:#FEF3C7; border:none; cursor:pointer; font-weight:700; }
 .login-wrap { width:100%; max-width:420px; padding:0 20px; position:relative; z-index:1; }
 .login-brand { text-align:center; margin-bottom:36px; }
 .login-brand-logo { display:inline-flex; align-items:center; gap:12px; margin-bottom:10px; }
@@ -379,6 +420,14 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .player-info .tags-wrap-inline { display:none !important; }
   .map-container { height:350px; }
   .alert-form { grid-template-columns:1fr; }
+  .lp-features-grid { grid-template-columns:1fr; }
+  .lp-h1 { font-size:32px; }
+  .lp-sub { font-size:15px; }
+  .lp-problem-grid { grid-template-columns:1fr !important; }
+  .lp-nav-link { display:none !important; }
+}
+@media(min-width:769px) {
+  .lp-nav-link { display:inline-block !important; }
 }
 @media(max-width:480px) {
   .hero-stats { grid-template-columns:repeat(2,1fr); }
@@ -396,27 +445,177 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <div class="loading-bar"><div class="loading-bar-fill"></div></div>
 </div>
 
-<!-- LOGIN -->
+<!-- LOGIN / LANDING -->
 <div id="page-login" class="page">
-  <div class="login-wrap">
-    <div class="login-brand">
-      <div class="login-brand-logo">
-        <div class="login-brand-icon"><span class="login-brand-icon-text">MM</span></div>
-        <div class="login-brand-name">MM <span>TALENT</span> SPORT</div>
-      </div>
-      <div class="login-brand-sub">Scouting &amp; Analytics Platform</div>
+  <!-- NAV -->
+  <div style="position:fixed;top:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);padding:0 24px;height:56px;display:flex;align-items:center">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--purple),var(--purple2));border-radius:8px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:#fff">MM</span></div>
+      <span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--navy)">MM <span style="color:var(--purple)">SCOUTING</span></span>
     </div>
-    <div class="login-box">
-      <div class="login-tabs">
-        <div class="login-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</div>
-        <div class="login-tab" id="tab-register" onclick="switchTab('register')">Crear cuenta</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+      <a href="#features" style="font-size:12px;color:var(--text2);text-decoration:none;padding:6px 12px;font-weight:500;display:none" class="lp-nav-link">Funciones</a>
+      <a href="#how-it-works" style="font-size:12px;color:var(--text2);text-decoration:none;padding:6px 12px;font-weight:500;display:none" class="lp-nav-link">Cómo funciona</a>
+      <button onclick="openLoginModal()" style="font-size:12px;padding:6px 14px;border:1px solid var(--borderL);border-radius:8px;background:#fff;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;font-weight:500">Iniciar sesión</button>
+      <button onclick="startDemo()" style="font-size:12px;padding:6px 14px;border:none;border-radius:8px;background:var(--purple);color:#fff;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700">Probar gratis</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="lp-hero" style="padding-top:100px">
+    <div class="lp-hero-inner">
+      <div class="lp-badge">Plataforma de scouting con inteligencia artificial</div>
+      <h1 class="lp-h1">Tu base de datos de <span>talento</span> del fútbol base</h1>
+      <p class="lp-sub">Para cuando tu ojo clínico es de élite pero tus herramientas no lo parecen. Gestiona jugadores, genera informes con IA y toma decisiones con datos — todo desde una sola plataforma.</p>
+      <div class="lp-ctas">
+        <button class="lp-cta-primary" onclick="startDemo()">Probar demo gratuita</button>
+        <button class="lp-cta-secondary" onclick="openLoginModal()">Acceder a mi cuenta</button>
       </div>
-      <div id="login-err" class="login-err"></div>
-      <div id="login-ok" class="login-ok"></div>
-      <div class="login-field"><label>Correo electrónico</label><input id="l-email" type="email" placeholder="tu@email.com" autocomplete="email"></div>
-      <div class="login-field"><label>Contraseña</label><input id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
-      <p class="forgot" id="forgot-link" onclick="resetPassword()">¿Olvidaste tu contraseña?</p>
+      <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+        <span style="font-size:12px;color:var(--slate)">✓ Sin tarjeta de crédito</span>
+        <span style="font-size:12px;color:var(--slate)">✓ Demo con datos reales</span>
+        <span style="font-size:12px;color:var(--slate)">✓ Informes con IA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <div style="background:#fff;padding:80px 24px">
+    <div style="max-width:800px;margin:0 auto;text-align:center">
+      <div class="lp-section-label">El problema</div>
+      <div class="lp-section-title" style="margin-bottom:48px">El problema no es encontrar talento, es gestionarlo</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:left" class="lp-problem-grid">
+        <div style="padding:24px;border-radius:14px;border:1px solid #FEE2E2;background:#FFF5F5">
+          <div style="font-size:24px;margin-bottom:12px">📓</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px">El cuaderno infinito</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">Notas en la libreta, WhatsApps, excels... La información del jugador está dispersa y cuando la necesitas no la encuentras.</div>
+        </div>
+        <div style="padding:24px;border-radius:14px;border:1px solid #FEF3C7;background:#FFFBEB">
+          <div style="font-size:24px;margin-bottom:12px">📄</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px">El informe amateur</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">Tu análisis es bueno pero el documento lo devalúa. Un Word con tablas torcidas no transmite profesionalidad al director deportivo.</div>
+        </div>
+        <div style="padding:24px;border-radius:14px;border:1px solid #EDE9FE;background:#F5F3FF">
+          <div style="font-size:24px;margin-bottom:12px">🤷</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px">La decisión a ciegas</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6">"¿Quién era mejor, el lateral de Lorca o el de Cartagena?" Sin datos estructurados, cada decisión depende de la memoria.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="lp-features" id="features">
+    <div class="lp-features-inner">
+      <div class="lp-section-label">Funcionalidades</div>
+      <div class="lp-section-title">Estructura de departamento de scouting profesional</div>
+      <div class="lp-features-grid">
+        <div class="lp-feature"><div class="lp-feature-icon">⚽</div><div class="lp-feature-title">Base de datos completa</div><div class="lp-feature-desc">Fichas técnicas con foto, valoraciones, etiquetas, notas privadas y datos de contacto. Filtros por posición, categoría, estado y más.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">🤖</div><div class="lp-feature-title">Informes con IA</div><div class="lp-feature-desc">La IA analiza tus notas de visita y redacta informes profesionales automáticamente. Informes globales o por partido individual.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">⚖️</div><div class="lp-feature-title">Comparador inteligente</div><div class="lp-feature-desc">Compara hasta 4 jugadores con radar chart y barras visuales. La IA te dice cuál es la mejor opción y por qué.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">📋</div><div class="lp-feature-title">Sports CV automático</div><div class="lp-feature-desc">CV profesional con trayectoria en clubes, radar de valoración y descripción moldeada por IA. Listo para enviar a cualquier club.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">📊</div><div class="lp-feature-title">Dashboard analytics</div><div class="lp-feature-desc">Gráficos de tu base de datos: distribución por posición, categoría, estado, pie dominante, etiquetas y ranking de mejores jugadores.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">🗺️</div><div class="lp-feature-title">Mapa interactivo</div><div class="lp-feature-desc">Visualiza dónde están tus jugadores en toda España. Filtra por localidad del jugador o del club y planifica rutas de ojeo.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">📈</div><div class="lp-feature-title">Evolución y tendencia</div><div class="lp-feature-desc">Valora al jugador en cada partido. El gráfico de evolución y la IA analizan la tendencia para tomar decisiones con datos.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">🔔</div><div class="lp-feature-title">Alertas y seguimiento</div><div class="lp-feature-desc">Recordatorios con fecha límite: "Revisar antes de junio", "Contrato acaba en agosto". Gestiona prioridades y pospón alertas.</div></div>
+        <div class="lp-feature"><div class="lp-feature-icon">🔗</div><div class="lp-feature-title">Compartir por enlace</div><div class="lp-feature-desc">Genera un enlace público con el perfil del jugador. Cualquier director deportivo puede verlo sin cuenta. Tus notas privadas nunca se comparten.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div style="background:#fff;padding:80px 24px" id="how-it-works">
+    <div style="max-width:800px;margin:0 auto">
+      <div class="lp-section-label">Cómo funciona</div>
+      <div class="lp-section-title">Del campo al informe profesional en 3 pasos</div>
+      <div style="display:grid;gap:32px">
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0">01</div>
+          <div><div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">Crea la ficha del jugador</div><div style="font-size:13px;color:var(--text2);line-height:1.6">Añade sus datos, sube una foto, asigna valoraciones y etiquetas. La ficha se completa en 2 minutos.</div></div>
+        </div>
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0">02</div>
+          <div><div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">Registra tus visitas</div><div style="font-size:13px;color:var(--text2);line-height:1.6">Después de cada partido, anota tus observaciones y puntúa al jugador. El historial de evolución se construye solo.</div></div>
+        </div>
+        <div style="display:flex;gap:20px;align-items:flex-start">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0">03</div>
+          <div><div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">Genera y comparte</div><div style="font-size:13px;color:var(--text2);line-height:1.6">Informes PDF, Sports CV, comparativas — todo generado con IA y con la calidad visual que tu análisis merece. Un clic.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOUNDER -->
+  <div style="background:linear-gradient(180deg,#f5f0ff 0%,#ece4ff 100%);padding:60px 24px">
+    <div style="max-width:600px;margin:0 auto;text-align:center">
+      <div class="lp-section-label">Por qué existe MM Scouting</div>
+      <div style="background:var(--navy);border-radius:20px;padding:32px;margin-top:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(124,58,237,.1)"></div>
+        <div style="font-size:32px;margin-bottom:16px">💬</div>
+        <p style="font-size:14px;color:#cbd5e1;line-height:1.8;margin-bottom:20px;font-style:italic;position:relative;z-index:1">"Veía jugadores con talento real en campos de fútbol base y no tenía una herramienta profesional para documentarlo, analizarlo y compartirlo. Los grandes clubes tienen departamentos de scouting con tecnología — ¿por qué el fútbol base no?"</p>
+        <div style="font-size:14px;font-weight:700;color:#fff">Mario Martínez</div>
+        <div style="font-size:12px;color:var(--slateL)">Fundador de MM Talent Sport</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div style="background:#fff;padding:80px 24px" id="pricing">
+    <div style="max-width:500px;margin:0 auto;text-align:center">
+      <div class="lp-section-label">Precios</div>
+      <div class="lp-section-title">Empieza gratis, crece cuando lo necesites</div>
+      <div style="background:var(--navy);border-radius:20px;padding:36px;text-align:left;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(124,58,237,.1)"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;z-index:1">
+          <div><div style="font-size:16px;font-weight:700;color:#fff">Plan Scout</div><div style="font-size:11px;color:var(--slateL)">Acceso completo a todas las funciones</div></div>
+          <div style="text-align:right"><span style="font-size:36px;font-weight:800;color:#fff;font-family:'Syne',sans-serif">0€</span><span style="font-size:13px;color:var(--slateL)"> /mes</span></div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:16px;position:relative;z-index:1">
+          ${['Base de datos ilimitada de jugadores','Informes PDF con análisis automático','Sports CV profesional','Comparador de hasta 4 jugadores','Dashboard analytics completo','Mapa interactivo de toda España','Alertas y sistema de seguimiento','Compartir informes por enlace','Instalable como app (PWA)'].map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px;color:#cbd5e1"><span style="color:#34D399;font-weight:700">✓</span>${f}</div>`).join('')}
+        </div>
+        <button class="lp-cta-primary" onclick="startDemo()" style="width:100%;margin-top:20px;position:relative;z-index:1">Empezar gratis</button>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--slateL);position:relative;z-index:1">Sin tarjeta de crédito · Sin límite de tiempo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="background:linear-gradient(180deg,#ffffff 0%,#f5f0ff 100%);padding:80px 24px">
+    <div style="max-width:700px;margin:0 auto">
+      <div class="lp-section-label">FAQ</div>
+      <div class="lp-section-title">Preguntas frecuentes</div>
+      <div id="lp-faqs">
+        ${[
+          ['¿Es realmente gratis?','Sí, completamente gratis. No pedimos tarjeta de crédito ni hay límite de tiempo. Todas las funciones están disponibles desde el primer día.'],
+          ['¿Necesito instalar algo?','No. MM Scouting funciona 100% en el navegador. También puedes instalarlo como app en tu móvil desde el propio navegador para acceso rápido.'],
+          ['¿Mis datos son privados?','Sí. Cada usuario solo ve sus propios jugadores. Usamos Firebase con autenticación segura. Las notas privadas del scout nunca aparecen en informes compartidos.'],
+          ['¿Cómo funciona la IA?','La inteligencia artificial analiza tus notas de visita y genera informes profesionales automáticamente. También moldea descripciones para Sports CV, analiza evolución y recomienda jugadores en el comparador.'],
+          ['¿Puedo compartir informes con un director deportivo?','Sí. Genera un enlace público que cualquier persona puede abrir sin necesidad de cuenta. Ve las valoraciones, el radar chart y los datos del jugador — pero nunca tus notas privadas.'],
+          ['¿Funciona en el móvil?','Sí. La herramienta está optimizada para móvil. Puedes registrar visitas desde el campo y generar informes cuando llegues a casa.']
+        ].map(([q,a])=>`<div style="border-bottom:1px solid #E2E8F0;padding:16px 0"><div style="font-size:14px;font-weight:600;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('span').textContent=this.nextElementSibling.style.display==='none'?'+':'−'">${q}<span style="color:var(--purple);font-size:18px;font-weight:700">+</span></div><div style="display:none;font-size:13px;color:var(--text2);line-height:1.6;padding-top:10px">${a}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL CTA -->
+  <div class="lp-final">
+    <div class="lp-section-label" style="color:var(--purple3)">¿Listo para empezar?</div>
+    <div class="lp-final-title">Tu primer informe con aspecto profesional</div>
+    <div class="lp-final-sub">Sin tarjeta. Sin instalación. Entra en la demo y comprueba qué puede hacer MM Scouting por tu trabajo.</div>
+    <div class="lp-ctas" style="position:relative;z-index:1">
+      <button class="lp-cta-primary" onclick="startDemo()">Probar demo gratuita</button>
+      <button class="lp-cta-secondary" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)" onclick="openLoginModal()">Crear cuenta gratis</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="lp-footer">
+    <div style="max-width:800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></div>
+        <span style="font-size:11px;color:var(--slateL)">MM Talent Sport · Scouting & Analytics</span>
+      </div>
+      <span style="font-size:11px;color:var(--slateL)"><a href="https://mm-talent-sport.vercel.app" style="color:var(--purple3);text-decoration:none">mmtalentsport.com</a></span>
     </div>
   </div>
 </div>
@@ -445,6 +644,12 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <input type="password" id="api-key-input" placeholder="sk-ant-api03-...">
   <button style="font-size:12px;padding:6px 14px;background:var(--gold);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600" onclick="saveApiKey()">Guardar</button>
   <button style="background:transparent;color:#FCD34D;border:1px solid rgba(245,158,11,.3);font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif" onclick="document.getElementById('api-banner').classList.remove('show')">✕</button>
+</div>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner" id="demo-banner" style="display:none">
+  <span>⚡ Estás en modo demo con datos de ejemplo</span>
+  <button onclick="exitDemo()">Crear cuenta gratis</button>
 </div>
 
 <!-- LIST PAGE -->
@@ -1078,7 +1283,103 @@ window.saveApiKey = async function(){
 async function loadApiKey(){ try{ const s=await getDoc(doc(db,'config','apikey')); if(s.exists()){const k=s.data().key||''; localStorage.setItem('sct_apikey_v1',k); return k;} }catch(e){} return getApiKey(); }
 window.showApiKeyConfig = function(){ if(!isAdmin())return; document.getElementById('api-key-input').value=getApiKey(); document.getElementById('api-banner').classList.add('show'); };
 
-/* ── LOGIN / AUTH ── */
+/* ── LOGIN MODAL ── */
+window.openLoginModal = function(){
+  const overlay=document.createElement('div');
+  overlay.className='login-modal-overlay';
+  overlay.id='login-modal';
+  overlay.innerHTML=`<div class="login-modal">
+    <div class="login-brand" style="text-align:center;margin-bottom:24px">
+      <div class="login-brand-logo" style="justify-content:center">
+        <div class="login-brand-icon"><span class="login-brand-icon-text">MM</span></div>
+        <div class="login-brand-name">MM <span>TALENT</span> SPORT</div>
+      </div>
+    </div>
+    <div class="login-box">
+      <div class="login-tabs">
+        <div class="login-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</div>
+        <div class="login-tab" id="tab-register" onclick="switchTab('register')">Crear cuenta</div>
+      </div>
+      <div id="login-err" class="login-err"></div>
+      <div id="login-ok" class="login-ok"></div>
+      <div class="login-field"><label>Correo electrónico</label><input id="l-email" type="email" placeholder="tu@email.com" autocomplete="email"></div>
+      <div class="login-field"><label>Contraseña</label><input id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="login-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+      <p class="forgot" id="forgot-link" onclick="resetPassword()">¿Olvidaste tu contraseña?</p>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+};
+
+/* ── DEMO MODE ── */
+let isDemo=false;
+
+const DEMO_PLAYERS=[
+  {id:'d1',nombre:'Alejandro García López',fecha:'2010-03-15',posicion:'Delantero Centro',pieDom:'Derecho',altura:'168',peso:'58',club:'CF Lorca Deportiva',localidad:'Lorca',localidadClub:'Lorca',catMain:'Cadete',catSub:'Superliga',ojeoMain:'Juvenil',ojeoSub:'División de Honor',estado:'Activo',tecnica:8,tactica:7,fisico:7,actitud:9,tags:['Goleador','Líder','Rápido'],notasPrivadas:'Familia muy implicada. El padre fue futbolista semi-pro.',contacto:'Carlos García',relacion:'Padre/Madre',telefono:'612 345 678',representante:'',interes:'Interesado',foto:'',visitas:[
+    {id:'v1',fecha:'2025-01-15',partido:'Cadete Lorca vs Cartagena J12',nota:'Gran partido. Dos goles y una asistencia. Se mueve bien entre líneas y busca la portería constantemente. Buena actitud en la presión alta.',valoracion:9},
+    {id:'v2',fecha:'2025-02-20',partido:'Cadete Lorca vs Real Murcia J16',nota:'Partido más discreto. El rival le anuló bien con doble marca. Aun así, generó peligro en el segundo tiempo con un disparo al palo.',valoracion:6},
+    {id:'v3',fecha:'2025-03-10',partido:'Cadete Lorca vs UCAM J20',nota:'Vuelve a su mejor nivel. Hat-trick y liderazgo en el vestuario. Pidió el balón en momentos difíciles.',valoracion:9}
+  ],cvClubs:[{club:'EF Lorca Base',etapa:'Benjamín',categoria:'Superliga'},{club:'CF Lorca Deportiva',etapa:'Alevín-Cadete',categoria:'Superliga'}]},
+  {id:'d2',nombre:'Pablo Fernández Ruiz',fecha:'2011-07-22',posicion:'Central',pieDom:'Izquierdo',altura:'175',peso:'65',club:'FC Cartagena Academy',localidad:'Cartagena',localidadClub:'Cartagena',catMain:'Infantil',catSub:'División de Honor',ojeoMain:'Cadete',ojeoSub:'Superliga',estado:'En seguimiento',tecnica:6,tactica:8,fisico:8,actitud:7,tags:['Líder','Disciplinado'],notasPrivadas:'',contacto:'María Ruiz',relacion:'Padre/Madre',telefono:'634 567 890',representante:'',interes:'Podría valorar',foto:'',visitas:[
+    {id:'v4',fecha:'2025-02-05',partido:'Infantil Cartagena vs Elche J8',nota:'Muy sólido defensivamente. Buena salida de balón y liderazgo en la línea. Imponente físicamente para su edad.',valoracion:8},
+    {id:'v5',fecha:'2025-03-12',partido:'Infantil Cartagena vs Hércules J14',nota:'Partido irregular. Dos errores graves en salida que generaron ocasiones. Necesita trabajar la concentración.',valoracion:5}
+  ]},
+  {id:'d3',nombre:'Martín López Sánchez',fecha:'2009-11-03',posicion:'Mediocampista',pieDom:'Derecho',altura:'172',peso:'62',club:'Real Murcia CF',localidad:'Murcia',localidadClub:'Murcia',catMain:'Juvenil',catSub:'Nacional',ojeoMain:'Juvenil',ojeoSub:'División de Honor',estado:'Activo',tecnica:9,tactica:8,fisico:6,actitud:7,tags:['Creativo','Polivalente'],notasPrivadas:'Representante ha contactado. Interés del Villarreal B.',contacto:'José López',relacion:'Padre/Madre',telefono:'678 901 234',representante:'Sports Agency Sur',interes:'Muy interesado',foto:'',visitas:[
+    {id:'v6',fecha:'2025-01-20',partido:'Juvenil R.Murcia vs Albacete J10',nota:'El mejor del campo. Distribución impecable, cambios de orientación precisos. Dos asistencias de gol.',valoracion:9},
+    {id:'v7',fecha:'2025-02-18',partido:'Juvenil R.Murcia vs Granada J14',nota:'Controlador del tempo del partido. Menos vistoso pero efectivo. Buena lectura táctica.',valoracion:7}
+  ]},
+  {id:'d4',nombre:'Hugo Martínez Pérez',fecha:'2012-05-10',posicion:'Extremo Derecho',pieDom:'Ambidiestro',altura:'158',peso:'48',club:'EF Alhama',localidad:'Alhama de Murcia',localidadClub:'Alhama de Murcia',catMain:'Alevín',catSub:'Superliga',ojeoMain:'Infantil',ojeoSub:'Autonómica',estado:'En espera',tecnica:7,tactica:5,fisico:7,actitud:6,tags:['Rápido','Canterano'],notasPrivadas:'',contacto:'Ana Pérez',relacion:'Padre/Madre',telefono:'645 123 789',representante:'',interes:'Desconocido',foto:'',visitas:[
+    {id:'v8',fecha:'2025-03-01',partido:'Alevín Alhama vs Totana J18',nota:'Velocidad desbordante por la banda. Le falta decisión en el último tercio. Potencial claro.',valoracion:7}
+  ]},
+  {id:'d5',nombre:'Daniel Torres Navarro',fecha:'2010-09-28',posicion:'Portero',pieDom:'Derecho',altura:'178',peso:'68',club:'UCAM Murcia',localidad:'Molina de Segura',localidadClub:'Murcia',catMain:'Cadete',catSub:'División de Honor',ojeoMain:'Juvenil',ojeoSub:'Nacional',estado:'Activo',tecnica:7,tactica:7,fisico:9,actitud:8,tags:['Disciplinado','Líder'],notasPrivadas:'Muy maduro para su edad. El entrenador lo considera intocable.',contacto:'Pedro Torres',relacion:'Padre/Madre',telefono:'656 789 012',representante:'',interes:'Podría valorar',foto:'',visitas:[
+    {id:'v9',fecha:'2025-01-25',partido:'Cadete UCAM vs Lorca J11',nota:'Tres paradas decisivas. Muy seguro en el juego aéreo. Buena comunicación con la defensa.',valoracion:8},
+    {id:'v10',fecha:'2025-02-22',partido:'Cadete UCAM vs Cartagena J15',nota:'Penalti parado y portería a cero. Transmite seguridad. Mejorar el juego con los pies en salida.',valoracion:8},
+    {id:'v11',fecha:'2025-03-15',partido:'Cadete UCAM vs Real Murcia J19',nota:'Su mejor partido. Cuatro intervenciones clave incluyendo un mano a mano. Nivel de juvenil.',valoracion:9}
+  ]},
+  {id:'d6',nombre:'Adrián Ruiz Molina',fecha:'2009-02-14',posicion:'Lateral Derecho',pieDom:'Derecho',altura:'174',peso:'64',club:'CF Lorca Deportiva',localidad:'Águilas',localidadClub:'Lorca',catMain:'Juvenil',catSub:'Autonómica',ojeoMain:'Juvenil',ojeoSub:'Nacional',estado:'Descartado',tecnica:5,tactica:6,fisico:7,actitud:4,tags:['Lesionado'],notasPrivadas:'Lesión de rodilla en marzo. Descartado por actitud en recuperación.',contacto:'Fran Ruiz',relacion:'Padre/Madre',telefono:'689 456 123',representante:'',interes:'Sin interés',foto:'',visitas:[
+    {id:'v12',fecha:'2025-01-10',partido:'Juvenil Lorca vs Cieza J9',nota:'Buen despliegue físico pero muchas pérdidas de balón. Faltas innecesarias. Mal gesto con el árbitro.',valoracion:4}
+  ]},
+  {id:'d7',nombre:'Iker Navarro Giménez',fecha:'2011-12-01',posicion:'Pivote Defensivo',pieDom:'Derecho',altura:'169',peso:'60',club:'Jumilla CF',localidad:'Jumilla',localidadClub:'Jumilla',catMain:'Infantil',catSub:'Autonómica',ojeoMain:'Cadete',ojeoSub:'Autonómica',estado:'En seguimiento',tecnica:6,tactica:7,fisico:6,actitud:8,tags:['Disciplinado','Canterano'],notasPrivadas:'',contacto:'Laura Giménez',relacion:'Padre/Madre',telefono:'623 789 456',representante:'',interes:'Podría valorar',foto:'',visitas:[
+    {id:'v13',fecha:'2025-02-15',partido:'Infantil Jumilla vs Yecla J12',nota:'Muy ordenado en el posicionamiento. Buen corte y distribución. Le falta intensidad física en duelos directos.',valoracion:7},
+    {id:'v14',fecha:'2025-03-08',partido:'Infantil Jumilla vs Cieza J16',nota:'Mejoría clara respecto a la visita anterior. Más agresivo en la recuperación. Buena progresión.',valoracion:7}
+  ]},
+  {id:'d8',nombre:'Sergio Hernández Díaz',fecha:'2008-06-19',posicion:'Mediapunta',pieDom:'Izquierdo',altura:'176',peso:'66',club:'Real Murcia CF',localidad:'Murcia',localidadClub:'Murcia',catMain:'Sénior',catSub:'Preferente',ojeoMain:'Sénior',ojeoSub:'3ºRFEF',estado:'Activo',tecnica:8,tactica:7,fisico:6,actitud:7,tags:['Creativo','Goleador'],notasPrivadas:'Hablar con el representante antes de mayo.',contacto:'Miguel Hernández',relacion:'Representante',telefono:'690 123 567',representante:'MH Sports Management',interes:'Muy interesado',foto:'',visitas:[
+    {id:'v15',fecha:'2025-02-01',partido:'Preferente R.Murcia B vs Águilas J18',nota:'Desequilibrante con el balón. Zurda muy precisa. Un gol de falta directa espectacular.',valoracion:8},
+    {id:'v16',fecha:'2025-03-05',partido:'Preferente R.Murcia B vs Lorca J22',nota:'Algo desaparecido en la primera parte. Mejoró con el cambio de sistema. Asistencia decisiva.',valoracion:6}
+  ]}
+];
+
+window.startDemo = function(){
+  isDemo=true;
+  // Close login modal if open
+  const modal=document.getElementById('login-modal');
+  if(modal)modal.remove();
+  // Set demo data
+  players=[...DEMO_PLAYERS.map(p=>({...p,visitas:[...(p.visitas||[]).map(v=>({...v}))],tags:[...(p.tags||[])],cvClubs:[...(p.cvClubs||[])]}))];
+  currentUser={uid:'demo',email:'demo@mmtalentsport.com'};
+  // Show UI
+  document.getElementById('main-header').style.display='flex';
+  document.getElementById('demo-banner').style.display='flex';
+  document.getElementById('user-pill').textContent='👤 Modo demo';
+  document.getElementById('btn-api-admin').style.display='none';
+  buildYearFilter();
+  renderList();
+  updateSubcats('f-cat-sub','f-cat-main');
+  updateSubcats('f-ojeo-sub','f-ojeo-main');
+  showPage('list');
+};
+
+window.exitDemo = function(){
+  isDemo=false;
+  players=[];
+  currentId=null;
+  currentUser=null;
+  document.getElementById('main-header').style.display='none';
+  document.getElementById('demo-banner').style.display='none';
+  showPage('login');
+  setTimeout(()=>openLoginModal(),300);
+};
 window.switchTab = function(m){
   loginMode=m;
   document.getElementById('tab-login').classList.toggle('active',m==='login');
@@ -1144,10 +1445,16 @@ function startSync(uid){
   },err=>console.error('Alerts error:',err));
 }
 async function persistPlayer(p){
+  if(isDemo){
+    const idx=players.findIndex(x=>x.id===p.id);
+    if(idx>=0)players[idx]={...p};else players.push({...p});
+    buildYearFilter();renderList();showSavePill();return;
+  }
   try{const{id,...data}=p; await setDoc(doc(db,'users',currentUser.uid,'players',id),data); showSavePill();}
   catch(e){showToast('❌ Error al guardar: '+e.message);}
 }
 async function removePlayer(id){
+  if(isDemo){players=players.filter(x=>x.id!==id);buildYearFilter();renderList();return;}
   try{await deleteDoc(doc(db,'users',currentUser.uid,'players',id));}
   catch(e){showToast('❌ Error al eliminar: '+e.message);}
 }
@@ -1161,6 +1468,11 @@ onAuthStateChanged(auth, async user=>{
     await new Promise(r=>setTimeout(r,1000)); // esperar animación
   }
   if(user){
+    isDemo=false;
+    document.getElementById('demo-banner').style.display='none';
+    // Close login modal if open
+    const modal=document.getElementById('login-modal');
+    if(modal)modal.remove();
     currentUser=user;
     document.getElementById('user-pill').textContent='👤 '+user.email;
     document.getElementById('main-header').style.display='flex';
@@ -1170,7 +1482,7 @@ onAuthStateChanged(auth, async user=>{
     showPage('list');
     updateSubcats('f-cat-sub','f-cat-main');
     updateSubcats('f-ojeo-sub','f-ojeo-main');
-  } else {
+  } else if(!isDemo) {
     currentUser=null;
     showPage('login');
   }
@@ -2272,6 +2584,7 @@ window.removePhoto = function(){
 
 /* ── COMPARTIR INFORME ── */
 window.shareReport = async function(){
+  if(isDemo){showToast('⚠️ Compartir no disponible en modo demo. Crea tu cuenta gratis.');return;}
   const p=players.find(x=>x.id===currentId);
   if(!p)return;
 
@@ -2452,6 +2765,7 @@ window.createAlert = async function(){
     done:false,
     createdAt:new Date().toISOString()
   };
+  if(isDemo){alerts.push(al);updateAlertBadge();renderAlerts();document.getElementById('al-message').value='';document.getElementById('al-date').value='';showToast('🔔 Alerta creada');return;}
   try{
     const{id,...data}=al;
     await setDoc(doc(db,'users',currentUser.uid,'alerts',id),data);
@@ -2462,6 +2776,7 @@ window.createAlert = async function(){
 };
 
 window.completeAlert = async function(id){
+  if(isDemo){const a=alerts.find(x=>x.id===id);if(a){a.done=true;a.doneAt=todayISO();}updateAlertBadge();renderAlerts();showToast('✓ Completada');return;}
   try{await setDoc(doc(db,'users',currentUser.uid,'alerts',id),{done:true,doneAt:todayISO()},{merge:true});renderAlerts();showToast('✓ Alerta completada');}
   catch(e){showToast('❌ Error: '+e.message);}
 };
@@ -2472,12 +2787,14 @@ window.postponeAlert = async function(id){
   const d=new Date(al.date||Date.now());
   d.setDate(d.getDate()+7);
   const newDate=d.toISOString().split('T')[0];
+  if(isDemo){al.date=newDate;renderAlerts();showToast('→ Pospuesta 7 días');return;}
   try{await setDoc(doc(db,'users',currentUser.uid,'alerts',id),{date:newDate},{merge:true});renderAlerts();showToast('→ Pospuesta 7 días');}
   catch(e){showToast('❌ Error: '+e.message);}
 };
 
 window.deleteAlert = async function(id){
   showConfirm('Eliminar alerta','¿Eliminar esta alerta?',async()=>{
+    if(isDemo){alerts=alerts.filter(x=>x.id!==id);updateAlertBadge();renderAlerts();showToast('Alerta eliminada');return;}
     try{await deleteDoc(doc(db,'users',currentUser.uid,'alerts',id));renderAlerts();showToast('Alerta eliminada');}
     catch(e){showToast('❌ Error: '+e.message);}
   },'Eliminar',true);
