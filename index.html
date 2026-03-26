@@ -13,6 +13,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root {
   --navy: #0B0F1A;
@@ -329,6 +331,29 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .share-link-box { display:flex; gap:8px; align-items:center; margin-top:10px; }
 .share-link-box input { flex:1; font-size:12px; background:#F1F5F9; }
 
+/* ── ALERTS ── */
+.alert-badge { position:relative; }
+.alert-count { position:absolute; top:-4px; right:-6px; min-width:16px; height:16px; border-radius:99px; background:#DC2626; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+.alert-panel { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.alert-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid #F8FAFC; }
+.alert-item:last-child { border-bottom:none; }
+.alert-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.alert-icon.urgent { background:#FEE2E2; }
+.alert-icon.warning { background:#FEF3C7; }
+.alert-icon.info { background:#EDE9FE; }
+.alert-body { flex:1; min-width:0; }
+.alert-title { font-size:13px; font-weight:600; margin-bottom:2px; }
+.alert-sub { font-size:11px; color:var(--slate); }
+.alert-actions { display:flex; gap:6px; margin-top:6px; }
+.alert-actions button { font-size:10px; padding:3px 10px; }
+.alert-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px; background:#F8FAFC; border-radius:10px; margin-bottom:14px; }
+
+/* ── MAP ── */
+.map-container { height:500px; border-radius:14px; overflow:hidden; border:1px solid var(--borderL); margin-bottom:16px; }
+.map-legend { display:flex; gap:16px; flex-wrap:wrap; padding:10px 0; }
+.map-legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text2); }
+.map-legend-dot { width:12px; height:12px; border-radius:50%; }
+
 @media(max-width:768px) {
   .hero-stats { grid-template-columns:repeat(3,1fr); }
   .hero-top { flex-direction:column; align-items:flex-start; }
@@ -352,6 +377,8 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .player-meta > div:not(:last-child):not(:first-child) { display:none; }
   .player-sub { display:none; }
   .player-info .tags-wrap-inline { display:none !important; }
+  .map-container { height:350px; }
+  .alert-form { grid-template-columns:1fr; }
 }
 @media(max-width:480px) {
   .hero-stats { grid-template-columns:repeat(2,1fr); }
@@ -404,6 +431,8 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     <span class="save-pill" id="save-pill">✓ Guardado</span>
     <button class="hbtn" onclick="openDashboard()">📊 Dashboard</button>
     <button class="hbtn" onclick="openCompare()">⚖️ Comparar</button>
+    <button class="hbtn" onclick="openMap()">🗺️ Mapa</button>
+    <button class="hbtn alert-badge" onclick="openAlerts()" id="btn-alerts">🔔<span class="alert-count" id="alert-count" style="display:none">0</span></button>
     <span class="user-pill" id="user-pill">—</span>
     <button class="hbtn" id="btn-api-admin" onclick="showApiKeyConfig()" style="display:none">🔑 API IA</button>
     <button class="hbtn" onclick="doLogout()">Salir</button>
@@ -616,6 +645,68 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   </div>
 </div>
 
+<!-- MAP PAGE -->
+<div id="page-map" class="page">
+  <div class="hero" style="padding:24px">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-title">🗺️ Mapa de <span>jugadores</span></h1>
+        <div class="hero-actions">
+          <button class="hero-action-btn" onclick="showPage('list')">← Volver</button>
+          <select id="map-filter" onchange="renderMap()" style="font-size:12px;padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)">
+            <option value="club" style="color:#000">Localidad del club</option>
+            <option value="jugador" style="color:#000">Localidad del jugador</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="map-container" id="map-container"></div>
+    <div class="map-legend">
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#34D399"></div>Activo</div>
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#818CF8"></div>En seguimiento</div>
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#FBBF24"></div>En espera</div>
+      <div class="map-legend-item"><div class="map-legend-dot" style="background:#F87171"></div>Descartado</div>
+    </div>
+    <div class="card" id="map-stats"></div>
+  </div>
+</div>
+
+<!-- ALERTS PAGE -->
+<div id="page-alerts" class="page">
+  <div class="hero" style="padding:24px">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <h1 class="hero-title">🔔 Alertas y <span>seguimiento</span></h1>
+        <button class="hero-action-btn" onclick="showPage('list')">← Volver</button>
+      </div>
+    </div>
+  </div>
+  <div class="container" style="max-width:760px">
+    <div class="alert-panel">
+      <div class="card-title">Crear nueva alerta</div>
+      <div class="alert-form">
+        <div class="form-group"><label class="form-label">Jugador</label><select id="al-player"><option value="">Seleccionar...</option></select></div>
+        <div class="form-group"><label class="form-label">Fecha límite</label><input type="date" id="al-date"></div>
+        <div class="form-group" style="grid-column:1/-1"><label class="form-label">Mensaje</label><input id="al-message" placeholder="Ej: Revisar antes del cierre de mercado"></div>
+        <div class="form-group"><label class="form-label">Prioridad</label>
+          <select id="al-priority"><option value="info">Normal</option><option value="warning">Importante</option><option value="urgent">Urgente</option></select>
+        </div>
+        <div style="display:flex;align-items:flex-end"><button class="btn-primary" onclick="createAlert()" style="width:100%">+ Crear alerta</button></div>
+      </div>
+    </div>
+    <div class="alert-panel">
+      <div class="card-title" id="alerts-pending-title">Alertas pendientes (0)</div>
+      <div id="alerts-pending-list"></div>
+    </div>
+    <div class="alert-panel" style="opacity:.7">
+      <div class="card-title" id="alerts-done-title">Completadas (0)</div>
+      <div id="alerts-done-list"></div>
+    </div>
+  </div>
+</div>
+
 <!-- FORM PAGE -->
 <div id="page-form" class="page">
   <div class="container" style="max-width:760px">
@@ -648,6 +739,8 @@ button:disabled { opacity:.5; cursor:not-allowed; }
         <div class="form-group"><label class="form-label">Altura (cm)</label><input id="f-altura" type="number" placeholder="175" min="100" max="220"></div>
         <div class="form-group"><label class="form-label">Peso (kg)</label><input id="f-peso" type="number" placeholder="68" min="25" max="150"></div>
         <div class="form-group full"><label class="form-label">Club actual</label><input id="f-club" placeholder="Ej: CF Lorca Deportiva"></div>
+        <div class="form-group"><label class="form-label">Localidad del jugador</label><input id="f-localidad" placeholder="Ej: Lorca, Murcia"></div>
+        <div class="form-group"><label class="form-label">Localidad del club</label><input id="f-localidad-club" placeholder="Ej: Cartagena, Murcia"></div>
         <div class="form-group"><label class="form-label">Categoría del jugador</label>
           <select id="f-cat-main" onchange="updateSubcats('f-cat-sub','f-cat-main')">
             <option>Benjamín</option><option>Alevín</option><option>Infantil</option><option>Cadete</option><option>Juvenil</option><option>Sénior</option>
@@ -835,6 +928,7 @@ const SUBCATS = {
 
 let currentUser=null, players=[], currentId=null, loginMode='login', unsubscribe=null;
 let activeFilters = { estado:'' };
+let alerts=[], unsubAlerts=null;
 let _debounceTimer = null;
 
 const AVAILABLE_TAGS = ['Rápido','Líder','Goleador','Creativo','Lesionado','Canterano','Polivalente','Disciplinado'];
@@ -1017,8 +1111,9 @@ window.resetPassword = async function(){
 window.doLogout = function(){
   showConfirm('Cerrar sesión', '¿Seguro que quieres salir?', async()=>{
     if(unsubscribe){unsubscribe();unsubscribe=null;}
+    if(unsubAlerts){unsubAlerts();unsubAlerts=null;}
     await signOut(auth);
-    players=[]; currentId=null;
+    players=[]; alerts=[]; currentId=null;
     document.getElementById('main-header').style.display='none';
     document.getElementById('api-banner').classList.remove('show');
     document.getElementById('l-email').value=''; document.getElementById('l-pass').value='';
@@ -1039,6 +1134,13 @@ function startSync(uid){
     renderList();
     if(currentId){const p=players.find(x=>x.id===currentId);if(p)renderVisits(p);}
   },err=>console.error('Firestore error:',err));
+  // Sync alerts
+  if(unsubAlerts)unsubAlerts();
+  const qa=query(collection(db,'users',uid,'alerts'),orderBy('date'));
+  unsubAlerts=onSnapshot(qa,snap=>{
+    alerts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    updateAlertBadge();
+  },err=>console.error('Alerts error:',err));
 }
 async function persistPlayer(p){
   try{const{id,...data}=p; await setDoc(doc(db,'users',currentUser.uid,'players',id),data); showSavePill();}
@@ -1186,7 +1288,7 @@ window.openNew = function(){
   currentId=null;
   document.getElementById('form-title').textContent='Nuevo jugador';
   document.getElementById('btn-delete').style.display='none';
-  ['nombre','fecha','club','telefono','contacto','representante','altura','peso'].forEach(k=>document.getElementById('f-'+k).value='');
+  ['nombre','fecha','club','telefono','contacto','representante','altura','peso','localidad','localidad-club'].forEach(k=>document.getElementById('f-'+k).value='');
   document.getElementById('f-posicion').value='Mediocampista';
   document.getElementById('f-pie').value='Derecho';
   document.getElementById('f-estado').value='Activo';
@@ -1215,6 +1317,8 @@ window.editCurrent = function(){
   document.getElementById('f-nombre').value=p.nombre||'';
   document.getElementById('f-fecha').value=p.fecha||'';
   document.getElementById('f-club').value=p.club||'';
+  document.getElementById('f-localidad').value=p.localidad||'';
+  document.getElementById('f-localidad-club').value=p.localidadClub||'';
   document.getElementById('f-altura').value=p.altura||'';
   document.getElementById('f-peso').value=p.peso||'';
   document.getElementById('f-telefono').value=p.telefono||'';
@@ -1279,6 +1383,8 @@ window.savePlayer = async function(){
     nombre,
     fecha:document.getElementById('f-fecha').value,
     club:document.getElementById('f-club').value.trim(),
+    localidad:document.getElementById('f-localidad').value.trim(),
+    localidadClub:document.getElementById('f-localidad-club').value.trim(),
     catMain:document.getElementById('f-cat-main').value,
     catSub:document.getElementById('f-cat-sub').value,
     ojeoMain:document.getElementById('f-ojeo-main').value,
@@ -1352,6 +1458,7 @@ window.openDetail = function(id){
     ['Posición',p.posicion||'—'],['Pie dominante',p.pieDom||'—'],
     ['Categoría del jugador',p.catMain+(p.catSub?' · '+p.catSub:'')],
     ['Categoría de ojeo',p.ojeoMain+(p.ojeoSub?' · '+p.ojeoSub:'')],
+    ['Localidad del jugador',p.localidad||'—'],['Localidad del club',p.localidadClub||'—'],
     ['Altura',p.altura?p.altura+' cm':'—'],['Peso',p.peso?p.peso+' kg':'—'],
     ['Fecha de nacimiento',formatDate(p.fecha)],['Estado',p.estado||'—']
   ].map(([k,v])=>`<div class="detail-row"><span class="dk">${esc(k)}</span><span class="dv">${esc(v)}</span></div>`).join('');
@@ -1999,7 +2106,202 @@ async function checkSharedReport(){
   }catch(e){return false;}
 }
 
-/* ── PWA MANIFEST + SERVICE WORKER (inline) ── */
+/* ── SISTEMA DE ALERTAS ── */
+function updateAlertBadge(){
+  const pending=alerts.filter(a=>!a.done);
+  const badge=document.getElementById('alert-count');
+  if(pending.length>0){badge.textContent=pending.length;badge.style.display='flex';}
+  else{badge.style.display='none';}
+}
+
+window.openAlerts = function(){
+  // Populate player selector
+  const opts='<option value="">Sin jugador específico</option>'+[...players].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).map(p=>`<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  document.getElementById('al-player').innerHTML=opts;
+  document.getElementById('al-date').value='';
+  document.getElementById('al-message').value='';
+  renderAlerts();
+  showPage('alerts');
+};
+
+function renderAlerts(){
+  const pending=alerts.filter(a=>!a.done).sort((a,b)=>{const pr={urgent:0,warning:1,info:2};return(pr[a.priority]||2)-(pr[b.priority]||2)||(a.date||'').localeCompare(b.date||'');});
+  const done=alerts.filter(a=>a.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
+  document.getElementById('alerts-pending-title').textContent=`Alertas pendientes (${pending.length})`;
+  document.getElementById('alerts-done-title').textContent=`Completadas (${done.length})`;
+
+  const today=todayISO();
+  const renderItem=(a,isDone)=>{
+    const p=players.find(x=>x.id===a.playerId);
+    const overdue=!isDone&&a.date&&a.date<today;
+    const iconClass=a.priority==='urgent'?'urgent':a.priority==='warning'?'warning':'info';
+    const icon=a.priority==='urgent'?'🔴':a.priority==='warning'?'🟡':'🔵';
+    return `<div class="alert-item" style="${overdue?'background:#FEF2F2;margin:0 -10px;padding:12px 10px;border-radius:8px':''}">
+      <div class="alert-icon ${iconClass}">${icon}</div>
+      <div class="alert-body">
+        <div class="alert-title" style="${overdue?'color:#DC2626':''}">${esc(a.message)||'Sin mensaje'}${overdue?' — <strong>VENCIDA</strong>':''}</div>
+        <div class="alert-sub">${p?`<span style="cursor:pointer;color:var(--purple);font-weight:600" onclick="openDetail('${p.id}')">${esc(p.nombre)}</span> · `:''}${a.date?'Fecha: '+formatDate(a.date):'Sin fecha'}</div>
+        <div class="alert-actions">
+          ${!isDone?`<button class="btn-primary" style="font-size:10px;padding:3px 10px" onclick="completeAlert('${a.id}')">✓ Completar</button>
+          <button style="font-size:10px;padding:3px 10px" onclick="postponeAlert('${a.id}')">→ Posponer 7d</button>
+          <button class="btn-danger" style="font-size:10px;padding:3px 10px" onclick="deleteAlert('${a.id}')">✕</button>`
+          :`<span style="font-size:10px;color:var(--slateL)">Completada ${a.doneAt?formatDate(a.doneAt):''}</span>
+          <button class="btn-danger" style="font-size:10px;padding:3px 10px" onclick="deleteAlert('${a.id}')">✕</button>`}
+        </div>
+      </div>
+    </div>`;
+  };
+  document.getElementById('alerts-pending-list').innerHTML=pending.length?pending.map(a=>renderItem(a,false)).join(''):'<p style="font-size:12px;color:var(--slateL);text-align:center;padding:16px">Sin alertas pendientes</p>';
+  document.getElementById('alerts-done-list').innerHTML=done.length?done.slice(0,10).map(a=>renderItem(a,true)).join(''):'<p style="font-size:12px;color:var(--slateL);text-align:center;padding:16px">Ninguna todavía</p>';
+}
+
+window.createAlert = async function(){
+  const message=document.getElementById('al-message').value.trim();
+  if(!message){showToast('⚠️ Escribe un mensaje para la alerta');return;}
+  const al={
+    id:Date.now().toString(),
+    playerId:document.getElementById('al-player').value||'',
+    date:document.getElementById('al-date').value||'',
+    message,
+    priority:document.getElementById('al-priority').value,
+    done:false,
+    createdAt:new Date().toISOString()
+  };
+  try{
+    const{id,...data}=al;
+    await setDoc(doc(db,'users',currentUser.uid,'alerts',id),data);
+    document.getElementById('al-message').value='';
+    document.getElementById('al-date').value='';
+    showToast('🔔 Alerta creada');
+  }catch(e){showToast('❌ Error: '+e.message);}
+};
+
+window.completeAlert = async function(id){
+  try{await setDoc(doc(db,'users',currentUser.uid,'alerts',id),{done:true,doneAt:todayISO()},{merge:true});renderAlerts();showToast('✓ Alerta completada');}
+  catch(e){showToast('❌ Error: '+e.message);}
+};
+
+window.postponeAlert = async function(id){
+  const al=alerts.find(a=>a.id===id);
+  if(!al)return;
+  const d=new Date(al.date||Date.now());
+  d.setDate(d.getDate()+7);
+  const newDate=d.toISOString().split('T')[0];
+  try{await setDoc(doc(db,'users',currentUser.uid,'alerts',id),{date:newDate},{merge:true});renderAlerts();showToast('→ Pospuesta 7 días');}
+  catch(e){showToast('❌ Error: '+e.message);}
+};
+
+window.deleteAlert = async function(id){
+  showConfirm('Eliminar alerta','¿Eliminar esta alerta?',async()=>{
+    try{await deleteDoc(doc(db,'users',currentUser.uid,'alerts',id));renderAlerts();showToast('Alerta eliminada');}
+    catch(e){showToast('❌ Error: '+e.message);}
+  },'Eliminar',true);
+};
+
+/* ── MAPA DE JUGADORES ── */
+const CITY_COORDS={
+  // Murcia
+  'murcia':[37.9922,-1.1307],'cartagena':[37.6257,-0.9966],'lorca':[37.6774,-1.6991],'molina de segura':[38.0548,-1.2074],
+  'águilas':[37.4055,-1.5836],'cieza':[38.2393,-1.4189],'yecla':[38.6137,-1.1147],'caravaca':[38.1056,-1.8621],
+  'mazarrón':[37.5989,-1.3149],'totana':[37.7691,-1.5064],'torre pacheco':[37.7438,-0.9531],'san javier':[37.8044,-0.8373],
+  'alcantarilla':[37.9693,-1.2107],'alhama de murcia':[37.8516,-1.4289],'jumilla':[38.4739,-1.3257],'mula':[38.0411,-1.4914],
+  'san pedro del pinatar':[37.8353,-0.7921],'los alcázares':[37.7489,-0.8517],'archena':[38.1153,-1.3006],'fuente álamo':[37.7176,-1.1806],
+  'fortuna':[38.1818,-1.1246],'bullas':[38.0497,-1.6717],'cehegín':[38.0917,-1.7979],'calasparra':[38.2296,-1.7003],
+  'beniel':[38.0491,-1.0001],'las torres de cotillas':[38.0250,-1.2429],
+  // Andalucía
+  'almería':[36.8340,-2.4637],'granada':[37.1773,-3.5986],'málaga':[36.7213,-4.4214],'sevilla':[37.3891,-5.9845],
+  'córdoba':[37.8882,-4.7794],'jaén':[37.7796,-3.7890],'cádiz':[36.5271,-6.2886],'huelva':[37.2614,-6.9447],
+  'jerez':[36.6850,-6.1261],'marbella':[36.5099,-4.8862],'algeciras':[36.1408,-5.4536],'motril':[36.7452,-3.5187],
+  'linares':[38.0953,-3.6364],'antequera':[37.0194,-4.5613],'el ejido':[36.7764,-2.8145],'roquetas de mar':[36.7641,-2.6149],
+  'estepona':[36.4276,-5.1459],'torremolinos':[36.6221,-4.4993],'fuengirola':[36.5398,-4.6244],'vélez-málaga':[36.7841,-4.1035],
+  'ronda':[36.7462,-5.1618],'guadix':[37.2988,-3.1356],'úbeda':[38.0126,-3.3706],'baeza':[37.9936,-3.4714],
+  'san fernando':[36.4602,-6.1985],'chiclana':[36.4193,-6.1505],'puerto real':[36.5283,-6.1914],'el puerto de santa maría':[36.5939,-6.2275],
+  'dos hermanas':[37.2843,-5.9220],'utrera':[37.1856,-5.7814],'écija':[37.5415,-5.0827],'osuna':[37.2381,-5.1024],
+  // Valencia Sur
+  'alicante':[38.3452,-0.4810],'elche':[38.2669,-0.6983],'orihuela':[38.0847,-0.9439],'torrevieja':[37.9787,-0.6821],
+  'elda':[38.4773,-0.7919],'alcoy':[38.6985,-0.4736],'villena':[38.6361,-0.8649],'crevillente':[38.2505,-0.8113],
+  'petrer':[38.4888,-0.7718],'novelda':[38.3847,-0.7674],'santa pola':[38.1920,-0.5561],'guardamar':[38.0889,-0.6548],
+  'pilar de la horadada':[37.8670,-0.7920],'callosa de segura':[38.1258,-0.8779],'aspe':[38.3453,-0.7674],
+  // Grandes
+  'madrid':[40.4168,-3.7038],'barcelona':[41.3851,2.1734],'valencia':[39.4699,-0.3763],'bilbao':[43.2630,-2.9350],
+  'zaragoza':[41.6488,-0.8891],'vigo':[42.2406,-8.7207],'gijón':[43.5322,-5.6611],'valladolid':[41.6523,-4.7245],
+};
+
+let leafletMap=null;
+let mapMarkers=[];
+
+window.openMap = function(){
+  if(!players.length){showToast('⚠️ Añade jugadores con localidad para ver el mapa');return;}
+  showPage('map');
+  setTimeout(()=>renderMap(),200);
+};
+
+function renderMap(){
+  const mode=document.getElementById('map-filter').value; // 'club' or 'jugador'
+  const field=mode==='club'?'localidadClub':'localidad';
+
+  // Init map if needed
+  if(!leafletMap){
+    leafletMap=L.map('map-container').setView([37.9,-1.5],8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap',maxZoom:18
+    }).addTo(leafletMap);
+  }
+  // Clear markers
+  mapMarkers.forEach(m=>leafletMap.removeLayer(m));
+  mapMarkers=[];
+
+  // Group players by location
+  const groups={};
+  players.forEach(p=>{
+    const loc=(p[field]||'').trim().toLowerCase();
+    if(!loc)return;
+    // Try to find coords by matching city name
+    const cityKey=Object.keys(CITY_COORDS).find(k=>loc.includes(k)||k.includes(loc.split(',')[0].trim()));
+    if(!cityKey)return;
+    if(!groups[cityKey])groups[cityKey]={coords:CITY_COORDS[cityKey],players:[],name:loc};
+    groups[cityKey].players.push(p);
+  });
+
+  const estadoColor={Activo:'#34D399','En seguimiento':'#818CF8','En espera':'#FBBF24',Descartado:'#F87171'};
+  let totalMapped=0;
+
+  Object.values(groups).forEach(g=>{
+    const n=g.players.length;
+    totalMapped+=n;
+    const radius=Math.min(20,8+n*3);
+    const colors=g.players.map(p=>estadoColor[p.estado]||'#94A3B8');
+    const mainColor=colors[0];
+
+    const circle=L.circleMarker(g.coords,{radius,fillColor:mainColor,color:'#fff',weight:2,opacity:1,fillOpacity:.8}).addTo(leafletMap);
+
+    const popupHTML=`<div style="font-family:Inter,system-ui;min-width:180px">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px;text-transform:capitalize">${esc(g.name)} (${n})</div>
+      ${g.players.map(p=>`<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;cursor:pointer" onclick="openDetail('${p.id}')">
+        <span style="width:8px;height:8px;border-radius:50%;background:${estadoColor[p.estado]||'#94A3B8'};flex-shrink:0"></span>
+        <span style="font-weight:600">${esc(p.nombre)}</span>
+        <span style="color:#64748b;margin-left:auto">${avg(p)}</span>
+      </div>`).join('')}
+    </div>`;
+    circle.bindPopup(popupHTML);
+    mapMarkers.push(circle);
+  });
+
+  // Fit bounds if markers exist
+  if(mapMarkers.length>0){
+    const group=L.featureGroup(mapMarkers);
+    leafletMap.fitBounds(group.getBounds().pad(0.1));
+  }
+
+  // Stats
+  const noLoc=players.filter(p=>!(p[field]||'').trim()).length;
+  document.getElementById('map-stats').innerHTML=`<div class="card-title">Resumen geográfico</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:13px">
+      <div><span style="font-weight:700;font-size:20px;color:var(--purple);font-family:'Syne',sans-serif">${totalMapped}</span><br><span style="color:var(--slate)">jugadores en el mapa</span></div>
+      <div><span style="font-weight:700;font-size:20px;color:var(--text);font-family:'Syne',sans-serif">${Object.keys(groups).length}</span><br><span style="color:var(--slate)">localidades</span></div>
+      ${noLoc?`<div><span style="font-weight:700;font-size:20px;color:var(--amber);font-family:'Syne',sans-serif">${noLoc}</span><br><span style="color:var(--slate)">sin localidad (${mode==='club'?'club':'jugador'})</span></div>`:''}
+    </div>`;
+}
 (function(){
   const manifest={name:'MM Talent Sport',short_name:'MM Talent',description:'Plataforma de scouting de fútbol base',start_url:'/',display:'standalone',background_color:'#0B0F1A',theme_color:'#0B0F1A',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%237C3AED"/><text x="256" y="340" text-anchor="middle" font-size="220" font-weight="800" fill="white" font-family="system-ui">MM</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
   const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
