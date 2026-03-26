@@ -1511,7 +1511,10 @@ function renderVisits(p){
     `<div class="visit-item">
       <div class="visit-meta">
         <span>📅 ${esc(v.fecha)} · ${esc(v.partido)}${v.valoracion?` <span style="font-size:12px;font-weight:800;color:${v.valoracion>=8?'var(--green)':v.valoracion>=6?'var(--amber)':'var(--red)'};font-family:'Syne',sans-serif;background:${v.valoracion>=8?'#D1FAE5':v.valoracion>=6?'#FEF3C7':'#FEE2E2'};padding:1px 8px;border-radius:6px;margin-left:4px">${v.valoracion}/10</span>`:''}</span>
-        <button class="visit-delete" onclick="event.stopPropagation();deleteVisit('${v.id}')">✕ Eliminar</button>
+        <span style="display:flex;gap:4px">
+          <button class="visit-delete" style="opacity:1;color:var(--purple);border:1px solid #DDD6FE" onclick="event.stopPropagation();generateVisitReport('${v.id}')">📄</button>
+          <button class="visit-delete" style="opacity:1" onclick="event.stopPropagation();deleteVisit('${v.id}')">✕</button>
+        </span>
       </div>
       <div class="visit-note">${esc(v.nota)||'Sin notas'}</div>
     </div>`
@@ -1546,6 +1549,55 @@ window.deleteVisit = function(visitId){
     await persistPlayer(updated);
     showToast('Visita eliminada');
   },'Eliminar',true);
+};
+
+/* ── INFORME DE VISITA INDIVIDUAL ── */
+window.generateVisitReport = function(visitId){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  const v=(p.visitas||[]).find(x=>x.id===visitId);
+  if(!v)return;
+  const a=avg(p);
+  const rc=val=>val>=8?'#059669':val>=6?'#D97706':'#DC2626';
+  const catLabel=(p.catMain||'')+(p.catSub?' · '+p.catSub:'');
+  const fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}};
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informe de partido — ${esc(p.nombre)}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:12mm;size:A4}.pbtns{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:8px}.pbtns button{font-family:system-ui;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;border:none;font-weight:700}@media print{.pbtns{display:none!important}}</style></head><body>
+<div class="pbtns"><button onclick="window.print()" style="background:#7C3AED;color:#fff">🖨️ Guardar como PDF</button><button onclick="window.close()" style="background:#fff;color:#374151;border:1px solid #d1d5db">✕ Cerrar</button></div>
+<div style="max-width:700px;margin:0 auto;padding:30px">
+  <div style="background:#0B0F1A;color:#fff;border-radius:16px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden">
+    <div style="height:4px;background:linear-gradient(90deg,#7C3AED,#8B5CF6,#A78BFA);position:absolute;top:0;left:0;right:0;border-radius:16px 16px 0 0"></div>
+    <div style="display:flex;align-items:center;gap:20px;margin-top:4px">
+      ${p.foto?`<img src="${p.foto}" style="width:64px;height:64px;border-radius:14px;object-fit:cover;border:2px solid rgba(124,58,237,.4)">`:`<div style="width:64px;height:64px;border-radius:14px;background:rgba(124,58,237,.2);border:2px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#c4b5fd">${ini(p.nombre)}</div>`}
+      <div style="flex:1">
+        <div style="font-size:10px;letter-spacing:.12em;color:#94a3b8;text-transform:uppercase;font-weight:600;margin-bottom:4px">Informe de partido · MM Talent Sport</div>
+        <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px">${esc(p.nombre)}</div>
+        <div style="font-size:13px;color:#94a3b8">${esc(p.posicion)} · ${esc(p.club)||'—'} · ${esc(catLabel)}</div>
+      </div>
+      ${v.valoracion?`<div style="text-align:center;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.35);border-radius:12px;padding:12px 16px"><div style="font-size:9px;color:#c4b5fd;text-transform:uppercase;font-weight:700;letter-spacing:.1em;margin-bottom:2px">Valoración</div><div style="font-size:38px;font-weight:800;color:${rc(v.valoracion)};line-height:1;font-family:system-ui">${v.valoracion}</div><div style="font-size:9px;color:#94a3b8;margin-top:2px">/10</div></div>`:''}
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+    <div style="background:#F8FAFC;border-radius:12px;padding:16px"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Partido</div><div style="font-size:15px;font-weight:700;color:#1e293b">${esc(v.partido)}</div></div>
+    <div style="background:#F8FAFC;border-radius:12px;padding:16px"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Fecha</div><div style="font-size:15px;font-weight:700;color:#1e293b">${fd(v.fecha)}</div></div>
+  </div>
+  <div style="margin-bottom:24px">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Observaciones del scout</div>
+    <div style="background:#F5F3FF;border-left:4px solid #7C3AED;padding:20px 24px;border-radius:0 10px 10px 0;font-size:14px;line-height:1.8;color:#1e293b;white-space:pre-wrap">${esc(v.nota)||'Sin observaciones registradas.'}</div>
+  </div>
+  <div style="margin-bottom:24px">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Valoraciones globales del jugador</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,val])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 8px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${l}</div><div style="font-size:24px;font-weight:800;color:${rc(val)};line-height:1">${val}</div></div>`).join('')}</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid #f1f5f9">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#7C3AED"></div><span style="font-size:11px;color:#64748b;font-weight:600">MM Talent Sport</span></div>
+    <span style="font-size:10px;color:#94a3b8">Generado el ${todayStr()}</span>
+  </div>
+</div></body></html>`;
+  const win=window.open('','_blank','width=820,height=700,scrollbars=yes');
+  if(!win){showToast('⚠️ Permite ventanas emergentes');return;}
+  win.document.write(html);win.document.close();
 };
 
 /* ── RESUMEN INTELIGENTE (FALLBACK SIN IA) ── */
@@ -1709,38 +1761,132 @@ function renderEvolutionChart(p){
   });
 }
 
-/* ── SPORTS CV GENERATOR ── */
+/* ── SPORTS CV GENERATOR (con popup) ── */
+let cvClubHistory=[];
+
 window.generateCV = function(){
   const p=players.find(x=>x.id===currentId);
   if(!p)return;
+  cvClubHistory=p.cvClubs||[];
+
+  const overlay=document.createElement('div');
+  overlay.className='confirm-overlay';
+  overlay.innerHTML=`<div class="confirm-box" style="max-width:560px;max-height:90vh;overflow-y:auto">
+    <h3 style="margin-bottom:4px">📋 Generar Sports CV</h3>
+    <p style="font-size:12px;color:var(--slate);margin-bottom:16px">Completa la trayectoria y una descripción del jugador.</p>
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.06em">Trayectoria en clubes</label>
+      <div id="cv-clubs-list" style="margin-top:8px"></div>
+      <div style="display:grid;grid-template-columns:1fr 80px 100px auto;gap:6px;margin-top:8px;align-items:end">
+        <div><label style="font-size:10px;color:var(--slate)">Club</label><input id="cv-add-club" placeholder="CF Lorca" style="font-size:12px;padding:6px 8px"></div>
+        <div><label style="font-size:10px;color:var(--slate)">Etapa</label><input id="cv-add-age" placeholder="Alevín" style="font-size:12px;padding:6px 8px"></div>
+        <div><label style="font-size:10px;color:var(--slate)">Categoría</label><input id="cv-add-cat" placeholder="Superliga" style="font-size:12px;padding:6px 8px"></div>
+        <button onclick="addCvClub()" style="font-size:11px;padding:6px 10px;height:32px">+</button>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:var(--slate);text-transform:uppercase;letter-spacing:.06em">Describe al jugador</label>
+      <textarea id="cv-description" placeholder="Ej: Jugador con buen manejo de balón, destaca en la conducción y el regate. Líder en el vestuario..." style="width:100%;height:80px;resize:vertical;margin-top:6px;font-size:12px"></textarea>
+      <div style="font-size:10px;color:var(--slateL);margin-top:4px">La IA moldeará este texto de forma profesional</div>
+    </div>
+    <div class="confirm-actions">
+      <button class="cancel-btn" onclick="this.closest('.confirm-overlay').remove()">Cancelar</button>
+      <button class="ok-btn btn-primary" onclick="processCVGeneration()">Generar Sports CV</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+  renderCvClubsList();
+};
+
+function renderCvClubsList(){
+  const el=document.getElementById('cv-clubs-list');
+  if(!el)return;
+  el.innerHTML=cvClubHistory.length?cvClubHistory.map((c,i)=>
+    `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#F8FAFC;border-radius:8px;margin-bottom:4px;font-size:12px">
+      <span style="font-weight:700;color:var(--text);flex:1">${esc(c.club)}</span>
+      <span style="color:var(--slate)">${esc(c.etapa)}</span>
+      <span style="color:var(--purple);font-weight:600">${esc(c.categoria)}</span>
+      <span style="cursor:pointer;color:#DC2626;font-size:14px" onclick="removeCvClub(${i})">✕</span>
+    </div>`
+  ).join(''):'<p style="font-size:11px;color:var(--slateL);padding:8px 0">Aún no has añadido clubes</p>';
+}
+
+window.addCvClub = function(){
+  const club=document.getElementById('cv-add-club').value.trim();
+  const etapa=document.getElementById('cv-add-age').value.trim();
+  const categoria=document.getElementById('cv-add-cat').value.trim();
+  if(!club){showToast('⚠️ Indica el nombre del club');return;}
+  cvClubHistory.push({club,etapa,categoria});
+  document.getElementById('cv-add-club').value='';
+  document.getElementById('cv-add-age').value='';
+  document.getElementById('cv-add-cat').value='';
+  renderCvClubsList();
+};
+
+window.removeCvClub = function(i){
+  cvClubHistory.splice(i,1);
+  renderCvClubsList();
+};
+
+window.processCVGeneration = async function(){
+  const p=players.find(x=>x.id===currentId);
+  if(!p)return;
+  const desc=document.getElementById('cv-description').value.trim();
+  const overlay=document.querySelector('.confirm-overlay');
+
+  // Save club history to player
+  const updated={...p,cvClubs:[...cvClubHistory],updatedAt:new Date().toISOString()};
+  await persistPlayer(updated);
+
+  // Close popup
+  if(overlay)overlay.remove();
+
+  // Polish description with AI
+  let polishedDesc=desc;
+  const apiKey=getApiKey();
+  if(desc&&apiKey){
+    showToast('🤖 La IA está puliendo la descripción...');
+    try{
+      const prompt=`Eres un redactor de informes de fútbol base profesional. Reescribe esta descripción de un jugador de forma profesional, en tercera persona, fluida y concisa (máximo 80 palabras). No inventes datos, solo mejora la redacción y el estilo:\n\n"${desc}"\n\nJugador: ${p.nombre}, ${p.posicion}, ${p.catMain}. Nota global: ${avg(p)}/10.`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      if(!data.error&&data.content?.[0]?.text) polishedDesc=data.content[0].text.trim();
+    }catch(e){console.warn('CV AI fallback:',e.message);}
+  }
+
+  openCVWindow(p,cvClubHistory,polishedDesc);
+};
+
+function openCVWindow(p,clubs,description){
   const a=avg(p);
   const rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626';
   const fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}};
   const age=p.fecha?Math.floor((Date.now()-new Date(p.fecha+'T12:00:00'))/(365.25*24*60*60*1000)):'—';
-  const vis=p.visitas||[];
   const tags=p.tags||[];
   const catLabel=(p.catMain||'')+(p.catSub?' · '+p.catSub:'');
+  const tagColors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};
+  const tagsHTML=tags.map(t=>{const[bg,col]=tagColors[t]||['#F1F5F9','#475569'];return`<span style="font-size:10px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600">${esc(t)}</span>`;}).join(' ');
 
-  // Radar SVG for CV
+  // Radar SVG
   const radarSvg=(()=>{const labels=['TEC','TAC','FIS','ACT'],keys=['tecnica','tactica','fisico','actitud'],cx=100,cy=100,R=80,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="180" height="180">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.7'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.7"/>`;const[lx,ly]=po(a,R+14),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="10" font-weight="700" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="4" fill="#7C3AED" stroke="#fff" stroke-width="1.5"/>`;}s+='</svg>';return s;})();
 
-  const tagColors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};
-  const tagsHTML=tags.map(t=>{const[bg,col]=tagColors[t]||['#F1F5F9','#475569'];return`<span style="font-size:10px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600;font-family:system-ui">${esc(t)}</span>`;}).join(' ');
+  const ir=(icon,label,value)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0"><span style="font-size:14px">${icon}</span><span style="font-size:12px;color:#64748b;min-width:100px">${label}</span><span style="font-size:13px;font-weight:600;color:#1e293b">${value}</span></div>`;
+  const scoreBar=(label,v)=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:#64748b;font-weight:500">${label}</span><span style="font-size:13px;font-weight:800;color:${rc(v)}">${v}/10</span></div><div style="height:6px;border-radius:3px;background:#f1f5f9"><div style="height:6px;border-radius:3px;background:${rc(v)};width:${v*10}%"></div></div></div>`;
 
-  const ir=(icon,label,value)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0"><span style="font-size:14px">${icon}</span><span style="font-size:12px;color:#64748b;min-width:100px">${label}</span><span style="font-size:13px;font-weight:600;color:#1e293b">${value}</span></div>`;
+  const clubsHTML=clubs.length?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Trayectoria deportiva</div>
+    <div style="position:relative;padding-left:24px">${clubs.map((c,i)=>`<div style="position:relative;padding-bottom:${i<clubs.length-1?'16':'0'}px"><div style="position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:#7C3AED;border:2px solid #fff;z-index:1"></div>${i<clubs.length-1?'<div style="position:absolute;left:-18px;top:16px;bottom:0;width:2px;background:#E2E8F0"></div>':''}<div style="font-size:13px;font-weight:700;color:#1e293b">${esc(c.club)}</div><div style="font-size:11px;color:#64748b">${esc(c.etapa)}${c.categoria?' · '+esc(c.categoria):''}</div></div>`).join('')}</div></div>`:'';
 
-  const scoreBar=(label,v)=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:#64748b;font-weight:500">${label}</span><span style="font-size:13px;font-weight:800;color:${rc(v)};font-family:system-ui">${v}/10</span></div><div style="height:6px;border-radius:3px;background:#f1f5f9"><div style="height:6px;border-radius:3px;background:${rc(v)};width:${v*10}%;transition:width .5s"></div></div></div>`;
+  const descHTML=description?`<div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Perfil del jugador</div><div style="font-size:13.5px;line-height:1.8;color:#1e293b;background:#F5F3FF;border-left:4px solid #7C3AED;padding:16px 20px;border-radius:0 10px 10px 0">${esc(description)}</div></div>`:'';
 
   const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Sports CV — ${esc(p.nombre)}</title>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:10mm;size:A4}.pbtns{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:8px}.pbtns button{font-family:system-ui;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;border:none;font-weight:700}@media print{.pbtns{display:none!important}}</style></head><body>
 <div class="pbtns"><button onclick="window.print()" style="background:#059669;color:#fff">🖨️ Guardar como PDF</button><button onclick="window.close()" style="background:#fff;color:#374151;border:1px solid #d1d5db">✕ Cerrar</button></div>
-
 <div style="max-width:700px;margin:0 auto;padding:20px">
-  <!-- HEADER -->
   <div style="background:linear-gradient(135deg,#0B0F1A 0%,#1a103a 100%);border-radius:20px;padding:32px;margin-bottom:20px;position:relative;overflow:hidden">
     <div style="position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(124,58,237,.1)"></div>
     <div style="display:flex;align-items:center;gap:24px;position:relative;z-index:1">
-      ${p.foto?`<img src="${p.foto}" style="width:90px;height:90px;border-radius:18px;object-fit:cover;border:3px solid rgba(124,58,237,.4)">`:`<div style="width:90px;height:90px;border-radius:18px;background:rgba(124,58,237,.2);border:3px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#c4b5fd;font-family:system-ui">${ini(p.nombre)}</div>`}
+      ${p.foto?`<img src="${p.foto}" style="width:90px;height:90px;border-radius:18px;object-fit:cover;border:3px solid rgba(124,58,237,.4)">`:`<div style="width:90px;height:90px;border-radius:18px;background:rgba(124,58,237,.2);border:3px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#c4b5fd">${ini(p.nombre)}</div>`}
       <div style="flex:1">
         <div style="font-size:10px;letter-spacing:.12em;color:#94a3b8;text-transform:uppercase;margin-bottom:6px;font-weight:600">Sports CV · Fútbol Base</div>
         <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:4px">${esc(p.nombre)}</div>
@@ -1749,28 +1895,23 @@ window.generateCV = function(){
       </div>
       <div style="text-align:center;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.35);border-radius:14px;padding:14px 18px">
         <div style="font-size:9px;letter-spacing:.1em;color:#c4b5fd;text-transform:uppercase;font-weight:700;margin-bottom:2px">Nota</div>
-        <div style="font-size:42px;font-weight:800;color:${rc(a)};line-height:1;font-family:system-ui">${a}</div>
+        <div style="font-size:42px;font-weight:800;color:${rc(a)};line-height:1">${a}</div>
         <div style="font-size:9px;color:#94a3b8;margin-top:2px">/10</div>
       </div>
     </div>
   </div>
-
-  <!-- BODY GRID -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-    <!-- Left: Data -->
     <div>
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Datos personales</div>
       ${ir('📅','Nacimiento',`${fd(p.fecha)}${age!=='—'?' ('+age+' años)':''}` )}
       ${ir('📍','Localidad',esc(p.localidad)||'—')}
       ${ir('⚽','Club actual',esc(p.club)||'—')}
-      ${ir('📍','Ciudad club',esc(p.localidadClub)||'—')}
       ${ir('🏷️','Categoría',esc(catLabel))}
       ${ir('🎯','Ojeo para',esc((p.ojeoMain||'')+(p.ojeoSub?' '+p.ojeoSub:''))||'—')}
       ${ir('🦶','Pie',esc(p.pieDom)||'—')}
       ${ir('📏','Altura',p.altura?p.altura+' cm':'—')}
       ${ir('⚖️','Peso',p.peso?p.peso+' kg':'—')}
     </div>
-    <!-- Right: Radar + Scores -->
     <div>
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Valoración técnica</div>
       <div style="text-align:center;margin-bottom:14px">${radarSvg}</div>
@@ -1780,30 +1921,17 @@ window.generateCV = function(){
       ${scoreBar('Actitud y competitividad',p.actitud||0)}
     </div>
   </div>
-
-  ${vis.length>0?`
-  <!-- HIGHLIGHTS -->
-  <div style="margin-bottom:20px">
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Historial de observaciones (${vis.length})</div>
-    <div style="display:grid;gap:8px">${vis.slice(-5).map(v=>`<div style="display:flex;gap:12px;padding:10px 14px;background:#f8fafc;border-radius:10px;border-left:3px solid #7C3AED">
-      <div style="flex-shrink:0;text-align:center;min-width:50px"><div style="font-size:10px;color:#64748b">${esc(v.fecha)}</div>${v.valoracion?`<div style="font-size:16px;font-weight:800;color:${rc(v.valoracion)};font-family:system-ui;margin-top:2px">${v.valoracion}</div>`:''}</div>
-      <div><div style="font-size:11px;font-weight:700;color:#1e293b;margin-bottom:2px">${esc(v.partido)}</div><div style="font-size:11px;color:#475569;line-height:1.5">${esc(v.nota)||'—'}</div></div>
-    </div>`).join('')}</div>
-  </div>`:''}
-
-  <!-- FOOTER -->
+  ${clubsHTML}
+  ${descHTML}
   <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #f1f5f9;margin-top:10px">
     <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:#7C3AED"></div><span style="font-size:11px;color:#64748b;font-weight:600">MM Talent Sport · Sports CV</span></div>
     <span style="font-size:10px;color:#94a3b8">Generado el ${todayStr()}</span>
   </div>
-</div>
-</body></html>`;
-
+</div></body></html>`;
   const win=window.open('','_blank','width=820,height=900,scrollbars=yes');
   if(!win){showToast('⚠️ Permite ventanas emergentes');return;}
-  win.document.write(html);
-  win.document.close();
-};
+  win.document.write(html);win.document.close();
+}
 
 /* ── ANÁLISIS DE EVOLUCIÓN IA ── */
 window.analyzeEvolution = async function(){
@@ -2188,14 +2316,75 @@ async function checkSharedReport(){
     const p=snap.data();
     const a=Math.round(((p.tecnica||0)+(p.tactica||0)+(p.fisico||0)+(p.actitud||0))/4*10)/10;
     const rc=v=>v>=8?'#059669':v>=6?'#D97706':'#DC2626';
-    const vis=p.visitas||[];
-    const ph=p.foto?`<img src="${p.foto}" style="width:60px;height:60px;border-radius:14px;object-fit:cover">`:`<div class="avatar-lg">${p.nombre?p.nombre.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase():'?'}</div>`;
+    const fd=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}catch(e){return d;}};
+    const age=p.fecha?Math.floor((Date.now()-new Date(p.fecha+'T12:00:00'))/(365.25*24*60*60*1000)):'—';
+    const ini2=n=>n?n.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase():'?';
+    const ph=p.foto?`<img src="${p.foto}" style="width:80px;height:80px;border-radius:18px;object-fit:cover;border:3px solid rgba(124,58,237,.4)">`:`<div style="width:80px;height:80px;border-radius:18px;background:rgba(124,58,237,.2);border:3px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#c4b5fd;font-family:'Syne',sans-serif">${ini2(p.nombre)}</div>`;
+    const catLabel=(p.catMain||'')+(p.catSub?' · '+p.catSub:'');
+    const tags=p.tags||[];
+    const tagColors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};
+
+    // Radar SVG
+    const radarSvg=(()=>{const labels=['TEC','TAC','FIS','ACT'],keys=['tecnica','tactica','fisico','actitud'],cx=120,cy=120,R=95,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;margin:0 auto;display:block">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.7'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.7"/>`;const[lx,ly]=po(a,R+16),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="11" font-weight="700" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED">${v}</text>`;}s+='</svg>';return s;})();
+
+    const scoreBar=(label,v)=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748b;font-weight:500">${label}</span><span style="font-size:14px;font-weight:800;color:${rc(v)}">${v}/10</span></div><div style="height:8px;border-radius:4px;background:#f1f5f9"><div style="height:8px;border-radius:4px;background:${rc(v)};width:${v*10}%"></div></div></div>`;
+    const ir=(label,value)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F8FAFC;font-size:13px"><span style="color:#64748b">${label}</span><span style="font-weight:600;color:#1e293b">${value}</span></div>`;
+
     document.getElementById('shared-content').innerHTML=`
-      <div class="detail-hero"><div class="detail-hero-inner">${ph}<div style="flex:1;min-width:0"><div style="font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:4px">${esc(p.nombre)}</div><div style="font-size:12px;color:var(--slateL)">${esc(p.posicion)} · ${esc(p.club)||'—'} · ${esc(p.catMain)}${p.catSub?' · '+esc(p.catSub):''}</div></div><div class="detail-nota"><div style="font-size:10px;letter-spacing:.1em;color:var(--purple3);text-transform:uppercase;font-weight:700;margin-bottom:4px">Nota</div><div style="font-size:38px;font-weight:800;color:${rc(a)};line-height:1;font-family:'Syne',sans-serif">${a}</div></div></div></div>
-      <div class="ratings-grid">${[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div class="rating-box"><div class="rl">${l}</div><div class="rv" style="color:${rc(v)}">${v}</div></div>`).join('')}</div>
-      ${(p.tags||[]).length?`<div class="card"><div class="card-title">Etiquetas</div><div class="tags-wrap">${p.tags.map(t=>`<span class="tag tag-default">${esc(t)}</span>`).join('')}</div></div>`:''}
-      ${vis.length?`<div class="card"><div class="card-title">Historial de visitas (${vis.length})</div>${vis.map(v=>`<div class="visit-item"><div class="visit-meta"><span>📅 ${esc(v.fecha)} · ${esc(v.partido)}${v.valoracion?` <span style="font-weight:800;color:${rc(v.valoracion)}">${v.valoracion}/10</span>`:''}</span></div><div class="visit-note">${esc(v.nota)||'Sin notas'}</div></div>`).join('')}</div>`:''}
-      <div style="text-align:center;padding:20px;font-size:11px;color:var(--slateL)">Compartido el ${new Date(p.sharedAt).toLocaleDateString('es-ES')} por ${esc(p.sharedBy)}</div>`;
+      <!-- Hero -->
+      <div style="background:linear-gradient(135deg,#0B0F1A,#160b2e);border-radius:20px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:rgba(124,58,237,.1)"></div>
+        <div style="display:flex;align-items:center;gap:24px;position:relative;z-index:1;flex-wrap:wrap">
+          ${ph}
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:10px;letter-spacing:.12em;color:#94a3b8;text-transform:uppercase;font-weight:600;margin-bottom:6px">Informe de scouting · MM Talent Sport</div>
+            <div style="font-size:26px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;margin-bottom:4px">${esc(p.nombre)}</div>
+            <div style="font-size:13px;color:#94a3b8;margin-bottom:12px">${esc(p.posicion)} · ${esc(p.club)||'—'} · ${esc(catLabel)}</div>
+            ${tags.length?`<div style="display:flex;gap:6px;flex-wrap:wrap">${tags.map(t=>{const[bg,col]=tagColors[t]||['rgba(255,255,255,.1)','#cbd5e1'];return`<span style="font-size:10px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600">${esc(t)}</span>`;}).join('')}</div>`:''}
+          </div>
+          <div style="text-align:center;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.35);border-radius:14px;padding:16px 22px">
+            <div style="font-size:9px;letter-spacing:.1em;color:#c4b5fd;text-transform:uppercase;font-weight:700;margin-bottom:2px">Nota global</div>
+            <div style="font-size:48px;font-weight:800;color:${rc(a)};line-height:1;font-family:'Syne',sans-serif">${a}</div>
+            <div style="font-size:9px;color:#94a3b8;margin-top:4px">sobre 10</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radar + Scores -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div class="card" style="text-align:center;padding:24px">
+          <div class="card-title">Perfil de rendimiento</div>
+          ${radarSvg}
+        </div>
+        <div class="card" style="padding:24px">
+          <div class="card-title">Valoraciones</div>
+          ${scoreBar('Técnica individual',p.tecnica||0)}
+          ${scoreBar('Capacidad táctica',p.tactica||0)}
+          ${scoreBar('Físico y atletismo',p.fisico||0)}
+          ${scoreBar('Actitud y competitividad',p.actitud||0)}
+        </div>
+      </div>
+
+      <!-- Datos -->
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-title">Datos del jugador</div>
+        ${ir('Posición',esc(p.posicion)||'—')}
+        ${ir('Club actual',esc(p.club)||'—')}
+        ${ir('Categoría',esc(catLabel))}
+        ${ir('Ojeo para',esc((p.ojeoMain||'')+(p.ojeoSub?' · '+p.ojeoSub:''))||'—')}
+        ${ir('Pie dominante',esc(p.pieDom)||'—')}
+        ${ir('Nacimiento',`${fd(p.fecha)}${age!=='—'?' ('+age+' años)':''}` )}
+        ${ir('Altura',p.altura?p.altura+' cm':'—')}
+        ${ir('Peso',p.peso?p.peso+' kg':'—')}
+        ${ir('Estado',esc(p.estado)||'—')}
+        ${ir('Nº de observaciones',''+(p.visitas||[]).length)}
+      </div>
+
+      <!-- Footer -->
+      <div style="text-align:center;padding:24px;font-size:11px;color:var(--slateL)">
+        <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple)"></div><span style="font-weight:600;color:var(--slate)">MM Talent Sport · Scouting & Analytics</span></div><br>
+        Compartido el ${new Date(p.sharedAt).toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})}
+      </div>`;
     showPage('shared');
     document.getElementById('main-header').style.display='none';
     return true;
@@ -2377,6 +2566,7 @@ window.openMap = function(){
     renderMap();
   },300);
 };
+window.renderMap = renderMap;
 
 function renderMap(){
   const mode=document.getElementById('map-filter').value;
