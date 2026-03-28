@@ -4212,9 +4212,9 @@ function renderCompDropdown(){
     return;
   }
   dd.innerHTML=savedCompetitions.map((c,i)=>`
-    <div style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--borderL);cursor:pointer" onmouseenter="this.style.background='#F5F3FF'" onmouseleave="this.style.background=''">
-      <span style="flex:1;font-size:13px" onmousedown="event.preventDefault();document.getElementById('mf-competition').value=${JSON.stringify(c)};updateCompSaveBtn();document.getElementById('mf-comp-dropdown').style.display='none'">${esc(c)}</span>
-      <button onmousedown="event.preventDefault();removeCompetition(${i})" style="background:none;border:none;cursor:pointer;color:var(--slateL);font-size:12px;padding:0 2px;line-height:1" title="Eliminar">✕</button>
+    <div onmousedown="event.preventDefault();document.getElementById('mf-competition').value=${JSON.stringify(c)};updateCompSaveBtn();document.getElementById('mf-comp-dropdown').style.display='none'" style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--borderL);cursor:pointer" onmouseenter="this.style.background='#F5F3FF'" onmouseleave="this.style.background=''">
+      <span style="flex:1;font-size:13px;pointer-events:none">${esc(c)}</span>
+      <button onmousedown="event.stopPropagation();event.preventDefault();removeCompetition(${i})" style="background:none;border:none;cursor:pointer;color:var(--slateL);font-size:12px;padding:0 2px;line-height:1;pointer-events:auto" title="Eliminar">✕</button>
     </div>`).join('');
 }
 
