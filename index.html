@@ -4216,6 +4216,15 @@ document.addEventListener('click',function(e){
   }
 });
 
+window.selectCompetition=function(name){
+  const input=document.getElementById('competition-input');
+  if(input) input.value=name;
+  updateCompSaveBtn();
+  competitionsDropdownOpen=false;
+  const dropdown=document.getElementById('competitions-dropdown');
+  if(dropdown) dropdown.style.display='none';
+};
+
 function renderCompDropdown(){
   const dd=document.getElementById('competitions-dropdown');
   if(!dd) return;
@@ -4224,8 +4233,8 @@ function renderCompDropdown(){
     return;
   }
   dd.innerHTML=savedCompetitions.map((c,i)=>`
-    <div onclick="document.getElementById('competition-input').value=${JSON.stringify(c)};updateCompSaveBtn();competitionsDropdownOpen=false;document.getElementById('competitions-dropdown').style.display='none';" style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--borderL);cursor:pointer;" onmouseenter="this.style.background='#F5F3FF'" onmouseleave="this.style.background=''">
-      <span style="flex:1;font-size:13px;">${esc(c)}</span>
+    <div onclick="selectCompetition(${JSON.stringify(c)})" style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--borderL);cursor:pointer;" onmouseenter="this.style.background='#F5F3FF'" onmouseleave="this.style.background=''">
+      <span style="flex:1;font-size:13px;pointer-events:none">${esc(c)}</span>
       <button onclick="event.stopPropagation();removeCompetition(${i})" style="background:none;border:none;cursor:pointer;color:var(--slateL);font-size:12px;padding:0 4px;line-height:1" title="Eliminar">✕</button>
     </div>`).join('');
 }
