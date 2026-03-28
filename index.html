@@ -1144,6 +1144,58 @@ let alerts=[], unsubAlerts=null;
 let _debounceTimer = null;
 
 const AVAILABLE_TAGS = ['Rápido','Líder','Goleador','Creativo','Lesionado','Canterano','Polivalente','Disciplinado'];
+
+const POSITION_METRICS = {
+  groups: {
+    portero: {
+      positions: ['Portero'],
+      metrics: {
+        tecnica: ['Paradas', 'Manos/Reflejos', 'Juego con pies', 'Salidas', 'Posicionamiento'],
+        tactica: ['Organización defensiva', 'Comunicación', 'Lectura del juego', 'Juego de área', 'Presión alta'],
+        fisico: ['Velocidad de reacción', 'Explosividad', 'Fuerza', 'Resistencia', 'Salto'],
+        actitud: ['Liderazgo', 'Comunicación', 'Competitividad', 'Disciplina', 'Mentalidad']
+      }
+    },
+    defensa: {
+      positions: ['Lateral Derecho', 'Lateral Izquierdo', 'Central'],
+      metrics: {
+        tecnica: ['Pase', 'Control', 'Duelo aéreo', 'Juego largo', 'Anticipación'],
+        tactica: ['Marcaje', 'Cobertura', 'Presión', 'Transición defensiva', 'Juego en bloque'],
+        fisico: ['Velocidad', 'Fuerza', 'Resistencia', 'Salto', 'Recuperación'],
+        actitud: ['Liderazgo', 'Comunicación', 'Competitividad', 'Disciplina', 'Mentalidad']
+      }
+    },
+    centrocampista: {
+      positions: ['Pivote Defensivo', 'Mediocampista', 'Mediapunta'],
+      metrics: {
+        tecnica: ['Pase', 'Control', 'Visión de juego', 'Conducción', 'Pressing'],
+        tactica: ['Equilibrio', 'Transición', 'Recuperación', 'Creación', 'Presión alta'],
+        fisico: ['Velocidad', 'Resistencia', 'Fuerza', 'Salto', 'Recuperación'],
+        actitud: ['Liderazgo', 'Comunicación', 'Competitividad', 'Disciplina', 'Mentalidad']
+      }
+    },
+    delantero: {
+      positions: ['Extremo Derecho', 'Extremo Izquierdo', 'Delantero Centro', 'Segundo Delantero'],
+      metrics: {
+        tecnica: ['Tiro', 'Control', 'Regate', 'Movimiento sin balón', 'Cabeza'],
+        tactica: ['Pressing', 'Desmarque', 'Apoyo', 'Transición ofensiva', 'Movimiento'],
+        fisico: ['Velocidad', 'Explosividad', 'Resistencia', 'Fuerza', 'Salto'],
+        actitud: ['Liderazgo', 'Comunicación', 'Competitividad', 'Disciplina', 'Mentalidad']
+      }
+    }
+  },
+  getGroup(position) {
+    for (const [key, group] of Object.entries(this.groups)) {
+      if (group.positions.includes(position)) return { key, ...group };
+    }
+    return null;
+  },
+  getMetrics(position) {
+    const group = this.getGroup(position);
+    return group ? group.metrics : null;
+  }
+};
+
 function tagClass(t){ const m={'Rápido':'rápido','Líder':'líder','Goleador':'goleador','Creativo':'creativo','Lesionado':'lesionado','Canterano':'canterano','Polivalente':'polivalente','Disciplinado':'disciplinado'}; return 'tag tag-'+(m[t]||'default'); }
 let formTags = [];
 
