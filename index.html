@@ -944,7 +944,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
         <div class="form-group full"><label class="form-label">Nombre completo *</label><input id="f-nombre" placeholder="Ej: Alejandro García López" required></div>
         <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input id="f-fecha" type="date"></div>
         <div class="form-group"><label class="form-label">Posición principal</label>
-          <select id="f-posicion"><option>Portero</option><option>Lateral Derecho</option><option>Lateral Izquierdo</option><option>Central</option><option>Pivote Defensivo</option><option>Mediocampista</option><option>Mediapunta</option><option>Extremo Derecho</option><option>Extremo Izquierdo</option><option>Delantero Centro</option><option>Segundo Delantero</option></select></div>
+          <select id="f-posicion" onchange="renderSubMetrics()"><option>Portero</option><option>Lateral Derecho</option><option>Lateral Izquierdo</option><option>Central</option><option>Pivote Defensivo</option><option>Mediocampista</option><option>Mediapunta</option><option>Extremo Derecho</option><option>Extremo Izquierdo</option><option>Delantero Centro</option><option>Segundo Delantero</option></select></div>
         <div class="form-group"><label class="form-label">Pie dominante</label>
           <select id="f-pie"><option>Derecho</option><option>Izquierdo</option><option>Ambidiestro</option></select></div>
         <div class="form-group"><label class="form-label">Altura (cm)</label><input id="f-altura" type="number" placeholder="175" min="100" max="220"></div>
@@ -977,6 +977,15 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Capacidad táctica</span><span id="v-tactica" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-tactica" min="1" max="10" value="5" step="1" oninput="updateSlider('tactica')"></div>
       <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Físico y atletismo</span><span id="v-fisico" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-fisico" min="1" max="10" value="5" step="1" oninput="updateSlider('fisico')"></div>
       <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Actitud y competitividad</span><span id="v-actitud" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-actitud" min="1" max="10" value="5" step="1" oninput="updateSlider('actitud')"></div>
+      <div id="f-submetrics-section" style="display:none;margin:4px 0 14px">
+        <div style="border:1px solid #DDD6FE;border-radius:10px;overflow:hidden">
+          <div onclick="toggleSubMetrics()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);cursor:pointer;user-select:none">
+            <span style="font-size:12px;font-weight:700;color:var(--purple)">📊 Métricas detalladas</span>
+            <span id="f-submetrics-arrow" style="font-size:11px;color:var(--purple);transition:transform .2s">▼</span>
+          </div>
+          <div id="f-submetrics-body" style="display:none;padding:16px 14px;background:#FAFAFE"></div>
+        </div>
+      </div>
       <div class="nota-global"><span style="font-size:13px;color:var(--text2);font-weight:500">Nota global (media)</span><span id="v-nota-global" style="font-size:30px;font-weight:800;color:var(--purple);font-family:'Syne',sans-serif">5.0</span></div>
     </div>
     <div class="card">
@@ -1674,6 +1683,7 @@ window.openNew = function(){
   document.getElementById('f-photo-preview').innerHTML='<span class="photo-preview-empty">📷</span>';
   document.getElementById('f-photo-input').value='';
   document.getElementById('f-notas-privadas').value='';
+  renderSubMetrics();
   showPage('form');
   setTimeout(()=>document.getElementById('f-nombre').focus(),100);
 };
@@ -1713,6 +1723,7 @@ window.editCurrent = function(){
   else{prev.innerHTML='<span class="photo-preview-empty">📷</span>';}
   document.getElementById('f-photo-input').value='';
   document.getElementById('f-notas-privadas').value=p.notasPrivadas||'';
+  renderSubMetrics(p.subMetrics||{});
   showPage('form');
 };
 
@@ -1726,6 +1737,70 @@ window.updateSlider = function(k){
   ng.textContent=a;
   ng.style.color=rateColor(a);
 };
+
+/* ── SUB-MÉTRICAS ── */
+function smId(dim, name){ return `fsm-${dim}-${name.replace(/[^a-z0-9]/gi,'_')}`; }
+function smDisplayId(dim, name){ return `vsm-${dim}-${name.replace(/[^a-z0-9]/gi,'_')}`; }
+
+window.renderSubMetrics = function(savedValues){
+  const posicion=document.getElementById('f-posicion').value;
+  const section=document.getElementById('f-submetrics-section');
+  const body=document.getElementById('f-submetrics-body');
+  const metrics=POSITION_METRICS.getMetrics(posicion);
+  if(!metrics){section.style.display='none';return;}
+  section.style.display='block';
+  const dims=[{key:'tecnica',label:'Técnica'},{key:'tactica',label:'Táctica'},{key:'fisico',label:'Físico'},{key:'actitud',label:'Actitud'}];
+  const sv=savedValues||{};
+  body.innerHTML=dims.map(({key,label})=>{
+    const subList=metrics[key]||[];
+    return `<div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #DDD6FE">${label}</div>
+      ${subList.map(name=>{
+        const val=(sv[key]&&sv[key][name]!=null)?sv[key][name]:5;
+        const iid=smId(key,name), did=smDisplayId(key,name);
+        return `<div class="slider-row"><div class="slider-header"><span style="font-size:11px;color:var(--text2);font-weight:500">${esc(name)}</span><span id="${did}" style="font-size:13px;font-weight:700;color:var(--purple)">${val}</span></div><input type="range" id="${iid}" min="0" max="10" value="${val}" step="1" oninput="updateSubMetricSlider('${key}',this.value,'${did}')"></div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+};
+
+window.toggleSubMetrics = function(){
+  const body=document.getElementById('f-submetrics-body');
+  const arrow=document.getElementById('f-submetrics-arrow');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  arrow.style.transform=open?'rotate(180deg)':'';
+};
+
+window.updateSubMetricSlider = function(dim, val, displayId){
+  document.getElementById(displayId).textContent=val;
+  // Recalcular la media de sub-métricas de esta dimensión y actualizar el slider principal
+  const posicion=document.getElementById('f-posicion').value;
+  const metrics=POSITION_METRICS.getMetrics(posicion);
+  if(!metrics||!metrics[dim])return;
+  const values=metrics[dim].map(name=>{
+    const el=document.getElementById(smId(dim,name));
+    return el?parseInt(el.value):5;
+  });
+  const mean=Math.max(1,Math.min(10,Math.round(values.reduce((a,b)=>a+b,0)/values.length)));
+  const mainSlider=document.getElementById('f-'+dim);
+  if(mainSlider){mainSlider.value=mean;updateSlider(dim);}
+};
+
+function collectSubMetrics(){
+  const posicion=document.getElementById('f-posicion').value;
+  const metrics=POSITION_METRICS.getMetrics(posicion);
+  if(!metrics)return{};
+  const result={};
+  ['tecnica','tactica','fisico','actitud'].forEach(dim=>{
+    result[dim]={};
+    (metrics[dim]||[]).forEach(name=>{
+      const el=document.getElementById(smId(dim,name));
+      result[dim][name]=el?parseInt(el.value):0;
+    });
+  });
+  return result;
+}
 
 /* ── GUARDAR JUGADOR ── */
 window.savePlayer = async function(){
@@ -1777,6 +1852,7 @@ window.savePlayer = async function(){
     foto:playerPhoto,
     notasPrivadas:document.getElementById('f-notas-privadas').value.trim(),
     visitas:currentId?(players.find(x=>x.id===currentId)||{}).visitas||[]:[],
+    subMetrics:collectSubMetrics(),
     updatedAt:new Date().toISOString()
   };
   await persistPlayer(p);
