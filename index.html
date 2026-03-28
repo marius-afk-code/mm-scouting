@@ -1685,8 +1685,16 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       </div>
       <div class="form-group" style="margin-bottom:4px">
         <label class="form-label">Competición</label>
-        <input type="text" id="mf-competition" autocomplete="off" placeholder="Escribe la competición..." oninput="renderCompSuggestions()" onfocus="renderCompSuggestions()" onblur="setTimeout(()=>{const el=document.getElementById('mf-comp-suggestions');if(el)el.style.display='none';},150)">
-        <div id="mf-comp-suggestions" style="display:none;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" id="mf-competition" autocomplete="off" placeholder="ej: Champions League" oninput="updateCompSaveBtn()" style="flex:1">
+          <div style="position:relative">
+            <button type="button" id="mf-comp-list-btn" onmousedown="event.preventDefault();toggleCompDropdown()" style="padding:7px 10px;border:1px solid var(--borderL);border-radius:8px;background:#fff;cursor:pointer;font-size:14px;color:var(--slate)" title="Mis competiciones">☰</button>
+            <div id="mf-comp-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);min-width:220px;background:#fff;border:1px solid var(--borderL);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:10;overflow:hidden"></div>
+          </div>
+        </div>
+        <div id="mf-comp-save-btn" style="display:none;margin-top:6px">
+          <button type="button" onmousedown="event.preventDefault();saveCompetition()" style="font-size:11px;padding:4px 10px;border:1px dashed var(--purple);border-radius:6px;background:#F5F3FF;color:var(--purple);cursor:pointer">＋ Guardar en Mis competiciones</button>
+        </div>
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="form-label">Categoría</label>
@@ -1747,7 +1755,7 @@ const SUBCATS = {
 let currentUser=null, players=[], currentId=null, loginMode='login', unsubscribe=null;
 let activeFilters = { estado:'' };
 let alerts=[], unsubAlerts=null;
-let matches=[], unsubMatches=null, logTab='matches', selectedMatchPlayers=[];
+let matches=[], unsubMatches=null, logTab='matches', selectedMatchPlayers=[], savedCompetitions=[];
 let _debounceTimer = null;
 
 const AVAILABLE_TAGS = ['Rápido','Líder','Goleador','Creativo','Lesionado','Canterano','Polivalente','Disciplinado'];
@@ -2087,7 +2095,7 @@ window.doLogout = function(){
     if(unsubAlerts){unsubAlerts();unsubAlerts=null;}
     if(unsubMatches){unsubMatches();unsubMatches=null;}
     await signOut(auth);
-    players=[]; alerts=[]; matches=[]; currentId=null;
+    players=[]; alerts=[]; matches=[]; savedCompetitions=[]; currentId=null;
     document.getElementById('main-header').style.display='none';
     document.getElementById('api-banner').classList.remove('show');
     document.getElementById('l-email').value=''; document.getElementById('l-pass').value='';
@@ -2162,6 +2170,7 @@ onAuthStateChanged(auth, async user=>{
     document.getElementById('main-header').style.display='flex';
     document.getElementById('btn-api-admin').style.display=user.email===ADMIN_EMAIL?'inline-block':'none';
     await loadApiKey();
+    loadSavedCompetitions();
     startSync(user.uid);
     showPage('list');
     updateSubcats('f-cat-sub','f-cat-main');
@@ -4167,7 +4176,8 @@ window.openMatchForm=function(){
   document.getElementById('mf-player-search').value='';
   selectedMatchPlayers=[];
   filterMatchPlayers();
-  document.getElementById('mf-comp-suggestions').style.display='none';
+  updateCompSaveBtn();
+  document.getElementById('mf-comp-dropdown').style.display='none';
   document.getElementById('match-modal').style.display='flex';
 };
 
@@ -4175,16 +4185,72 @@ window.closeMatchModal=function(){
   document.getElementById('match-modal').style.display='none';
 };
 
-window.renderCompSuggestions=function(){
-  const el=document.getElementById('mf-comp-suggestions');
-  if(!el) return;
-  const current=(document.getElementById('mf-competition').value||'').toLowerCase();
-  const used=[...new Set(matches.map(m=>m.competition).filter(Boolean))];
-  const filtered=current?used.filter(c=>c.toLowerCase().includes(current)):used;
-  if(!filtered.length){el.style.display='none';return;}
-  el.innerHTML=filtered.map(c=>`<span onmousedown="event.preventDefault();document.getElementById('mf-competition').value=${JSON.stringify(c)};renderCompSuggestions()" style="display:inline-block;font-size:11px;padding:3px 10px;border-radius:99px;background:#F5F3FF;color:var(--purple);border:1px solid #DDD6FE;cursor:pointer">${esc(c)}</span>`).join('');
-  el.style.display='flex';
+window.updateCompSaveBtn=function(){
+  const val=(document.getElementById('mf-competition').value||'').trim();
+  const btn=document.getElementById('mf-comp-save-btn');
+  if(btn) btn.style.display=val?'block':'none';
 };
+
+window.toggleCompDropdown=function(){
+  const dd=document.getElementById('mf-comp-dropdown');
+  if(!dd) return;
+  if(dd.style.display==='none'){
+    renderCompDropdown();
+    dd.style.display='block';
+    const hide=function(e){if(!dd.contains(e.target)&&e.target.id!=='mf-comp-list-btn'){dd.style.display='none';document.removeEventListener('mousedown',hide);}};
+    setTimeout(()=>document.addEventListener('mousedown',hide),0);
+  } else {
+    dd.style.display='none';
+  }
+};
+
+function renderCompDropdown(){
+  const dd=document.getElementById('mf-comp-dropdown');
+  if(!dd) return;
+  if(!savedCompetitions.length){
+    dd.innerHTML=`<div style="padding:14px 16px;font-size:12px;color:var(--slateL);line-height:1.5">Aún no tienes competiciones guardadas — escribe una y pulsa Guardar</div>`;
+    return;
+  }
+  dd.innerHTML=savedCompetitions.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--borderL);cursor:pointer" onmouseenter="this.style.background='#F5F3FF'" onmouseleave="this.style.background=''">
+      <span style="flex:1;font-size:13px" onmousedown="event.preventDefault();document.getElementById('mf-competition').value=${JSON.stringify(c)};updateCompSaveBtn();document.getElementById('mf-comp-dropdown').style.display='none'">${esc(c)}</span>
+      <button onmousedown="event.preventDefault();removeCompetition(${i})" style="background:none;border:none;cursor:pointer;color:var(--slateL);font-size:12px;padding:0 2px;line-height:1" title="Eliminar">✕</button>
+    </div>`).join('');
+}
+
+window.saveCompetition=async function(){
+  const val=(document.getElementById('mf-competition').value||'').trim();
+  if(!val) return;
+  if(savedCompetitions.includes(val)){showToast('Ya está guardada');return;}
+  savedCompetitions=[...savedCompetitions,val];
+  await persistCompetitions();
+  showToast('Competición guardada');
+};
+
+window.removeCompetition=async function(idx){
+  savedCompetitions=savedCompetitions.filter((_,i)=>i!==idx);
+  await persistCompetitions();
+  renderCompDropdown();
+};
+
+async function persistCompetitions(){
+  if(isDemo) return;
+  if(!currentUser) return;
+  try{
+    const {setDoc,doc}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await setDoc(doc(db,'users',currentUser.uid,'config','competitions'),{list:savedCompetitions,updatedAt:new Date().toISOString()});
+  }catch(e){console.error(e);}
+}
+
+async function loadSavedCompetitions(){
+  if(isDemo) return;
+  if(!currentUser) return;
+  try{
+    const {getDoc,doc}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap=await getDoc(doc(db,'users',currentUser.uid,'config','competitions'));
+    if(snap.exists()) savedCompetitions=snap.data().list||[];
+  }catch(e){console.error(e);}
+}
 
 window.filterMatchPlayers=function(){
   const q=(document.getElementById('mf-player-search').value||'').toLowerCase();
