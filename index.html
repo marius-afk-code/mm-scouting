@@ -1863,24 +1863,31 @@ function debouncedRender() {
 function buildRadarSvg(p, opts) {
   opts = opts || {};
   const sub = p && p.subMetrics;
-  let labels = [], values = [];
+  let labels = [], values = [], avgValues = [], hasSub = false;
   if (sub && typeof sub === 'object' && Object.keys(sub).length > 0) {
     ['tecnica','tactica','fisico','actitud'].forEach(dim => {
       const d = sub[dim];
-      if (d && typeof d === 'object') {
+      if (d && typeof d === 'object' && Object.keys(d).length > 0) {
+        const dimVals = Object.values(d).map(v => typeof v === 'number' ? Math.max(0,Math.min(10,v)) : 0);
+        const dimAvg = dimVals.length ? dimVals.reduce((a,b)=>a+b,0)/dimVals.length : 0;
         Object.entries(d).forEach(([name, val]) => {
           labels.push(name.length > 10 ? name.slice(0,9)+'.' : name);
           values.push(Math.max(0, Math.min(10, typeof val === 'number' ? val : 0)));
+          avgValues.push(dimAvg);
         });
+        hasSub = true;
       }
     });
   }
   if (labels.length === 0) {
     labels = ['Técnica','Táctica','Físico','Actitud'];
     values = [p?p.tecnica||0:0, p?p.tactica||0:0, p?p.fisico||0:0, p?p.actitud||0:0];
+    hasSub = false;
   }
   const n = labels.length;
+  const legendH = hasSub ? 28 : 0;
   const size = opts.size || (n > 4 ? 360 : 280);
+  const totalH = size + legendH;
   const cx = size/2, cy = size/2, R = size*0.36;
   const levels = 5, as = (2*Math.PI)/n, sa = -Math.PI/2;
   const showVals = opts.showValues !== false && n <= 8;
@@ -1892,12 +1899,14 @@ function buildRadarSvg(p, opts) {
   const wA = opts.width ? ` width="${opts.width}"` : '';
   const hA = opts.height ? ` height="${opts.height}"` : '';
   const cls = opts.className ? ` class="${opts.className}"` : '';
-  let s = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg"${wA}${hA}${cls}>`;
+  let s = `<svg viewBox="0 0 ${size} ${totalH}" xmlns="http://www.w3.org/2000/svg"${wA}${hA}${cls}>`;
+  // Grid
   for (let l=1; l<=levels; l++) {
     const r=R*l/levels, pts=[];
     for (let i=0; i<n; i++) { const [x,y]=po(sa+i*as,r); pts.push(`${x},${y}`); }
     s += `<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===levels?'1.5':'0.8'}"/>`;
   }
+  // Axes and labels
   for (let i=0; i<n; i++) {
     const a=sa+i*as, [x,y]=po(a,R);
     s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;
@@ -1905,16 +1914,37 @@ function buildRadarSvg(p, opts) {
     const anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';
     s += `<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="${fSz}" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
   }
+  // Layer 1 (back): category average polygon — only when sub-metrics exist
+  if (hasSub) {
+    const ap=[];
+    for (let i=0; i<n; i++) {
+      const v=Math.max(1,Math.min(10,avgValues[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
+      ap.push(`${x},${y}`);
+    }
+    s += `<polygon points="${ap.join(' ')}" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.5)" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>`;
+  }
+  // Layer 2 (front): detailed profile polygon
   const dp=[];
   for (let i=0; i<n; i++) {
     const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
     dp.push(`${x},${y}`);
   }
-  s += `<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;
+  s += `<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="rgba(124,58,237,0.85)" stroke-width="2" stroke-linejoin="round"/>`;
+  // Points on detailed layer
   for (let i=0; i<n; i++) {
     const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
     s += `<circle cx="${x}" cy="${y}" r="${ptR}" fill="#7C3AED" stroke="#fff" stroke-width="${ptSW}"/>`;
     if (showVals) s += `<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="Syne,system-ui">${v}</text>`;
+  }
+  // Legend (only when sub-metrics)
+  if (hasSub) {
+    const ly = size + 16;
+    const lx1 = cx - 90;
+    s += `<circle cx="${lx1}" cy="${ly}" r="4" fill="rgba(124,58,237,0.85)"/>`;
+    s += `<text x="${lx1+10}" y="${ly+4}" font-size="10" font-weight="600" fill="#64748B" font-family="Inter,system-ui">Perfil detallado</text>`;
+    const lx2 = cx + 8;
+    s += `<line x1="${lx2}" y1="${ly}" x2="${lx2+14}" y2="${ly}" stroke="rgba(167,139,250,0.8)" stroke-width="2" stroke-dasharray="4 3"/>`;
+    s += `<text x="${lx2+20}" y="${ly+4}" font-size="10" font-weight="600" fill="#64748B" font-family="Inter,system-ui">Media por categ.</text>`;
   }
   s += '</svg>';
   return s;
@@ -3267,13 +3297,26 @@ window.runCompare = function(){
     cmpLabels=['Técnica','Táctica','Físico','Actitud'];
     cmpData=selected.map(p=>[p.tecnica||0,p.tactica||0,p.fisico||0,p.actitud||0]);
   }
+  // Compute category averages per player for overlay (only when sub-metrics)
+  const cmpAvg=allHaveSub?selected.map(p=>{
+    const avgs=[];
+    ['tecnica','tactica','fisico','actitud'].forEach(dim=>{
+      const d0=selected[0].subMetrics[dim];
+      if(d0&&typeof d0==='object'){
+        const keys=Object.keys(d0);
+        const vals=keys.map(k=>(p.subMetrics[dim]&&p.subMetrics[dim][k]!=null)?p.subMetrics[dim][k]:0);
+        const dimAvg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+        keys.forEach(()=>avgs.push(dimAvg));
+      }
+    });
+    return avgs;
+  }):[];
+  const primaryDs=selected.map((p,i)=>({label:p.nombre,data:cmpData[i],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}));
+  const avgDs=allHaveSub?selected.map((p,i)=>({label:'',data:cmpAvg[i],backgroundColor:'transparent',borderColor:CMP_COLORS[i],borderWidth:1.5,borderDash:[4,3],pointRadius:0,pointHoverRadius:0})):[];
   _charts['compare-radar']=new Chart(document.getElementById('chart-compare-radar').getContext('2d'),{
     type:'radar',
-    data:{
-      labels:cmpLabels,
-      datasets:selected.map((p,i)=>({label:p.nombre,data:cmpData[i],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}))
-    },
-    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:allHaveSub?8:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}}}
+    data:{labels:cmpLabels,datasets:[...primaryDs,...avgDs]},
+    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:allHaveSub?8:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10,filter:item=>item.text!==''}}}}
   });
 
   // Table
