@@ -526,9 +526,6 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .sl-stat-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--slateL); }
 .sl-chart-card { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.04); margin-bottom:16px; }
 .sl-chart-card canvas { max-height:240px; }
-.sl-toggle { display:flex; background:#F1F5F9; border-radius:10px; padding:3px; gap:3px; margin-bottom:16px; }
-.sl-toggle-btn { flex:1; padding:10px; border:none; background:transparent; border-radius:8px; font-size:13px; font-weight:500; color:var(--slate); cursor:pointer; font-family:var(--font-body); transition:all .2s; text-align:center; }
-.sl-toggle-btn.active { background:#fff; color:var(--purple); font-weight:700; box-shadow:0 1px 4px rgba(0,0,0,.08); }
 .match-modal-box { background:#fff; border-radius:20px; padding:28px; width:100%; max-width:560px; position:relative; }
 
 /* ── MAP ── */
@@ -1682,25 +1679,14 @@ button:disabled { opacity:.5; cursor:not-allowed; }
         <h2 style="font-size:18px;font-weight:800;color:var(--navy)">Añadir partido</h2>
         <button onclick="closeMatchModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--slate);padding:4px 8px;line-height:1">✕</button>
       </div>
-      <!-- Type toggle -->
-      <div class="sl-toggle">
-        <button id="mf-type-work" class="sl-toggle-btn active" onclick="setMatchType('work')">💼 Partido de trabajo</button>
-        <button id="mf-type-personal" class="sl-toggle-btn" onclick="setMatchType('personal')">🎽 Seguimiento personal</button>
-      </div>
       <div class="form-grid" style="margin-bottom:12px">
         <div class="form-group"><label class="form-label">Fecha *</label><input type="date" id="mf-date"></div>
         <div class="form-group"><label class="form-label">Resultado</label><input type="text" id="mf-result" placeholder="ej: 2-1"></div>
       </div>
-      <div class="form-group" style="margin-bottom:12px">
-        <label class="form-label">Competición *</label>
-        <input type="text" id="mf-competition" list="mf-comp-list" placeholder="Liga, Copa del Rey...">
-        <datalist id="mf-comp-list">
-          <option value="LaLiga"><option value="LaLiga 2"><option value="Champions League"><option value="Europa League">
-          <option value="Conference League"><option value="Copa del Rey"><option value="Supercopa de España">
-          <option value="División de Honor Juvenil"><option value="Liga Nacional Juvenil"><option value="Liga Autonómica Juvenil">
-          <option value="División de Honor Cadete"><option value="Liga Autonómica Cadete">
-          <option value="División de Honor Infantil"><option value="División de Honor Alevín"><option value="Copa RFEF"><option value="Amistoso">
-        </datalist>
+      <div class="form-group" style="margin-bottom:4px">
+        <label class="form-label">Competición</label>
+        <input type="text" id="mf-competition" autocomplete="off" placeholder="Escribe la competición..." oninput="renderCompSuggestions()">
+        <div id="mf-comp-suggestions" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
       </div>
       <div class="form-group" style="margin-bottom:12px">
         <label class="form-label">Categoría</label>
@@ -1716,7 +1702,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
       </div>
       <div class="form-group" style="margin-bottom:12px"><label class="form-label">Campo / Lugar</label><input type="text" id="mf-venue" placeholder="Nombre del estadio o campo"></div>
       <div class="form-group" style="margin-bottom:12px"><label class="form-label">Notas</label><textarea id="mf-notes" rows="3" placeholder="Observaciones, contexto del partido..." style="resize:vertical"></textarea></div>
-      <!-- Players picker (only for work type) -->
+      <!-- Players picker -->
       <div id="mf-players-section" style="margin-bottom:16px">
         <label class="form-label">Jugadores observados</label>
         <input type="text" id="mf-player-search" placeholder="Buscar jugador por nombre..." style="margin-bottom:8px" oninput="filterMatchPlayers()">
@@ -1761,7 +1747,7 @@ const SUBCATS = {
 let currentUser=null, players=[], currentId=null, loginMode='login', unsubscribe=null;
 let activeFilters = { estado:'' };
 let alerts=[], unsubAlerts=null;
-let matches=[], unsubMatches=null, logTab='matches', matchType='work', selectedMatchPlayers=[];
+let matches=[], unsubMatches=null, logTab='matches', selectedMatchPlayers=[];
 let _debounceTimer = null;
 
 const AVAILABLE_TAGS = ['Rápido','Líder','Goleador','Creativo','Lesionado','Canterano','Polivalente','Disciplinado'];
@@ -4014,7 +4000,6 @@ function renderMatchList(){
         ${m.notes?`<div style="font-size:12px;color:var(--slate);margin-top:4px;font-style:italic">${esc(m.notes)}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <span class="${m.type==='work'?'sl-type-work':'sl-type-personal'}">${m.type==='work'?'Trabajo':'Personal'}</span>
         <button onclick="deleteMatch('${esc(m.id)}')" style="background:none;border:none;cursor:pointer;color:var(--slateL);font-size:14px;padding:2px 4px" title="Eliminar">🗑️</button>
       </div>
     </div>`;
@@ -4181,8 +4166,8 @@ window.openMatchForm=function(){
   document.getElementById('mf-notes').value='';
   document.getElementById('mf-player-search').value='';
   selectedMatchPlayers=[];
-  setMatchType('work');
   filterMatchPlayers();
+  renderCompSuggestions();
   document.getElementById('match-modal').style.display='flex';
 };
 
@@ -4190,12 +4175,14 @@ window.closeMatchModal=function(){
   document.getElementById('match-modal').style.display='none';
 };
 
-window.setMatchType=function(type){
-  matchType=type;
-  document.querySelectorAll('.sl-toggle-btn').forEach(b=>b.classList.remove('active'));
-  const btn=document.querySelector(`.sl-toggle-btn[data-type="${type}"]`);
-  if(btn) btn.classList.add('active');
-  document.getElementById('mf-players-section').style.display=type==='work'?'block':'none';
+window.renderCompSuggestions=function(){
+  const el=document.getElementById('mf-comp-suggestions');
+  if(!el) return;
+  const current=(document.getElementById('mf-competition').value||'').toLowerCase();
+  const used=[...new Set(matches.map(m=>m.competition).filter(Boolean))];
+  const filtered=current?used.filter(c=>c.toLowerCase().includes(current)):used;
+  if(!filtered.length){el.innerHTML='';return;}
+  el.innerHTML=filtered.map(c=>`<span onclick="document.getElementById('mf-competition').value=${JSON.stringify(c)};renderCompSuggestions()" style="display:inline-block;font-size:11px;padding:3px 10px;border-radius:99px;background:#F5F3FF;color:var(--purple);border:1px solid #DDD6FE;cursor:pointer">${esc(c)}</span>`).join('');
 };
 
 window.filterMatchPlayers=function(){
@@ -4244,8 +4231,7 @@ window.saveMatch=async function(){
     result:document.getElementById('mf-result').value.trim(),
     venue:document.getElementById('mf-venue').value.trim(),
     notes:document.getElementById('mf-notes').value.trim(),
-    type:matchType,
-    linkedPlayers:matchType==='work'?[...selectedMatchPlayers]:[],
+    linkedPlayers:[...selectedMatchPlayers],
     createdAt:new Date().toISOString()
   };
   if(isDemo){
