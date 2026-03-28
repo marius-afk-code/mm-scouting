@@ -1160,7 +1160,7 @@ const POSITION_METRICS = {
       positions: ['Portero'],
       metrics: {
         tecnica: ['Paradas', 'Manos/Reflejos', 'Juego con pies', 'Salidas', 'Posicionamiento'],
-        tactica: ['Organización defensiva', 'Comunicación', 'Lectura del juego', 'Juego de área', 'Presión alta'],
+        tactica: ['Organización defensiva', 'Comunicación', 'Lectura del juego', 'Juego de área'],
         fisico: ['Velocidad de reacción', 'Explosividad', 'Fuerza', 'Resistencia', 'Salto'],
         actitud: ['Liderazgo', 'Comunicación', 'Competitividad', 'Disciplina', 'Mentalidad']
       }
@@ -1734,13 +1734,13 @@ window.editCurrent = function(){
 };
 
 window.updateSlider = function(k){
-  const v=parseInt(document.getElementById('f-'+k).value);
+  const v=parseFloat(document.getElementById('f-'+k).value)||0;
   const el=document.getElementById('v-'+k);
   el.textContent=v;
   el.style.color=rateColor(v);
   const bar=document.getElementById('bar-'+k);
   if(bar){bar.style.width=(v/10*100)+'%';bar.style.background=rateColor(v);}
-  const a=Math.round(['tecnica','tactica','fisico','actitud'].map(x=>parseInt(document.getElementById('f-'+x).value)).reduce((a,b)=>a+b,0)/4*10)/10;
+  const a=Math.round(['tecnica','tactica','fisico','actitud'].map(x=>parseFloat(document.getElementById('f-'+x).value)||0).reduce((a,b)=>a+b,0)/4*10)/10;
   const ng=document.getElementById('v-nota-global');
   ng.textContent=a;
   ng.style.color=rateColor(a);
@@ -1791,7 +1791,7 @@ window.updateSubMetricSlider = function(dim, val, displayId){
     const el=document.getElementById(smId(dim,name));
     return el?parseInt(el.value):5;
   });
-  const mean=Math.max(1,Math.min(10,Math.round(values.reduce((a,b)=>a+b,0)/values.length)));
+  const mean=Math.min(10,Math.max(0,Math.round(values.reduce((a,b)=>a+b,0)/values.length*10)/10));
   const mainSlider=document.getElementById('f-'+dim);
   if(mainSlider){mainSlider.value=mean;updateSlider(dim);}
 };
@@ -1848,10 +1848,10 @@ window.savePlayer = async function(){
     altura:document.getElementById('f-altura').value,
     peso:document.getElementById('f-peso').value,
     estado:document.getElementById('f-estado').value,
-    tecnica:parseInt(document.getElementById('f-tecnica').value),
-    tactica:parseInt(document.getElementById('f-tactica').value),
-    fisico:parseInt(document.getElementById('f-fisico').value),
-    actitud:parseInt(document.getElementById('f-actitud').value),
+    tecnica:parseFloat(document.getElementById('f-tecnica').value)||0,
+    tactica:parseFloat(document.getElementById('f-tactica').value)||0,
+    fisico:parseFloat(document.getElementById('f-fisico').value)||0,
+    actitud:parseFloat(document.getElementById('f-actitud').value)||0,
     telefono:document.getElementById('f-telefono').value.trim(),
     contacto:document.getElementById('f-contacto').value.trim(),
     relacion:document.getElementById('f-relacion').value,
