@@ -284,7 +284,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 /* ── RADAR CHART ── */
 .radar-wrap { background:#fff; border:1px solid var(--borderL); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.04); text-align:center; }
 .radar-wrap .card-title { text-align:left; }
-.radar-svg { max-width:280px; margin:0 auto; }
+.radar-svg { max-width:360px; margin:0 auto; }
 
 /* ── TAGS ── */
 .tags-wrap { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
@@ -973,10 +973,10 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     </div>
     <div class="card">
       <div class="card-title">02 — Valoración scout</div>
-      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Técnica individual</span><span id="v-tecnica" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-tecnica" min="1" max="10" value="5" step="1" oninput="updateSlider('tecnica')"></div>
-      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Capacidad táctica</span><span id="v-tactica" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-tactica" min="1" max="10" value="5" step="1" oninput="updateSlider('tactica')"></div>
-      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Físico y atletismo</span><span id="v-fisico" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-fisico" min="1" max="10" value="5" step="1" oninput="updateSlider('fisico')"></div>
-      <div class="slider-row"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Actitud y competitividad</span><span id="v-actitud" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div><input type="range" id="f-actitud" min="1" max="10" value="5" step="1" oninput="updateSlider('actitud')"></div>
+      <div style="margin-bottom:12px"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Técnica individual</span><div style="display:flex;align-items:center;gap:6px"><span style="font-size:9px;color:var(--slateL);font-weight:500;background:#F1F5F9;padding:1px 6px;border-radius:4px">auto</span><span id="v-tecnica" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div></div><div style="height:8px;background:#E2E8F0;border-radius:4px;margin-top:6px;overflow:hidden"><div id="bar-tecnica" style="height:100%;border-radius:4px;background:var(--purple);width:50%;transition:width .3s,background .3s"></div></div><input type="hidden" id="f-tecnica" value="5"></div>
+      <div style="margin-bottom:12px"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Capacidad táctica</span><div style="display:flex;align-items:center;gap:6px"><span style="font-size:9px;color:var(--slateL);font-weight:500;background:#F1F5F9;padding:1px 6px;border-radius:4px">auto</span><span id="v-tactica" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div></div><div style="height:8px;background:#E2E8F0;border-radius:4px;margin-top:6px;overflow:hidden"><div id="bar-tactica" style="height:100%;border-radius:4px;background:var(--purple);width:50%;transition:width .3s,background .3s"></div></div><input type="hidden" id="f-tactica" value="5"></div>
+      <div style="margin-bottom:12px"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Físico y atletismo</span><div style="display:flex;align-items:center;gap:6px"><span style="font-size:9px;color:var(--slateL);font-weight:500;background:#F1F5F9;padding:1px 6px;border-radius:4px">auto</span><span id="v-fisico" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div></div><div style="height:8px;background:#E2E8F0;border-radius:4px;margin-top:6px;overflow:hidden"><div id="bar-fisico" style="height:100%;border-radius:4px;background:var(--purple);width:50%;transition:width .3s,background .3s"></div></div><input type="hidden" id="f-fisico" value="5"></div>
+      <div style="margin-bottom:12px"><div class="slider-header"><span style="font-size:12px;color:var(--text2);font-weight:500">Actitud y competitividad</span><div style="display:flex;align-items:center;gap:6px"><span style="font-size:9px;color:var(--slateL);font-weight:500;background:#F1F5F9;padding:1px 6px;border-radius:4px">auto</span><span id="v-actitud" style="font-size:16px;font-weight:700;color:var(--purple)">5</span></div></div><div style="height:8px;background:#E2E8F0;border-radius:4px;margin-top:6px;overflow:hidden"><div id="bar-actitud" style="height:100%;border-radius:4px;background:var(--purple);width:50%;transition:width .3s,background .3s"></div></div><input type="hidden" id="f-actitud" value="5"></div>
       <div id="f-submetrics-section" style="display:none;margin:4px 0 14px">
         <div style="border:1px solid #DDD6FE;border-radius:10px;overflow:hidden">
           <div onclick="toggleSubMetrics()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);cursor:pointer;user-select:none">
@@ -1254,62 +1254,68 @@ function debouncedRender() {
 }
 
 /* ── RADAR CHART SVG ── */
-function renderRadar(containerId, scores) {
-  // scores = {tecnica, tactica, fisico, actitud} — values 1-10
-  const labels = ['Técnica','Táctica','Físico','Actitud'];
-  const keys = ['tecnica','tactica','fisico','actitud'];
-  const cx=140, cy=140, R=110, levels=5;
-  const n = keys.length;
-  const angleStep = (2*Math.PI)/n;
-  const startAngle = -Math.PI/2; // start from top
-
-  function polar(angle, r){ return [cx+r*Math.cos(angle), cy+r*Math.sin(angle)]; }
-
-  let svg = `<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" class="radar-svg">`;
-
-  // Background grid
-  for(let l=1;l<=levels;l++){
-    const r=R*l/levels;
-    const pts=[];
-    for(let i=0;i<n;i++){
-      const [x,y]=polar(startAngle+i*angleStep,r);
-      pts.push(`${x},${y}`);
-    }
-    svg+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===levels?'1.5':'0.8'}"/>`;
+function buildRadarSvg(p, opts) {
+  opts = opts || {};
+  const sub = p && p.subMetrics;
+  let labels = [], values = [];
+  if (sub && typeof sub === 'object' && Object.keys(sub).length > 0) {
+    ['tecnica','tactica','fisico','actitud'].forEach(dim => {
+      const d = sub[dim];
+      if (d && typeof d === 'object') {
+        Object.entries(d).forEach(([name, val]) => {
+          labels.push(name.length > 10 ? name.slice(0,9)+'.' : name);
+          values.push(Math.max(0, Math.min(10, typeof val === 'number' ? val : 0)));
+        });
+      }
+    });
   }
-
-  // Axis lines + labels
-  for(let i=0;i<n;i++){
-    const angle=startAngle+i*angleStep;
-    const [x,y]=polar(angle,R);
-    svg+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;
-    // Label
-    const [lx,ly]=polar(angle,R+18);
-    const anchor=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';
-    svg+=`<text x="${lx}" y="${ly+4}" text-anchor="${anchor}" font-size="11" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
+  if (labels.length === 0) {
+    labels = ['Técnica','Táctica','Físico','Actitud'];
+    values = [p?p.tecnica||0:0, p?p.tactica||0:0, p?p.fisico||0:0, p?p.actitud||0:0];
   }
-
-  // Data polygon
-  const dataPts=[];
-  for(let i=0;i<n;i++){
-    const v=Math.max(1,Math.min(10,scores[keys[i]]||0));
-    const r=R*v/10;
-    const [x,y]=polar(startAngle+i*angleStep,r);
-    dataPts.push(`${x},${y}`);
+  const n = labels.length;
+  const size = opts.size || (n > 4 ? 360 : 280);
+  const cx = size/2, cy = size/2, R = size*0.36;
+  const levels = 5, as = (2*Math.PI)/n, sa = -Math.PI/2;
+  const showVals = opts.showValues !== false && n <= 8;
+  const lblOff = n > 8 ? 20 : 18;
+  const fSz = n > 8 ? 9 : 11;
+  const ptR = n > 8 ? 3 : 5;
+  const ptSW = n > 8 ? '1.5' : '2';
+  const po = (a, r) => [cx + r*Math.cos(a), cy + r*Math.sin(a)];
+  const wA = opts.width ? ` width="${opts.width}"` : '';
+  const hA = opts.height ? ` height="${opts.height}"` : '';
+  const cls = opts.className ? ` class="${opts.className}"` : '';
+  let s = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg"${wA}${hA}${cls}>`;
+  for (let l=1; l<=levels; l++) {
+    const r=R*l/levels, pts=[];
+    for (let i=0; i<n; i++) { const [x,y]=po(sa+i*as,r); pts.push(`${x},${y}`); }
+    s += `<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===levels?'1.5':'0.8'}"/>`;
   }
-  svg+=`<polygon points="${dataPts.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;
-
-  // Data points + value labels
-  for(let i=0;i<n;i++){
-    const v=Math.max(1,Math.min(10,scores[keys[i]]||0));
-    const r=R*v/10;
-    const [x,y]=polar(startAngle+i*angleStep,r);
-    svg+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;
-    svg+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="Syne,system-ui">${v}</text>`;
+  for (let i=0; i<n; i++) {
+    const a=sa+i*as, [x,y]=po(a,R);
+    s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;
+    const [lx,ly]=po(a, R+lblOff);
+    const anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';
+    s += `<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="${fSz}" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
   }
+  const dp=[];
+  for (let i=0; i<n; i++) {
+    const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
+    dp.push(`${x},${y}`);
+  }
+  s += `<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;
+  for (let i=0; i<n; i++) {
+    const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
+    s += `<circle cx="${x}" cy="${y}" r="${ptR}" fill="#7C3AED" stroke="#fff" stroke-width="${ptSW}"/>`;
+    if (showVals) s += `<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="Syne,system-ui">${v}</text>`;
+  }
+  s += '</svg>';
+  return s;
+}
 
-  svg+=`</svg>`;
-  document.getElementById(containerId).innerHTML=svg;
+function renderRadar(containerId, p) {
+  document.getElementById(containerId).innerHTML = buildRadarSvg(p, {className:'radar-svg'});
 }
 
 /* ── GESTIÓN DE ETIQUETAS EN FORMULARIO ── */
@@ -1732,6 +1738,8 @@ window.updateSlider = function(k){
   const el=document.getElementById('v-'+k);
   el.textContent=v;
   el.style.color=rateColor(v);
+  const bar=document.getElementById('bar-'+k);
+  if(bar){bar.style.width=(v/10*100)+'%';bar.style.background=rateColor(v);}
   const a=Math.round(['tecnica','tactica','fisico','actitud'].map(x=>parseInt(document.getElementById('f-'+x).value)).reduce((a,b)=>a+b,0)/4*10)/10;
   const ng=document.getElementById('v-nota-global');
   ng.textContent=a;
@@ -1756,7 +1764,8 @@ window.renderSubMetrics = function(savedValues){
     return `<div style="margin-bottom:14px">
       <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #DDD6FE">${label}</div>
       ${subList.map(name=>{
-        const val=(sv[key]&&sv[key][name]!=null)?sv[key][name]:5;
+        const mainVal=parseInt(document.getElementById('f-'+key)?.value)||5;
+        const val=(sv[key]&&sv[key][name]!=null)?sv[key][name]:mainVal;
         const iid=smId(key,name), did=smDisplayId(key,name);
         return `<div class="slider-row"><div class="slider-header"><span style="font-size:11px;color:var(--text2);font-weight:500">${esc(name)}</span><span id="${did}" style="font-size:13px;font-weight:700;color:var(--purple)">${val}</span></div><input type="range" id="${iid}" min="0" max="10" value="${val}" step="1" oninput="updateSubMetricSlider('${key}',this.value,'${did}')"></div>`;
       }).join('')}
@@ -1918,7 +1927,7 @@ window.openDetail = function(id){
   renderVisits(p);
 
   // Radar chart
-  renderRadar('d-radar',{tecnica:p.tecnica||0,tactica:p.tactica||0,fisico:p.fisico||0,actitud:p.actitud||0});
+  renderRadar('d-radar', p);
 
   // Tags
   const tags=p.tags||[];
@@ -2114,7 +2123,7 @@ function openReportWindow(p,summaryHTML){
   const scoreBoxes=[['Técnica',p.tecnica],['Táctica',p.tactica],['Físico',p.fisico],['Actitud',p.actitud]].map(([l,v])=>`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;text-align:center"><div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:system-ui">${l}</div><div style="font-size:28px;font-weight:800;color:${rc(v)};font-family:system-ui;line-height:1">${v}</div><div style="margin-top:6px;height:4px;border-radius:2px;background:#f1f5f9"><div style="height:4px;border-radius:2px;background:${rc(v)};width:${v*10}%"></div></div></div>`).join('');
 
   // Radar SVG for report
-  const radarSvg=(()=>{const labels=['Técnica','Táctica','Físico','Actitud'],keys=['tecnica','tactica','fisico','actitud'],cx=140,cy=140,R=110,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" width="240" height="240">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.8'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;const[lx,ly]=po(a,R+18),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="11" font-weight="600" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="system-ui">${v}</text>`;}s+='</svg>';return s;})();
+  const radarSvg=buildRadarSvg(p, {width:240, height:240});
 
   const tagsHTML=(p.tags||[]).length>0?`<div style="margin-bottom:20px"><div style="display:flex;gap:6px;flex-wrap:wrap">${(p.tags||[]).map(t=>{const colors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};const[bg,col]=colors[t]||['#F1F5F9','#475569'];return`<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600;font-family:system-ui">${esc(t)}</span>`;}).join('')}</div></div>`:'';
 
@@ -2315,7 +2324,7 @@ function openCVWindow(p,clubs,description){
   const tagsHTML=tags.map(t=>{const[bg,col]=tagColors[t]||['#F1F5F9','#475569'];return`<span style="font-size:10px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600">${esc(t)}</span>`;}).join(' ');
 
   // Radar SVG
-  const radarSvg=(()=>{const labels=['TEC','TAC','FIS','ACT'],keys=['tecnica','tactica','fisico','actitud'],cx=100,cy=100,R=80,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="180" height="180">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.7'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.7"/>`;const[lx,ly]=po(a,R+14),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="10" font-weight="700" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="4" fill="#7C3AED" stroke="#fff" stroke-width="1.5"/>`;}s+='</svg>';return s;})();
+  const radarSvg=buildRadarSvg(p, {width:180, height:180});
 
   const ir=(icon,label,value)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0"><span style="font-size:14px">${icon}</span><span style="font-size:12px;color:#64748b;min-width:100px">${label}</span><span style="font-size:13px;font-weight:600;color:#1e293b">${value}</span></div>`;
   const scoreBar=(label,v)=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:#64748b;font-weight:500">${label}</span><span style="font-size:13px;font-weight:800;color:${rc(v)}">${v}/10</span></div><div style="height:6px;border-radius:3px;background:#f1f5f9"><div style="height:6px;border-radius:3px;background:${rc(v)};width:${v*10}%"></div></div></div>`;
@@ -2608,13 +2617,23 @@ window.runCompare = function(){
 
   // Radar
   destroyChart('compare-radar');
+  const allHaveSub=selected.every(p=>p.subMetrics&&typeof p.subMetrics==='object'&&Object.keys(p.subMetrics).length>0);
+  let cmpLabels,cmpData;
+  if(allHaveSub){
+    cmpLabels=[];
+    ['tecnica','tactica','fisico','actitud'].forEach(dim=>{const d=selected[0].subMetrics[dim];if(d&&typeof d==='object')Object.keys(d).forEach(name=>cmpLabels.push(name.length>10?name.slice(0,9)+'.':name));});
+    cmpData=selected.map(p=>{const vals=[];['tecnica','tactica','fisico','actitud'].forEach(dim=>{const d0=selected[0].subMetrics[dim];if(d0)Object.keys(d0).forEach(name=>vals.push((p.subMetrics[dim]&&p.subMetrics[dim][name]!=null)?p.subMetrics[dim][name]:0));});return vals;});
+  } else {
+    cmpLabels=['Técnica','Táctica','Físico','Actitud'];
+    cmpData=selected.map(p=>[p.tecnica||0,p.tactica||0,p.fisico||0,p.actitud||0]);
+  }
   _charts['compare-radar']=new Chart(document.getElementById('chart-compare-radar').getContext('2d'),{
     type:'radar',
     data:{
-      labels:['Técnica','Táctica','Físico','Actitud'],
-      datasets:selected.map((p,i)=>({label:p.nombre,data:[p.tecnica||0,p.tactica||0,p.fisico||0,p.actitud||0],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}))
+      labels:cmpLabels,
+      datasets:selected.map((p,i)=>({label:p.nombre,data:cmpData[i],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}))
     },
-    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}}}
+    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:allHaveSub?8:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}}}
   });
 
   // Table
@@ -2729,6 +2748,7 @@ window.shareReport = async function(){
     catMain:clean(p.catMain),catSub:clean(p.catSub),ojeoMain:clean(p.ojeoMain),ojeoSub:clean(p.ojeoSub),
     pieDom:clean(p.pieDom),fecha:clean(p.fecha),altura:clean(p.altura),peso:clean(p.peso),estado:clean(p.estado),
     tecnica:p.tecnica||0,tactica:p.tactica||0,fisico:p.fisico||0,actitud:p.actitud||0,
+    subMetrics:p.subMetrics||{},
     tags:p.tags||[],foto:p.foto||'',
     visitas:(p.visitas||[]).map(v=>({fecha:clean(v.fecha),partido:clean(v.partido),nota:clean(v.nota),valoracion:v.valoracion||0})),
     sharedAt:new Date().toISOString(),sharedBy:currentUser.email
@@ -2772,7 +2792,7 @@ async function checkSharedReport(){
     const tagColors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};
 
     // Radar SVG
-    const radarSvg=(()=>{const labels=['TEC','TAC','FIS','ACT'],keys=['tecnica','tactica','fisico','actitud'],cx=120,cy=120,R=95,n=4,as=Math.PI*2/n,sa=-Math.PI/2;const po=(a,r)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];let s='<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;margin:0 auto;display:block">';for(let l=1;l<=5;l++){const r=R*l/5,pts=[];for(let i=0;i<n;i++){const[x,y]=po(sa+i*as,r);pts.push(`${x},${y}`);}s+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===5?'1.5':'0.7'}"/>`;}for(let i=0;i<n;i++){const a=sa+i*as,[x,y]=po(a,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.7"/>`;const[lx,ly]=po(a,R+16),anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';s+=`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="11" font-weight="700" fill="#64748B" font-family="system-ui">${labels[i]}</text>`;}const dp=[];for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);dp.push(`${x},${y}`);}s+=`<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;for(let i=0;i<n;i++){const v=Math.max(1,Math.min(10,p[keys[i]]||0)),r=R*v/10,[x,y]=po(sa+i*as,r);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED">${v}</text>`;}s+='</svg>';return s;})();
+    const radarSvg=buildRadarSvg(p, {});
 
     const scoreBar=(label,v)=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:#64748b;font-weight:500">${label}</span><span style="font-size:14px;font-weight:800;color:${rc(v)}">${v}/10</span></div><div style="height:8px;border-radius:4px;background:#f1f5f9"><div style="height:8px;border-radius:4px;background:${rc(v)};width:${v*10}%"></div></div></div>`;
     const ir=(label,value)=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F8FAFC;font-size:13px"><span style="color:#64748b">${label}</span><span style="font-weight:600;color:#1e293b">${value}</span></div>`;
