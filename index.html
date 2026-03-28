@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#0B0F1A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -589,6 +589,68 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   .cmp-hero-grid { grid-template-columns:1fr; }
   .player-row .avatar { width:34px; height:34px; font-size:12px; border-radius:8px; }
 }
+
+/* ── BOTTOM NAV ── */
+#bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #E2E8F0; z-index:290; height:60px; box-shadow:0 -2px 12px rgba(0,0,0,.06); }
+#bottom-nav > div { display:flex; height:100%; }
+.bnav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:none; border:none; cursor:pointer; color:var(--slateL); padding:4px 0; font-family:var(--font-body); line-height:1; min-height:44px; }
+.bnav-btn .bnav-icon { font-size:20px; }
+.bnav-btn .bnav-label { font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+.bnav-btn.active { color:var(--purple); }
+.bnav-btn.active .bnav-label { color:var(--purple); }
+
+/* ── APP DRAWER ── */
+#app-drawer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:299; backdrop-filter:blur(2px); }
+#app-drawer { display:none; position:fixed; top:0; right:0; bottom:0; width:min(300px,85vw); background:#fff; z-index:300; overflow-y:auto; box-shadow:-4px 0 24px rgba(0,0,0,.15); transform:translateX(100%); transition:transform .25s ease; }
+#app-drawer.open { transform:translateX(0); }
+.app-drawer-item { display:flex; align-items:center; width:100%; text-align:left; background:none; border:none; border-bottom:1px solid #F8FAFC; padding:14px 20px; font-size:15px; font-weight:500; color:var(--text); cursor:pointer; font-family:var(--font-body); min-height:48px; gap:10px; }
+.app-drawer-item:hover { background:#F5F3FF; color:var(--purple); }
+.app-drawer-item.danger { color:#DC2626; }
+.app-drawer-item.danger:hover { background:#FEF2F2; }
+
+/* ── MOBILE OVERRIDES ── */
+@media(max-width:768px) {
+  /* Landing: hide desktop nav buttons, show only hamburger */
+  .lp-nav-right .lp-nav-btn-login,
+  .lp-nav-right .lp-nav-btn-cta { display:none !important; }
+  /* App header: hide desktop buttons on mobile */
+  .header-right .hbtn:not(#btn-alerts):not(#app-menu-btn) { display:none !important; }
+  .header-right .user-pill,
+  .header-right .save-pill { display:none !important; }
+  #app-menu-btn { display:flex !important; align-items:center; justify-content:center; font-size:20px; }
+  /* Bottom nav & body padding */
+  body.app-active { padding-bottom:68px; }
+  /* Modal bottom sheets */
+  .login-modal-overlay { align-items:flex-end !important; }
+  .login-modal { max-width:100% !important; padding:0 !important; }
+  .login-modal > div { border-radius:20px 20px 0 0 !important; width:100% !important; max-height:90vh; overflow-y:auto; }
+  .confirm-overlay { align-items:flex-end !important; }
+  .confirm-box { border-radius:20px 20px 0 0 !important; max-width:100% !important; width:100% !important; margin:0; }
+  #match-modal { padding:0 !important; }
+  #match-modal > div { align-items:flex-end !important; padding:0 !important; min-height:unset !important; }
+  .match-modal-box { border-radius:20px 20px 0 0 !important; max-width:100% !important; max-height:92vh; overflow-y:auto; }
+  /* Inputs: prevent iOS zoom */
+  input:not([type=range]), select, textarea { font-size:16px !important; }
+  /* Touch targets */
+  .hbtn, .btn-primary, .btn-outline, .hero-action-btn { min-height:44px; }
+  /* Comparator mobile note */
+  #cmp-mobile-note { display:block !important; }
+  /* Scout Log summary 2x2 */
+  #sl-summary { grid-template-columns:repeat(2,1fr) !important; }
+  /* Map: taller on mobile */
+  .map-container { height:calc(100vh - 130px) !important; }
+  /* Landing h1 */
+  .lp-h1 { font-size:32px !important; }
+  /* Waitlist form: column */
+  .lp-waitlist-form { flex-direction:column !important; }
+  .lp-waitlist-form input, .lp-waitlist-form select, .lp-waitlist-form button { width:100% !important; }
+}
+@media(min-width:769px) {
+  #app-menu-btn { display:none !important; }
+  #bottom-nav { display:none !important; }
+  #app-drawer, #app-drawer-overlay { display:none !important; }
+  #cmp-mobile-note { display:none !important; }
+}
 </style>
 </head>
 <body>
@@ -1167,8 +1229,40 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     <span class="user-pill" id="user-pill">—</span>
     <button class="hbtn" id="btn-api-admin" onclick="showApiKeyConfig()" style="display:none">🔑 API IA</button>
     <button class="hbtn" onclick="doLogout()">Salir</button>
+    <button class="hbtn" id="app-menu-btn" onclick="openAppDrawer()" title="Menú" aria-label="Abrir menú">☰</button>
   </div>
 </div>
+
+<!-- APP DRAWER (mobile) -->
+<div id="app-drawer-overlay" onclick="closeAppDrawer()"></div>
+<div id="app-drawer">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid #F1F5F9">
+    <span style="font-size:15px;font-weight:800;color:var(--navy);font-family:var(--font-display)">Navegación</span>
+    <button onclick="closeAppDrawer()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--slate);line-height:1;padding:4px">✕</button>
+  </div>
+  <div style="padding:4px 0">
+    <button class="app-drawer-item" onclick="closeAppDrawer();showPage('list');updateBottomNav('list')">🏠 Jugadores</button>
+    <button class="app-drawer-item" onclick="closeAppDrawer();openDashboard();updateBottomNav('dashboard')">📊 Dashboard</button>
+    <button class="app-drawer-item" onclick="closeAppDrawer();openCompare()">⚖️ Comparar</button>
+    <button class="app-drawer-item" onclick="closeAppDrawer();openMap();updateBottomNav('map')">🗺️ Mapa</button>
+    <button class="app-drawer-item" onclick="closeAppDrawer();openScoutLog();updateBottomNav('scoutlog')">📋 Scout Log</button>
+    <button class="app-drawer-item" onclick="closeAppDrawer();openAlerts();updateBottomNav('alerts')">🔔 Alertas</button>
+    <button class="app-drawer-item" id="drawer-api-btn" onclick="closeAppDrawer();showApiKeyConfig()" style="display:none">🔑 API IA</button>
+    <div id="drawer-user" style="padding:12px 20px;font-size:12px;color:var(--slateL);border-bottom:1px solid #F8FAFC">—</div>
+    <button class="app-drawer-item danger" onclick="closeAppDrawer();doLogout()">Salir</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav id="bottom-nav" aria-label="Navegación rápida">
+  <div>
+    <button class="bnav-btn active" id="bnav-list" onclick="showPage('list');updateBottomNav('list')"><span class="bnav-icon">🏠</span><span class="bnav-label">Jugadores</span></button>
+    <button class="bnav-btn" id="bnav-dashboard" onclick="openDashboard();updateBottomNav('dashboard')"><span class="bnav-icon">📊</span><span class="bnav-label">Dashboard</span></button>
+    <button class="bnav-btn" id="bnav-scoutlog" onclick="openScoutLog();updateBottomNav('scoutlog')"><span class="bnav-icon">📋</span><span class="bnav-label">Scout Log</span></button>
+    <button class="bnav-btn" id="bnav-map" onclick="openMap();updateBottomNav('map')"><span class="bnav-icon">🗺️</span><span class="bnav-label">Mapa</span></button>
+    <button class="bnav-btn" id="bnav-alerts" onclick="openAlerts();updateBottomNav('alerts')"><span class="bnav-icon">🔔</span><span class="bnav-label">Alertas</span></button>
+  </div>
+</nav>
 
 <!-- API BANNER -->
 <div id="api-banner">
@@ -1354,6 +1448,7 @@ button:disabled { opacity:.5; cursor:not-allowed; }
     </div>
   </div>
   <div class="container">
+    <div id="cmp-mobile-note" style="display:none;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;padding:10px 14px;font-size:12px;color:#5B21B6;margin-bottom:12px">⚠️ Comparación de 3-4 jugadores disponible en escritorio</div>
     <div class="cmp-selectors" id="cmp-selectors"></div>
     <div class="cmp-result" id="cmp-result">
       <div class="cmp-hero-grid" id="cmp-heroes"></div>
@@ -1829,7 +1924,7 @@ function formatDate(d){ if(!d)return'—'; try{return new Date(d+'T12:00:00').to
 function getYear(d){ if(!d)return null; try{return new Date(d+'T12:00:00').getFullYear()}catch(e){return null;} }
 function todayISO(){ return new Date().toISOString().split('T')[0]; }
 function todayStr(){ return new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}); }
-function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); window.scrollTo(0,0); }
+function showPage(p){ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); window.scrollTo(0,0); if(typeof updateBottomNav==='function') updateBottomNav(p); }
 function showToast(m){ const t=document.getElementById('toast'); t.textContent=m||'✓ Guardado'; t.style.display='block'; clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2200); }
 function showSavePill(){ const s=document.getElementById('save-pill'); s.style.display='block'; clearTimeout(s._t); s._t=setTimeout(()=>s.style.display='none',2000); }
 function getApiKey(){ try{return localStorage.getItem('sct_apikey_v1')||''}catch(e){return''} }
@@ -2064,6 +2159,7 @@ window.startDemo = function(){
   document.getElementById('main-header').style.display='flex';
   document.getElementById('demo-banner').style.display='flex';
   document.getElementById('user-pill').textContent='👤 Modo demo';
+  showAppUI('demo@mmtalentsport.com', false);
   document.getElementById('btn-api-admin').style.display='none';
   buildYearFilter();
   renderList();
@@ -2121,6 +2217,7 @@ window.doLogout = function(){
     players=[]; alerts=[]; matches=[]; savedCompetitions=[]; currentId=null;
     document.getElementById('main-header').style.display='none';
     document.getElementById('api-banner').classList.remove('show');
+    hideAppUI();
     document.getElementById('l-email').value=''; document.getElementById('l-pass').value='';
     document.getElementById('login-err').style.display='none';
     document.getElementById('login-btn').disabled=false;
@@ -2192,6 +2289,7 @@ onAuthStateChanged(auth, async user=>{
     document.getElementById('user-pill').textContent='👤 '+user.email;
     document.getElementById('main-header').style.display='flex';
     document.getElementById('btn-api-admin').style.display=user.email===ADMIN_EMAIL?'inline-block':'none';
+    showAppUI(user.email, user.email===ADMIN_EMAIL);
     await loadApiKey();
     loadSavedCompetitions();
     startSync(user.uid);
@@ -3213,14 +3311,16 @@ function renderCmpSelectors(){
   for(let i=0;i<cmpSlots;i++){
     html+=`<div class="cmp-selector"><select id="cmp-p${i}" onchange="runCompare()">${opts}</select><div class="cmp-selector-preview" id="cmp-prev${i}">—</div></div>`;
   }
-  if(cmpSlots<4){
+  const maxSlots=window.innerWidth<=768?2:4;
+  if(cmpSlots<maxSlots){
     html+=`<div class="cmp-add-btn" onclick="addCmpSlot()" title="Añadir jugador">+</div>`;
   }
   document.getElementById('cmp-selectors').innerHTML=html;
 }
 
 window.addCmpSlot = function(){
-  if(cmpSlots>=4)return;
+  const maxSlots=window.innerWidth<=768?2:4;
+  if(cmpSlots>=maxSlots)return;
   cmpSlots++;
   renderCmpSelectors();
 };
@@ -4359,6 +4459,51 @@ window.deleteMatch=async function(id){
     }
   });
 };
+
+// ── MOBILE: DRAWER + BOTTOM NAV ─────────────────────────────────────────────
+
+window.openAppDrawer=function(){
+  const d=document.getElementById('app-drawer');
+  const o=document.getElementById('app-drawer-overlay');
+  if(!d||!o) return;
+  d.style.display='block';
+  o.style.display='block';
+  requestAnimationFrame(()=>d.classList.add('open'));
+};
+
+window.closeAppDrawer=function(){
+  const d=document.getElementById('app-drawer');
+  const o=document.getElementById('app-drawer-overlay');
+  if(!d) return;
+  d.classList.remove('open');
+  if(o) o.style.display='none';
+  setTimeout(()=>{ if(d&&!d.classList.contains('open')) d.style.display='none'; },250);
+};
+
+window.updateBottomNav=function(page){
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('bnav-'+page);
+  if(btn) btn.classList.add('active');
+};
+
+function showAppUI(email, isAdminUser){
+  const isMobile=window.innerWidth<=768;
+  if(isMobile){
+    document.getElementById('bottom-nav').style.display='flex';
+    document.body.classList.add('app-active');
+  }
+  // Sync drawer user info
+  const du=document.getElementById('drawer-user');
+  if(du) du.textContent='👤 '+email;
+  const da=document.getElementById('drawer-api-btn');
+  if(da) da.style.display=isAdminUser?'flex':'none';
+}
+
+function hideAppUI(){
+  document.getElementById('bottom-nav').style.display='none';
+  document.body.classList.remove('app-active');
+  closeAppDrawer();
+}
 
 (function(){
   const manifest={name:'MM Talent Sport',short_name:'MM Talent',description:'Plataforma de scouting de fútbol base',start_url:'/',display:'standalone',background_color:'#0B0F1A',theme_color:'#0B0F1A',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%237C3AED"/><text x="256" y="340" text-anchor="middle" font-size="220" font-weight="800" fill="white" font-family="system-ui">MM</text></svg>',sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
