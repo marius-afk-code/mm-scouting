@@ -13,9 +13,9 @@
 <meta property="og:description" content="Digitaliza tu trabajo como scout. Informes con IA, radar de métricas, Sports CV y mucho más.">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%237C3AED'/><text x='90' y='120' text-anchor='middle' font-size='72' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 46' width='180' height='180'><rect width='46' height='46' rx='10' fill='%237C3AED'/><text x='23' y='19' font-family='Georgia,serif' font-size='14' font-weight='700' fill='white' text-anchor='middle' letter-spacing='-1'>MM</text><path d='M10 36 A13 13 0 0 1 36 36' fill='none' stroke='white' stroke-width='1.2' opacity='.5' stroke-linecap='round'/><path d='M15 36 A8 8 0 0 1 31 36' fill='none' stroke='white' stroke-width='1.1' opacity='.8' stroke-linecap='round'/><line x1='23' y1='36' x2='34' y2='26' stroke='white' stroke-width='1.2' stroke-linecap='round'/><circle cx='34' cy='26' r='2.5' fill='white'/></svg>">
 <title>MM Scouting — Plataforma de scouting de fútbol base con IA</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237C3AED'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='800' fill='white' font-family='system-ui'>MM</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 46'><rect width='46' height='46' rx='10' fill='%237C3AED'/><text x='23' y='19' font-family='Georgia,serif' font-size='14' font-weight='700' fill='white' text-anchor='middle' letter-spacing='-1'>MM</text><path d='M10 36 A13 13 0 0 1 36 36' fill='none' stroke='white' stroke-width='1.2' opacity='.5' stroke-linecap='round'/><path d='M15 36 A8 8 0 0 1 31 36' fill='none' stroke='white' stroke-width='1.1' opacity='.8' stroke-linecap='round'/><line x1='23' y1='36' x2='34' y2='26' stroke='white' stroke-width='1.2' stroke-linecap='round'/><circle cx='34' cy='26' r='2.5' fill='white'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -585,10 +585,17 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <!-- NAV -->
   <nav class="lp-nav" id="lp-nav" role="navigation" aria-label="Navegación principal">
     <div class="lp-nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" role="link" aria-label="MM Scouting inicio">
-      <div class="lp-nav-logo-icon" aria-hidden="true">
-        <span style="font-family:var(--font-display);font-size:10px;font-weight:800;color:#fff">MM</span>
-      </div>
-      <span style="font-family:var(--font-display);font-size:15px;font-weight:800;color:#0B0F1A">MM <span style="color:#7C3AED">SCOUTING</span></span>
+      <svg width="180" height="36" viewBox="0 0 230 46" xmlns="http://www.w3.org/2000/svg" aria-label="MM Scouting">
+        <rect x="0" y="0" width="46" height="46" rx="10" fill="#7C3AED"/>
+        <text x="23" y="19" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-1">MM</text>
+        <path d="M10 36 A13 13 0 0 1 36 36" fill="none" stroke="white" stroke-width="1.2" opacity=".5" stroke-linecap="round"/>
+        <path d="M15 36 A8 8 0 0 1 31 36" fill="none" stroke="white" stroke-width="1.1" opacity=".8" stroke-linecap="round"/>
+        <line x1="23" y1="36" x2="34" y2="26" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="34" cy="26" r="2.5" fill="white"/>
+        <text x="56" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="#0B0F1A" letter-spacing="-0.5">MM</text>
+        <text x="84" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="#7C3AED" letter-spacing="-0.5">Scouting</text>
+        <text x="56" y="38" font-family="Arial,sans-serif" font-size="6.5" fill="#9CA3AF" letter-spacing=".14em" font-weight="500">TALENT SPORT</text>
+      </svg>
     </div>
     <div class="lp-nav-links" role="list">
       <a class="lp-nav-link" href="#features" role="listitem">Funciones</a>
@@ -999,14 +1006,18 @@ button:disabled { opacity:.5; cursor:not-allowed; }
   <!-- FOOTER -->
   <footer class="lp-footer" role="contentinfo">
     <div class="lp-footer-inner">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:28px;height:28px;background:linear-gradient(135deg,#7C3AED,#8B5CF6);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-hidden="true">
-          <span style="font-family:var(--font-display);font-size:9px;font-weight:800;color:#fff">MM</span>
-        </div>
-        <div>
-          <div style="font-size:12px;font-weight:700;color:#94A3B8;font-family:var(--font-display)">MM TALENT SPORT</div>
-          <div style="font-size:11px;color:#475569">Scouting &amp; Analytics · Fútbol base</div>
-        </div>
+      <div>
+        <svg width="180" height="36" viewBox="0 0 230 46" xmlns="http://www.w3.org/2000/svg" aria-label="MM Scouting">
+          <rect x="0" y="0" width="46" height="46" rx="10" fill="#7C3AED"/>
+          <text x="23" y="19" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-1">MM</text>
+          <path d="M10 36 A13 13 0 0 1 36 36" fill="none" stroke="white" stroke-width="1.2" opacity=".5" stroke-linecap="round"/>
+          <path d="M15 36 A8 8 0 0 1 31 36" fill="none" stroke="white" stroke-width="1.1" opacity=".8" stroke-linecap="round"/>
+          <line x1="23" y1="36" x2="34" y2="26" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="34" cy="26" r="2.5" fill="white"/>
+          <text x="56" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="white" letter-spacing="-0.5">MM</text>
+          <text x="84" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="#A78BFA" letter-spacing="-0.5">Scouting</text>
+          <text x="56" y="38" font-family="Arial,sans-serif" font-size="6.5" fill="#6B7280" letter-spacing=".14em" font-weight="500">TALENT SPORT</text>
+        </svg>
       </div>
       <div class="lp-footer-links">
         <a class="lp-footer-link" href="#features">Funciones</a>
@@ -1116,8 +1127,18 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 <!-- HEADER -->
 <div class="header" id="main-header" style="display:none">
   <div class="header-brand" onclick="showPage('list')">
-    <div class="header-brand-icon"><span class="header-brand-icon-text">MM</span></div>
-    <div class="header-brand-name">MM <span>TALENT</span> SPORT</div>
+    <svg width="32" height="32" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0" aria-hidden="true">
+      <rect width="46" height="46" rx="10" fill="#7C3AED"/>
+      <text x="23" y="19" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-1">MM</text>
+      <path d="M10 36 A13 13 0 0 1 36 36" fill="none" stroke="white" stroke-width="1.2" opacity=".5" stroke-linecap="round"/>
+      <path d="M15 36 A8 8 0 0 1 31 36" fill="none" stroke="white" stroke-width="1.1" opacity=".8" stroke-linecap="round"/>
+      <line x1="23" y1="36" x2="34" y2="26" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="34" cy="26" r="2.5" fill="white"/>
+    </svg>
+    <svg class="header-brand-name" width="128" height="28" viewBox="0 0 168 36" xmlns="http://www.w3.org/2000/svg" aria-label="MM Scouting">
+      <text x="0" y="26" font-family="Arial,sans-serif" font-size="22" font-weight="800" fill="white" letter-spacing="-0.5">MM</text>
+      <text x="32" y="26" font-family="Arial,sans-serif" font-size="22" font-weight="800" fill="#A78BFA" letter-spacing="-0.5">Scouting</text>
+    </svg>
   </div>
   <div class="header-right">
     <span class="save-pill" id="save-pill">✓ Guardado</span>
@@ -3451,9 +3472,18 @@ async function checkSharedReport(){
 
     /* BLOQUE 7 — Footer */
     const footerBlock=`<div style="text-align:center;padding:28px 24px;border-top:1px solid #E2E8F0;margin-top:4px">
-      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:32px;height:32px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:8px;display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-display);font-size:10px;font-weight:800;color:#fff">MM</span></div>
-        <span style="font-family:var(--font-display);font-size:15px;font-weight:800;color:#0B0F1A">MM <span style="color:#7C3AED">TALENT</span> SPORT</span>
+      <div style="display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <svg width="180" height="36" viewBox="0 0 230 46" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="46" height="46" rx="10" fill="#7C3AED"/>
+          <text x="23" y="19" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-1">MM</text>
+          <path d="M10 36 A13 13 0 0 1 36 36" fill="none" stroke="white" stroke-width="1.2" opacity=".5" stroke-linecap="round"/>
+          <path d="M15 36 A8 8 0 0 1 31 36" fill="none" stroke="white" stroke-width="1.1" opacity=".8" stroke-linecap="round"/>
+          <line x1="23" y1="36" x2="34" y2="26" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="34" cy="26" r="2.5" fill="white"/>
+          <text x="56" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="#0B0F1A" letter-spacing="-0.5">MM</text>
+          <text x="84" y="25" font-family="Arial,sans-serif" font-size="18" font-weight="800" fill="#7C3AED" letter-spacing="-0.5">Scouting</text>
+          <text x="56" y="38" font-family="Arial,sans-serif" font-size="6.5" fill="#9CA3AF" letter-spacing=".14em" font-weight="500">TALENT SPORT</text>
+        </svg>
       </div>
       <div style="font-size:12px;color:#94A3B8;margin-bottom:4px">Informe generado por MM Scouting · mm-talent-sport.vercel.app</div>
       <div style="font-size:11px;color:#CBD5E1">Compartido el ${new Date(p.sharedAt).toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'})} · Documento confidencial</div>
