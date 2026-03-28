@@ -1863,95 +1863,88 @@ function debouncedRender() {
 function buildRadarSvg(p, opts) {
   opts = opts || {};
   const sub = p && p.subMetrics;
-  let labels = [], values = [], avgValues = [], hasSub = false;
-  if (sub && typeof sub === 'object' && Object.keys(sub).length > 0) {
-    ['tecnica','tactica','fisico','actitud'].forEach(dim => {
-      const d = sub[dim];
-      if (d && typeof d === 'object' && Object.keys(d).length > 0) {
-        const dimVals = Object.values(d).map(v => typeof v === 'number' ? Math.max(0,Math.min(10,v)) : 0);
-        const dimAvg = dimVals.length ? dimVals.reduce((a,b)=>a+b,0)/dimVals.length : 0;
-        Object.entries(d).forEach(([name, val]) => {
-          labels.push(name.length > 10 ? name.slice(0,9)+'.' : name);
-          values.push(Math.max(0, Math.min(10, typeof val === 'number' ? val : 0)));
-          avgValues.push(dimAvg);
-        });
-        hasSub = true;
-      }
-    });
-  }
-  if (labels.length === 0) {
-    labels = ['Técnica','Táctica','Físico','Actitud'];
-    values = [p?p.tecnica||0:0, p?p.tactica||0:0, p?p.fisico||0:0, p?p.actitud||0:0];
-    hasSub = false;
-  }
-  const n = labels.length;
-  const legendH = hasSub ? 28 : 0;
-  const size = opts.size || (n > 4 ? 360 : 280);
-  const totalH = size + legendH;
-  const cx = size/2, cy = size/2, R = size*0.36;
+  const dims = [
+    {key:'tecnica', label:'Técnica'},
+    {key:'tactica', label:'Táctica'},
+    {key:'fisico',  label:'Físico'},
+    {key:'actitud', label:'Actitud'}
+  ];
+  const labels = dims.map(d => d.label);
+  const values = dims.map(d => {
+    const dimSub = sub && sub[d.key];
+    if (dimSub && typeof dimSub === 'object' && Object.keys(dimSub).length > 0) {
+      const vals = Object.values(dimSub).map(v => typeof v === 'number' ? Math.max(0, Math.min(10, v)) : 0);
+      return vals.reduce((a,b) => a+b, 0) / vals.length;
+    }
+    return Math.max(0, Math.min(10, p ? (p[d.key] || 0) : 0));
+  });
+  const n = 4;
+  const size = opts.size || 280;
+  const cx = size/2, cy = size/2, R = size * 0.34;
   const levels = 5, as = (2*Math.PI)/n, sa = -Math.PI/2;
-  const showVals = opts.showValues !== false && n <= 8;
-  const lblOff = n > 8 ? 20 : 18;
-  const fSz = n > 8 ? 9 : 11;
-  const ptR = n > 8 ? 3 : 5;
-  const ptSW = n > 8 ? '1.5' : '2';
   const po = (a, r) => [cx + r*Math.cos(a), cy + r*Math.sin(a)];
   const wA = opts.width ? ` width="${opts.width}"` : '';
   const hA = opts.height ? ` height="${opts.height}"` : '';
   const cls = opts.className ? ` class="${opts.className}"` : '';
-  let s = `<svg viewBox="0 0 ${size} ${totalH}" xmlns="http://www.w3.org/2000/svg"${wA}${hA}${cls}>`;
-  // Grid
+  let s = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg"${wA}${hA}${cls}>`;
   for (let l=1; l<=levels; l++) {
     const r=R*l/levels, pts=[];
     for (let i=0; i<n; i++) { const [x,y]=po(sa+i*as,r); pts.push(`${x},${y}`); }
     s += `<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="${l===levels?'1.5':'0.8'}"/>`;
   }
-  // Axes and labels
   for (let i=0; i<n; i++) {
     const a=sa+i*as, [x,y]=po(a,R);
     s += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#E2E8F0" stroke-width="0.8"/>`;
-    const [lx,ly]=po(a, R+lblOff);
+    const [lx,ly]=po(a, R+24);
     const anc=Math.abs(lx-cx)<5?'middle':lx>cx?'start':'end';
-    s += `<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="${fSz}" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
+    s += `<text x="${lx}" y="${ly+4}" text-anchor="${anc}" font-size="12" font-weight="600" fill="#64748B" font-family="Inter,system-ui">${labels[i]}</text>`;
   }
-  // Layer 1 (back): category average polygon — only when sub-metrics exist
-  if (hasSub) {
-    const ap=[];
-    for (let i=0; i<n; i++) {
-      const v=Math.max(1,Math.min(10,avgValues[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
-      ap.push(`${x},${y}`);
-    }
-    s += `<polygon points="${ap.join(' ')}" fill="rgba(167,139,250,0.1)" stroke="rgba(167,139,250,0.5)" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>`;
-  }
-  // Layer 2 (front): detailed profile polygon
   const dp=[];
   for (let i=0; i<n; i++) {
-    const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
+    const v=Math.max(0.5, values[i]||0), r=R*v/10, [x,y]=po(sa+i*as,r);
     dp.push(`${x},${y}`);
   }
-  s += `<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.15)" stroke="rgba(124,58,237,0.85)" stroke-width="2" stroke-linejoin="round"/>`;
-  // Points on detailed layer
+  s += `<polygon points="${dp.join(' ')}" fill="rgba(124,58,237,0.2)" stroke="#7C3AED" stroke-width="2.5" stroke-linejoin="round"/>`;
   for (let i=0; i<n; i++) {
-    const v=Math.max(1,Math.min(10,values[i]||0)), r=R*v/10, [x,y]=po(sa+i*as,r);
-    s += `<circle cx="${x}" cy="${y}" r="${ptR}" fill="#7C3AED" stroke="#fff" stroke-width="${ptSW}"/>`;
-    if (showVals) s += `<text x="${x}" y="${y-10}" text-anchor="middle" font-size="12" font-weight="800" fill="#7C3AED" font-family="Syne,system-ui">${v}</text>`;
-  }
-  // Legend (only when sub-metrics)
-  if (hasSub) {
-    const ly = size + 16;
-    const lx1 = cx - 90;
-    s += `<circle cx="${lx1}" cy="${ly}" r="4" fill="rgba(124,58,237,0.85)"/>`;
-    s += `<text x="${lx1+10}" y="${ly+4}" font-size="10" font-weight="600" fill="#64748B" font-family="Inter,system-ui">Perfil detallado</text>`;
-    const lx2 = cx + 8;
-    s += `<line x1="${lx2}" y1="${ly}" x2="${lx2+14}" y2="${ly}" stroke="rgba(167,139,250,0.8)" stroke-width="2" stroke-dasharray="4 3"/>`;
-    s += `<text x="${lx2+20}" y="${ly+4}" font-size="10" font-weight="600" fill="#64748B" font-family="Inter,system-ui">Media por categ.</text>`;
+    const v=Math.max(0.5, values[i]||0), r=R*v/10, [x,y]=po(sa+i*as,r);
+    s += `<circle cx="${x}" cy="${y}" r="5" fill="#7C3AED" stroke="#fff" stroke-width="2"/>`;
+    s += `<text x="${x}" y="${y-10}" text-anchor="middle" font-size="11" font-weight="800" fill="#7C3AED" font-family="Inter,system-ui">${(Math.round(v*10)/10).toFixed(1)}</text>`;
   }
   s += '</svg>';
   return s;
 }
 
+function buildSubMetricsBars(p, ff) {
+  const sub = p && p.subMetrics;
+  if (!sub || typeof sub !== 'object') return '';
+  const font = ff || 'Inter,system-ui';
+  const dimCfg = [
+    {key:'tecnica', label:'Técnica', color:'#7C3AED'},
+    {key:'tactica', label:'Táctica', color:'#2563EB'},
+    {key:'fisico',  label:'Físico',  color:'#059669'},
+    {key:'actitud', label:'Actitud', color:'#D97706'}
+  ];
+  let html = '', hasAny = false;
+  dimCfg.forEach(({key, label, color}) => {
+    const dimSub = sub[key];
+    if (!dimSub || typeof dimSub !== 'object' || !Object.keys(dimSub).length) return;
+    hasAny = true;
+    const entries = Object.entries(dimSub);
+    const vals = entries.map(([,v]) => typeof v === 'number' ? Math.max(0, Math.min(10, v)) : 0);
+    const mean = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
+    const bars = entries.map(([name, val]) => {
+      const v = typeof val === 'number' ? Math.max(0, Math.min(10, val)) : 0;
+      return `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-size:11px;color:#64748B;font-family:${font}">${esc(name)}</span><span style="font-size:11px;font-weight:700;color:${color};font-family:${font}">${v.toFixed(1)}</span></div><div style="height:8px;border-radius:4px;background:#E5E7EB"><div style="height:8px;border-radius:4px;background:${color};width:${(v/10)*100}%"></div></div></div>`;
+    }).join('');
+    html += `<div style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${color};font-family:${font}">${label}</span><span style="font-size:22px;font-weight:800;color:${color};line-height:1;font-family:${font}">${mean}</span></div>${bars}</div>`;
+  });
+  return hasAny ? html : '';
+}
+
 function renderRadar(containerId, p) {
-  document.getElementById(containerId).innerHTML = buildRadarSvg(p, {className:'radar-svg'});
+  const svg = buildRadarSvg(p, {className:'radar-svg'});
+  const bars = buildSubMetricsBars(p);
+  document.getElementById(containerId).innerHTML = svg + (bars ? `<div style="margin-top:20px">${bars}</div>` : '');
 }
 
 /* ── GESTIÓN DE ETIQUETAS EN FORMULARIO ── */
@@ -2794,6 +2787,7 @@ function openReportWindow(p,summaryHTML){
 
   // Radar SVG for report
   const radarSvg=buildRadarSvg(p, {width:240, height:240});
+  const subBarsHtml=buildSubMetricsBars(p,'Inter,system-ui');
 
   const tagsHTML=(p.tags||[]).length>0?`<div style="margin-bottom:20px"><div style="display:flex;gap:6px;flex-wrap:wrap">${(p.tags||[]).map(t=>{const colors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};const[bg,col]=colors[t]||['#F1F5F9','#475569'];return`<span style="font-size:11px;padding:3px 10px;border-radius:99px;background:${bg};color:${col};font-weight:600;font-family:system-ui">${esc(t)}</span>`;}).join('')}</div></div>`:'';
 
@@ -2822,7 +2816,7 @@ function openReportWindow(p,summaryHTML){
   <div style="position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(124,58,237,.08)"></div>
 </div>
 <div style="max-width:780px;margin:0 auto;padding:36px 48px">
-  <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${scoreBoxes}</div><div style="text-align:center">${radarSvg}</div></div></div>
+  <div style="margin-bottom:30px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Valoración scout</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${scoreBoxes}</div><div style="text-align:center">${radarSvg}</div></div>${subBarsHtml?`<div style="margin-top:20px;padding-top:20px;border-top:1px solid #F5F3FF">${subBarsHtml}</div>`:''}</div>
   ${tagsHTML}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px">
     <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #F5F3FF;font-family:'Inter',system-ui">Datos del jugador</div>${ir('Posición',esc(p.posicion)||'—')}${ir('Categoría',esc(catLabel))}${ir('Ojeo para',esc(ojeoLabel))}${ir('Club actual',esc(p.club)||'—')}${ir('Pie dominante',esc(p.pieDom)||'—')}${ir('Altura',p.altura?p.altura+' cm':'—')}${ir('Peso',p.peso?p.peso+' kg':'—')}${ir('Nacimiento',fd(p.fecha))}${ir('Estado',esc(p.estado)||'—')}</div>
@@ -2995,6 +2989,7 @@ function openCVWindow(p,clubs,description){
 
   // Radar SVG
   const radarSvg=buildRadarSvg(p, {width:180, height:180});
+  const cvSubBars=buildSubMetricsBars(p,'system-ui,-apple-system,sans-serif');
 
   const ir=(icon,label,value)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0"><span style="font-size:14px">${icon}</span><span style="font-size:12px;color:#64748b;min-width:100px">${label}</span><span style="font-size:13px;font-weight:600;color:#1e293b">${value}</span></div>`;
   const scoreBar=(label,v)=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:#64748b;font-weight:500">${label}</span><span style="font-size:13px;font-weight:800;color:${rc(v)}">${v}/10</span></div><div style="height:6px;border-radius:3px;background:#f1f5f9"><div style="height:6px;border-radius:3px;background:${rc(v)};width:${v*10}%"></div></div></div>`;
@@ -3040,10 +3035,7 @@ function openCVWindow(p,clubs,description){
     <div>
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #F5F3FF">Valoración técnica</div>
       <div style="text-align:center;margin-bottom:14px">${radarSvg}</div>
-      ${scoreBar('Técnica individual',p.tecnica||0)}
-      ${scoreBar('Capacidad táctica',p.tactica||0)}
-      ${scoreBar('Físico y atletismo',p.fisico||0)}
-      ${scoreBar('Actitud y competitividad',p.actitud||0)}
+      ${cvSubBars || scoreBar('Técnica individual',p.tecnica||0)+scoreBar('Capacidad táctica',p.tactica||0)+scoreBar('Físico y atletismo',p.fisico||0)+scoreBar('Actitud y competitividad',p.actitud||0)}
     </div>
   </div>
   ${clubsHTML}
@@ -3285,38 +3277,21 @@ window.runCompare = function(){
     }).join('');
   }
 
-  // Radar
+  // Radar — always 4 axes, averaged sub-metric values when available
   destroyChart('compare-radar');
-  const allHaveSub=selected.every(p=>p.subMetrics&&typeof p.subMetrics==='object'&&Object.keys(p.subMetrics).length>0);
-  let cmpLabels,cmpData;
-  if(allHaveSub){
-    cmpLabels=[];
-    ['tecnica','tactica','fisico','actitud'].forEach(dim=>{const d=selected[0].subMetrics[dim];if(d&&typeof d==='object')Object.keys(d).forEach(name=>cmpLabels.push(name.length>10?name.slice(0,9)+'.':name));});
-    cmpData=selected.map(p=>{const vals=[];['tecnica','tactica','fisico','actitud'].forEach(dim=>{const d0=selected[0].subMetrics[dim];if(d0)Object.keys(d0).forEach(name=>vals.push((p.subMetrics[dim]&&p.subMetrics[dim][name]!=null)?p.subMetrics[dim][name]:0));});return vals;});
-  } else {
-    cmpLabels=['Técnica','Táctica','Físico','Actitud'];
-    cmpData=selected.map(p=>[p.tecnica||0,p.tactica||0,p.fisico||0,p.actitud||0]);
-  }
-  // Compute category averages per player for overlay (only when sub-metrics)
-  const cmpAvg=allHaveSub?selected.map(p=>{
-    const avgs=[];
-    ['tecnica','tactica','fisico','actitud'].forEach(dim=>{
-      const d0=selected[0].subMetrics[dim];
-      if(d0&&typeof d0==='object'){
-        const keys=Object.keys(d0);
-        const vals=keys.map(k=>(p.subMetrics[dim]&&p.subMetrics[dim][k]!=null)?p.subMetrics[dim][k]:0);
-        const dimAvg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
-        keys.forEach(()=>avgs.push(dimAvg));
-      }
-    });
-    return avgs;
-  }):[];
-  const primaryDs=selected.map((p,i)=>({label:p.nombre,data:cmpData[i],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:4}));
-  const avgDs=allHaveSub?selected.map((p,i)=>({label:'',data:cmpAvg[i],backgroundColor:'transparent',borderColor:CMP_COLORS[i],borderWidth:1.5,borderDash:[4,3],pointRadius:0,pointHoverRadius:0})):[];
+  const cmpLabels=['Técnica','Táctica','Físico','Actitud'];
+  const cmpData=selected.map(p=>['tecnica','tactica','fisico','actitud'].map(dim=>{
+    const dimSub=p.subMetrics&&p.subMetrics[dim];
+    if(dimSub&&typeof dimSub==='object'&&Object.keys(dimSub).length>0){
+      const vals=Object.values(dimSub).map(v=>typeof v==='number'?Math.max(0,Math.min(10,v)):0);
+      return vals.reduce((a,b)=>a+b,0)/vals.length;
+    }
+    return p[dim]||0;
+  }));
   _charts['compare-radar']=new Chart(document.getElementById('chart-compare-radar').getContext('2d'),{
     type:'radar',
-    data:{labels:cmpLabels,datasets:[...primaryDs,...avgDs]},
-    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:allHaveSub?8:11,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10,filter:item=>item.text!==''}}}}
+    data:{labels:cmpLabels,datasets:selected.map((p,i)=>({label:p.nombre,data:cmpData[i],backgroundColor:CMP_BG[i],borderColor:CMP_COLORS[i],borderWidth:2.5,pointBackgroundColor:CMP_COLORS[i],pointRadius:5}))},
+    options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'#E2E8F0'},pointLabels:{font:{size:12,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:12,padding:10}}}}
   });
 
   // Table
@@ -3505,12 +3480,6 @@ async function checkSharedReport(){
     const visitas=p.visitas||[];
     const sub=p.subMetrics||{};
     const tagColors={'Rápido':['#DBEAFE','#1E40AF'],'Líder':['#FEF3C7','#92400E'],'Goleador':['#D1FAE5','#065F46'],'Creativo':['#EDE9FE','#5B21B6'],'Lesionado':['#FEE2E2','#991B1B'],'Canterano':['#E0E7FF','#3730A3'],'Polivalente':['#F0FDF4','#166534'],'Disciplinado':['#F8FAFC','#334155']};
-    const dimCfg=[
-      {key:'tecnica',label:'Técnica',color:'#7C3AED',bg:'#F5F3FF',border:'#DDD6FE'},
-      {key:'tactica',label:'Táctica',color:'#3B82F6',bg:'#EFF6FF',border:'#BFDBFE'},
-      {key:'fisico', label:'Físico', color:'#059669',bg:'#F0FDF4',border:'#A7F3D0'},
-      {key:'actitud',label:'Actitud',color:'#D97706',bg:'#FFFBEB',border:'#FDE68A'}
-    ];
 
     /* BLOQUE 1 — Hero */
     const photoEl=p.foto
@@ -3543,32 +3512,18 @@ async function checkSharedReport(){
 
     /* BLOQUE 2 — Radar */
     const radarSvg=buildRadarSvg(p,{});
-    const radarLegend=dimCfg.map(d=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:2px;background:${d.color}"></div><span style="font-size:11px;font-weight:600;color:#64748B">${d.label}</span></div>`).join('');
     const radarBlock=`<div style="background:#fff;border-radius:20px;padding:28px;margin-bottom:16px;box-shadow:0 2px 24px rgba(0,0,0,.07);border:1px solid #E2E8F0;text-align:center">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:4px">Perfil de rendimiento</div>
       <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:#0B0F1A;margin-bottom:20px">Radar de competencias</div>
-      <div style="max-width:400px;margin:0 auto">${radarSvg}</div>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:16px">${radarLegend}</div>
+      <div style="max-width:320px;margin:0 auto">${radarSvg}</div>
     </div>`;
 
-    /* BLOQUE 3 — Detailed metrics by category */
-    const metricsCards=dimCfg.map(({key,label,color,bg,border})=>{
-      const v=p[key]||0;
-      const dimSub=sub[key]||{};
-      const entries=Object.entries(dimSub);
-      const bars=entries.map(([name,val])=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:#64748B">${esc(name)}</span><span style="font-size:11px;font-weight:700;color:${color}">${val}</span></div><div style="height:5px;border-radius:3px;background:#F1F5F9"><div style="height:5px;border-radius:3px;background:${color};width:${Math.min(100,(val/10)*100)}%;opacity:.75"></div></div></div>`).join('');
-      return `<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid ${border};box-shadow:0 1px 8px rgba(0,0,0,.04)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:${color};margin-bottom:2px">${label}</div><div style="font-size:11px;color:#94A3B8">Media dimensional</div></div>
-          <div style="width:48px;height:48px;border-radius:50%;background:${bg};border:2px solid ${border};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:${color};font-family:var(--font-display)">${v}</div>
-        </div>
-        ${bars||`<div style="font-size:12px;color:#94A3B8;text-align:center;padding:8px 0">Sin sub-métricas</div>`}
-      </div>`;
-    }).join('');
-    const metricsBlock=`<div style="margin-bottom:16px">
-      <div style="margin-bottom:14px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:4px">Análisis técnico</div><div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:#0B0F1A">Desglose por categorías</div></div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">${metricsCards}</div>
-    </div>`;
+    /* BLOQUE 3 — Sub-metrics bars by category */
+    const sharedSubBars=buildSubMetricsBars(p);
+    const metricsBlock=sharedSubBars?`<div style="background:#fff;border-radius:20px;padding:28px;margin-bottom:16px;box-shadow:0 2px 24px rgba(0,0,0,.07);border:1px solid #E2E8F0">
+      <div style="margin-bottom:20px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#7C3AED;margin-bottom:4px">Análisis técnico</div><div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:#0B0F1A">Desglose por categorías</div></div>
+      ${sharedSubBars}
+    </div>`:'';
 
     /* BLOQUE 4 — Evolución */
     const ratedVis=visitas.filter(v=>v.valoracion);
